@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Android基础三部曲『Touch事件传递』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="touch事件传递，这里有三个关键的方法，分别是dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent，其中View和Activity没有onInterceptTouchEvent，只有ViewGroup三个方法都有。调用过程是：dispatch(分发)-&gt;intercept(是否拦截)-&gt;ontouch(处理)。事件由Activit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android基础三部曲『Touch事件传递』">
+<meta property="og:url" content="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="touch事件传递，这里有三个关键的方法，分别是dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent，其中View和Activity没有onInterceptTouchEvent，只有ViewGroup三个方法都有。调用过程是：dispatch(分发)-&gt;intercept(是否拦截)-&gt;ontouch(处理)。事件由Activit">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-19bd3ac2770676b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-5dd5920e40b17322.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-7b303e08235b2003.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-ef4951c9034fc86a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-6ec1d110a654160d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-d0c296fdd731ac2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2020-02-18T10:56:06.000Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:49.079Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/7186484-19bd3ac2770676b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Android基础三部曲『touch事件传递』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" class="article-date">
+  <time datetime="2020-02-18T10:56:06.000Z" itemprop="datePublished">2020-02-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android基础三部曲『Touch事件传递』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>touch事件传递，这里有三个关键的方法，分别是<code>dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent</code>，其中<strong>View和Activity没有onInterceptTouchEvent，只有ViewGroup三个方法都有</strong>。调用过程是：dispatch(分发)-&gt;intercept(是否拦截)-&gt;ontouch(处理)。事件由Activity经ViewGroup传递到View，如果一路事件都没有被消费掉，那么事件又会由View经ViewGroup传递到Activity直到被处理掉。<strong>View的dispatchTouchEvent是将事件分发给了自己。</strong></p>
+<p>二、重写onInterceptTouchEvent返回true(默认false)，则后续事件不会往下dispatch，子控件的diaptchTouchEvent无法接受touch事件；如果此时没有重写onTouchEvent，使之返回true，那么ACTION_DOWN将有父控件中onTouchEvent返回true的父控件处理，或者一直传递到Activity，由Activity处理；需要特别注意的是：假设A处理了ACTION_DOWN事件，则后续的ACTION_MOVE、ACTION_UP事件也由A处理！！</p>
+<p>三、dispatchTouchEvent的调用逻辑，如果是ViewGroup，则先调用自己的onInterceptTouchEvent,如果是true,则直接返回；如果是false，则调用子View/ViewGroup的dispatchTouchEvent事件，如果子组件没有消费掉事件，则返回到本组件的onTouchEvent，则返回onTouchEvent的返回值！！</p>
+<p>四、只重写onTouchEvent，使之返回true，表示消费了该touch事件，需要特别注意的是：假设ViewGroup A处理了ACTION_DOWN事件，不光是后续的ACTION_MOVE、ACTION_UP事件也由A处理，甚至子View的dispatchTouchEvent都不会调用，因为此时本View的dispatchTouchEvent返回true，表示事件已经被handled</p>
+<p>五、不管是重写onTouchEvent返回true，还是重写onIterceptTouchEvent返回true，都说明事件已经不需要往子view传递了，此时子view的dispatchTouchEvent将无法收到事件。如果onIterceptTouchEvent返回true,而onTouchEvent没有重写，则事件会继续往父控件传递，直到某个父控件消费了事件，或者传递到Activity，由Activity消费掉。</p>
+<p>六、在onTouchEvent中返回true，消费了事件，则事件不会再往上级组件传递；但是依然会调用父控件、Activity的dispatchTouchEvent事件，也就是说父控件还是有机会拦截事件的。</p>
+<p>七、在dispatchTouchEvent中返回true(默认返回false)，表示该事件已经被handled，不再继续分发；这样事件不会向传递给父控件处理，不管有没重写本组件的onTouchView消费该事件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">boolean</span> handled = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (onFilterTouchEventForSecurity(ev)) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> actionMasked = action &amp; MotionEvent.ACTION_MASK;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// Check for interception.</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line">        <span class="comment">//ViewGroup去判断这个事件该不该去拦截，首先是这个事件得是ACTION_DOWN事件或者该事件的mFirstTouchTarget（目标子View）是不为空的才会考虑要不要拦截。***这说明mFirstTouchTarget为空的情况下，ACTION_MOVE和ACTION_UP事件是不会经过这个拦截判断的，而是直接intercepted = true表示事件被直接拦截掉。</span></span><br><span class="line"><span class="comment">//      那么mFirstTouchTarget（目标子View）这个变量到底是什么呢？什么时候会为空呢？</span></span><br><span class="line">        <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN</span><br><span class="line">                || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//这个变量是控制是不是不允许父控件去拦截该事件的，取值是看"mGroupFlags"的取值，这里面涉及到一个方法：requestDisallowInterceptTouchEvent()方法。这个方法确定"mGroupFlags"的取值，控制请求父布局不拦截该事件，而是交给自己去做处理。这个方法在处理滑动冲突等场景时经常用到。</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (!disallowIntercept) &#123;</span><br><span class="line">                intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">                ev.setAction(action); <span class="comment">// restore action in case it was changed</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// There are no touch targets and this action is not an initial down</span></span><br><span class="line">            <span class="comment">// so this view group continues to intercept touches.</span></span><br><span class="line">            intercepted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">            <span class="keyword">if</span> (!canceled &amp;&amp; !intercepted) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// If the event is targeting accessibility focus we give it to the</span></span><br><span class="line">                <span class="comment">// view that has accessibility focus and if it does not handle it</span></span><br><span class="line">                <span class="comment">// we clear the flag and dispatch the event to all children as usual.</span></span><br><span class="line">                <span class="comment">// We are looking up the accessibility focused host to avoid keeping</span></span><br><span class="line">                <span class="comment">// state since these events are very rare.</span></span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Dispatch to touch targets.</span></span><br><span class="line">            <span class="keyword">if</span> (mFirstTouchTarget == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// No touch targets so treat this as an ordinary view.</span></span><br><span class="line">                handled = dispatchTransformedTouchEvent(ev, canceled, <span class="keyword">null</span>,</span><br><span class="line">                        TouchTarget.ALL_POINTER_IDS);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// Dispatch to touch targets, excluding the new touch target if we already</span></span><br><span class="line">                <span class="comment">// dispatched to it.  Cancel touch targets if necessary.</span></span><br><span class="line">                ...</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Update list of touch targets for pointer up or cancel, if needed.</span></span><br><span class="line">            <span class="keyword">if</span> (canceled</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_UP</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">                resetTouchState();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_UP) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> actionIndex = ev.getActionIndex();</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> idBitsToRemove = <span class="number">1</span> &lt;&lt; ev.getPointerId(actionIndex);</span><br><span class="line">                removePointersFromTouchTargets(idBitsToRemove);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!handled &amp;&amp; mInputEventConsistencyVerifier != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mInputEventConsistencyVerifier.onUnhandledEvent(ev, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> handled;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="默认情况"><a href="#默认情况" class="headerlink" title="默认情况"></a>默认情况</h4><p><img src="https://upload-images.jianshu.io/upload_images/7186484-19bd3ac2770676b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Touch默认流程.png"></p>
+<h4 id="dispatchTouchEvent返回值"><a href="#dispatchTouchEvent返回值" class="headerlink" title="dispatchTouchEvent返回值"></a>dispatchTouchEvent返回值</h4><p><code>dispatchTouchEvent()中调用了onInterceptTouchEvent()和dispatchTransformedTouchEvent()方法，dispatchTransformedTouchEvent()调用了super.dispatchTouchEvent()方法</code>，所以如果重写dispatchTouchEvent方法</p>
+<ul>
+<li>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-5dd5920e40b17322.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回true.png"></li>
+<li>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-7b303e08235b2003.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回false.png"></li>
+</ul>
+<h4 id="onInterceptTouchEvent返回值"><a href="#onInterceptTouchEvent返回值" class="headerlink" title="onInterceptTouchEvent返回值"></a>onInterceptTouchEvent返回值</h4><ul>
+<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-ef4951c9034fc86a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onInterceptTouchEvent返回true.png"></p>
+</li>
+<li><p>返回false<br>onInterceptTouchEvent和onTouchEvent如果返回false的话， 效果和默认的一样</p>
+</li>
+</ul>
+<h4 id="onTouchEvent返回值"><a href="#onTouchEvent返回值" class="headerlink" title="onTouchEvent返回值"></a>onTouchEvent返回值</h4><ul>
+<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-6ec1d110a654160d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回true.png"></p>
+</li>
+<li><p>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-d0c296fdd731ac2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回false.png"></p>
+</li>
+</ul>
+<p>参考：</p>
+<p><a href="https://www.jianshu.com/p/c98a41a9a5f3" target="_blank" rel="noopener">一步步探索学习Android Touch事件分发传递机制（一）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ck82f1b5h000olu26hyk3gy01" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/15/Android%E3%80%8EViewDragHelper%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android『ViewDragHelper』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/02/15/Java%E2%80%94%E2%80%94%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java——内存模型</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jni/" rel="tag">jni</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/" rel="tag">ndk</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" rel="tag">布局相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" rel="tag">数据转换，protobuf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/jni/" style="font-size: 10px;">jni</a> <a href="/tags/ndk/" style="font-size: 10px;">ndk</a> <a href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" style="font-size: 10px;">布局相关</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" style="font-size: 10px;">数据转换，protobuf</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E7%B1%BB%E5%BA%93%E5%AD%A6%E4%B9%A0%E3%80%8EProtocolBuffers%E3%80%8F/">Java类库学习『ProtocolBuffers』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

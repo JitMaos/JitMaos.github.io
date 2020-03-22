@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>读书笔记『Gradle实战』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="项目自动化的类型：按需构建、触发构建、预定构建，基于时间的程序调度方案。 P15：Ant的缺点  使用XML作为构建逻辑的定义语言相比于其他简明的定义语言，会导致构建脚本过于臃肿和啰嗦。 复杂的构建逻辑会导致又长又难维护的构建脚本。当尝试用标记语言去定义类似if-then&#x2F;if-then-else的逻辑语言时，它完全就成了一种负担。 Ant没有提供任何指导来告诉你如何构建项目。在一个企业级配置中，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记『Gradle实战』">
+<meta property="og:url" content="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="项目自动化的类型：按需构建、触发构建、预定构建，基于时间的程序调度方案。 P15：Ant的缺点  使用XML作为构建逻辑的定义语言相比于其他简明的定义语言，会导致构建脚本过于臃肿和啰嗦。 复杂的构建逻辑会导致又长又难维护的构建脚本。当尝试用标记语言去定义类似if-then&#x2F;if-then-else的逻辑语言时，它完全就成了一种负担。 Ant没有提供任何指导来告诉你如何构建项目。在一个企业级配置中，">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-04-05T07:34:50.000Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:49.096Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记『Gradle实战』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-05T07:34:50.000Z" itemprop="datePublished">2019-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      读书笔记『Gradle实战』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>项目自动化的类型：按需构建、触发构建、预定构建，基于时间的程序调度方案。</p>
+<p><strong>P15</strong>：Ant的缺点</p>
+<ul>
+<li>使用XML作为构建逻辑的定义语言相比于其他简明的定义语言，会导致构建脚本过于臃肿和啰嗦。</li>
+<li>复杂的构建逻辑会导致又长又难维护的构建脚本。当尝试用标记语言去定义类似if-then/if-then-else的逻辑语言时，它完全就成了一种负担。</li>
+<li>Ant没有提供任何指导来告诉你如何构建项目。在一个企业级配置中，这常常会导致一个build文件每一次看上去都不一样。常用功能时常被到处拷贝。项目中每一个新的开发人员都需要去理解构建中每一个独立的部分。</li>
+<li>在没有Ivy的情况下，使用Ant很难管理依赖。在通常情况下，你需要将JAR文件提交到版本控制系统中，并且手动管理组织结构。</li>
+</ul>
+<p><strong>P16</strong>：Maven选择约定优于配置的思想，同时是基于构建生命周期的思想。Maven有如下缺点：</p>
+<ul>
+<li>Maven推荐一个默认的结构和生命周期，常常会太过限制，也许不适合你的项目。</li>
+<li>为Maven写定制的扩展过于累赘。你需要学习Mojos.</li>
+</ul>
+<p><strong>P26</strong>：Gradle提供了具有表达性的DSL，约定优于配置的方法和强大的依赖管理。摒弃了XML，引入了动态语言Groovy来定义构建逻辑。</p>
+<p><strong>P33</strong>：对于一个Java项目，Gradle已经提供了默认的有意义的任务。例如，你可以编译Java产品源代码，运行测试和组装JAR文件。每个Java项目都以一个标准的目录布局开始。它定义了在哪里可以找到源代码、资源文件和测试代码。可以通过约定属性改变它们的默认值。</p>
+<a id="more"></a>
+
+<p><strong>P42</strong>：使用Gralde命令行</p>
+<ul>
+<li>执行一个任务：gradle taskname</li>
+<li>执行多个任务：gradle taskA taskB taskC(注意，<strong>如果A/B/C之间有相互引用，那么涉及到引用任务只会执行一次</strong>)</li>
+<li>声明task依taskA<strong>.dependsOn</strong> taskB，<strong>taskB会先执行</strong></li>
+<li>列出所有task，gradle -q tasks <strong>–all</strong></li>
+<li>支持任务名的驼峰缩写，如：gradle groupTherapy =&gt; gradle <strong>gT</strong></li>
+<li>排除一个任务，gradle groupTherapy <font color="#dd0000"><strong>-x</strong></font>  excludeTaskName</li>
+</ul>
+<p><strong>P47</strong>：守护进程以后台进程方式运行Gradle，可是在使用gradle命令时添加–daemon参数来启动，<strong>守护进程只会创建一次，并会在3小时空闲时间后自动过期。</strong>不使用守护进程：<strong>–no-daemon</strong>，停止守护进程：<strong>–stop</strong></p>
+<p><strong>P55*</strong>：Java插件式Gradle自身装载的一个插件。告诉Gradle要使用那个插件，比如告诉它要使用Java插件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'java'</span></span><br></pre></td></tr></table></figure>
+
+<p>Java插件引入的约定之一就是源代码的位置。在默认情况下，插件回到src/main/java目录下查找。Java插件提供的一个任务叫做build。这个build任务会以正确的顺序<strong>编译你的源代码，运行测试，组装JAR文件。</strong>运行gradle build命令后，可能得到类似:compileTestJava <font color="#dd0000"><strong>UP-TO-DATE</strong></font>，其中**UP-TO-DATE”表示该任务被跳过了。Gralde的增量式构建支持自动鉴别不需要被运行的任务。</p>
+<p><strong>P60</strong>：改变项目源代码目录及改变输出目录：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">        java &#123;</span><br><span class="line">            srcDirs = [<span class="string">'src'</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">buildDir = <span class="string">'out'</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>P61</strong>：<strong>定义仓库</strong>，Gradle要求你至少定义一个仓库(respository)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">repositories &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>定义依赖</strong>：一个依赖是通过<font color="#dd0000"><strong>group标识符、名字和一个指定版本</strong></font>来确定的。如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compile group: <span class="string">'org.apache.commons'</span>,name:<span class="string">'commons-lang3'</span>,version:<span class="string">'3.1'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P65</strong>：应用插件是一个<strong>幂等操作</strong>，在编程中一个幂等操作的特点是<strong>其任意多次执行所产生的影响均与一次执行的影响相同</strong>。</p>
+<p><strong>P68</strong>：修改Gradle插件提供的默认值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apply plugin <span class="string">'jetty'</span></span><br><span class="line">jettyRun &#123; <span class="comment">//Jetty运行Web应用的Task是jettyRun</span></span><br><span class="line">	httpPort = <span class="number">9090</span></span><br><span class="line">    contextPath = <span class="string">'todo'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P69</strong>：<font color="#dd0000"><strong>Gradle包装器</strong></font>，它是Gradle的核心特性，能够让机器在没有安装Gradle运行时的情况下运行Gradle构建。它也让构建脚本运行在一个指定的Gradle版本上。它是通过自动从中心仓库下载Gradle运行时，解压和使用来实现的。<strong>最终的目标是创建一个独立于系统、系统配置和Gradle版本的可靠和可重复的构建。</strong>其实就是将Gradle的配置信息写入到项目的task中，运行该task会自动下载解压运行对应版本的Gradle，免去了自己去下载安装的过程以及可能产生的版本不一致问题。</p>
+<p><strong>P78</strong>：Gralde使用领域驱动设计(DDD)的原理为其自己的领域构建软件模型。因此，在Gradle API中有相应的类来表示project和task。<strong>Gradle基于build.gradle中的配置实例化org.gralde.api.Project类，并且能够通过project变量使其隐式可用。</strong>部分API接口及重要方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;&lt;Interface&gt;&gt; Project</span><br><span class="line"><span class="comment">//构建脚本配置</span></span><br><span class="line">apply(options: Map&lt;String,?&gt;)</span><br><span class="line">buildscript(config: Closure)</span><br><span class="line"><span class="comment">//依赖管理</span></span><br><span class="line">dependencies(config: Closure)</span><br><span class="line">configurations(config: Closure)</span><br><span class="line">getDependencies()</span><br><span class="line">getConfigurations()</span><br><span class="line"><span class="comment">//getter、setter</span></span><br><span class="line">getAnt()</span><br><span class="line">getName()</span><br><span class="line">getDescription()</span><br><span class="line">getGroup()</span><br><span class="line">getPath()</span><br><span class="line">getVersion()</span><br><span class="line">getLogger()</span><br><span class="line">setDescription(descritption: String)</span><br><span class="line">setVersion(version: Object)</span><br><span class="line"><span class="comment">//创建文件</span></span><br><span class="line">file(path: Object)</span><br><span class="line">files(paths: Object...) </span><br><span class="line">fileTree(baseDir: Obejct)</span><br><span class="line"><span class="comment">//创建task</span></span><br><span class="line">task(args: Map&lt;String,?&gt;,name: String,c: Closure)</span><br><span class="line">task(name: String,c: Closure)</span><br></pre></td></tr></table></figure>
+
+<p><strong>P80</strong>：Task接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Task依赖</span></span><br><span class="line">depnedson(tasks: Object...)</span><br><span class="line"><span class="comment">//动作定义</span></span><br><span class="line">doFirst(action: Closure)</span><br><span class="line">doLast(action: Closre)</span><br><span class="line">getActions()</span><br><span class="line"><span class="comment">//输入、输出数据声明</span></span><br><span class="line">getInputs()</span><br><span class="line">getOutputs()</span><br><span class="line"><span class="comment">//getter、setter</span></span><br><span class="line">getAnt()</span><br><span class="line">getDescription()</span><br><span class="line">getEnabled()</span><br><span class="line">getGroup()</span><br><span class="line">setDescription(descritpion: String)</span><br><span class="line">setEnabled(enabled: <span class="keyword">boolean</span>)</span><br><span class="line">setGroup(group: String)</span><br></pre></td></tr></table></figure>
+
+<p><strong>P83</strong>：动作(action)就是在task中合适的地方放置构建逻辑。Task接口提供了两个相关的方法来声明task动作：doFirst(Closure)和doLast(Closure)。左移操作符是doLast方法的快捷版本。</p>
+<p><strong>P86</strong>：理解Gradle<strong>并不能保证task依赖的执行顺序</strong>是很重的。</p>
+<p><strong>P86</strong>：Gradle的三个生命周期阶段：<font color="#dd0000"><strong>初始化阶段、配置阶段、执行阶段</strong></font></p>
+<ul>
+<li>初始化阶段，Gradle为项目创建一个Project实例。</li>
+<li>配置阶段，Gradle构建了一个模型来表示任务，并参与到构建中来。增量式构建特性决定了模型中的task是否需要被运行。</li>
+<li>执行阶段，任务按顺序执行。</li>
+</ul>
+<p><strong>P90</strong>：Gradle通过比较两个构建task的inputs和outpus来决定task是否是最新的，只有当inputs和outputs不同时，task才运行。</p>
+<p><strong>P101</strong>：有两种方式可以编写回调生命周期时间：在闭包中，或者是通过Gradle API所提供的监听器接口实现。</p>
+<p><strong>P107</strong>：使用dependencies脚本来定义构建所依赖的类库。使用repositories闭包告诉构建从哪里获取依赖。</p>
+<p><strong>P117</strong>：当依赖管理器在仓库中查找一个依赖时，会通过属性组合来找到它。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  	org.hibernate  :  hibernamte_core  :  <span class="number">3.6</span><span class="number">.3</span>-Final</span><br><span class="line">  	<span class="comment">// group              name              version</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里没有classifier，classifier用来在相同的group、name、version时区分不同的依赖。<strong>这些属性以键值对的形式存在</strong>。</p>
+<p><strong>P119</strong>：运行：<strong>gradle dependencies</strong>，可以得到依赖的树形图。<strong>树形图中依赖后面的(*)表示被排除，这意味着依赖管理器选择的相同的或者另一个版本的类库；-&gt; 表示自动使用新版本。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">  	+--- xml-apis:xml-apis:<span class="number">1.0</span>.b2 -&gt; <span class="number">1.3</span><span class="number">.03</span></span><br><span class="line">  	...</span><br><span class="line">	+--- msv:msv:<span class="number">2002044</span> (*)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><strong>P120</strong>：使用exclude来排除指定的传递性依赖，除了module关键字外，还可以用/或者group和/</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  	cargo(<span class="string">'org.codehaus.cargo:cargo-ant:1.3.1'</span>) &#123;</span><br><span class="line">    	exclude group:<span class="string">'xml-apis'</span>,<span class="keyword">module</span>:<span class="string">'xml-apis'</span></span><br><span class="line">  	&#125;</span><br><span class="line">    cargo <span class="string">'xml-apis:xml-apis:2.0.2'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    或者可以使用transitive来排除所有的传递性依赖</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  	cargo(<span class="string">'org.codehaus.cargo:cargo-ant:1.3.1'</span>) &#123;</span><br><span class="line">    		transitive = <span class="keyword">false</span>	</span><br><span class="line">  	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P121</strong>：动态版本声明可以使用占位符latest-integration或者加号(+)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  	cargo <span class="string">'org.codehaus.cargo:cargo-ant:1.+'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P128</strong>：gradle的本地缓存目录在/Users/xxx/.gradle下，可以通过下面这个task打印出来</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">task printDependencies &lt;&lt; &#123;</span><br><span class="line">  configurations.getByName(<span class="string">'libname'</span>).each &#123;</span><br><span class="line">    dependency -&gt; println dependency</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>129</strong>：Gradle通过比较本地和远程的<strong>校验和</strong>来检测仓库中的工件是否发生变化。没有发生变化的工件不会再次下载，并且会重用本地缓存中的。</p>
+<p><strong>P145</strong>：Project接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//特定的项目配置</span></span><br><span class="line">project(path: String)</span><br><span class="line">project(path: String,config: Closure)</span><br><span class="line"><span class="comment">//公共的项目配置</span></span><br><span class="line">allprojects(action: Action&lt;? <span class="keyword">super</span> Project&gt;)</span><br><span class="line">allprojects(action: config: Clousre)</span><br><span class="line">subprojects(action: Action&lt;? <span class="keyword">super</span> Project&gt;)</span><br><span class="line">subprojects(action: config: Clousre)</span><br><span class="line"><span class="comment">//项目解析顺序</span></span><br><span class="line">evaluationDependsOn(Path: String)</span><br><span class="line">evaluationDependsOnChildren()</span><br></pre></td></tr></table></figure>
+
+<p><strong>P154</strong>：配置公共项目行为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//为根项目和所有子项目设置group和version属性</span></span><br><span class="line">allprojects &#123;</span><br><span class="line">  	group = <span class="string">"com.a.b"</span></span><br><span class="line">    version = <span class="string">'0.1'</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//设置Java插件只应用与子项目</span></span><br><span class="line">subprojects &#123;</span><br><span class="line">	  apply plugin: <span class="string">'java'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P160</strong>：如果你想构建可靠的、高质量的软件，自动化测试时开发工具箱的关键组成部分。自动化测试分为三种类型——单元测试、集成测试、功能测试。</p>
+<ul>
+<li>单元测试与产品代码实现一起作为一个task来执行，<strong>目的是测试代码的最小单元</strong>。在单元测试中，你需要避免与其他类或外部系统交互。在被测试代码中对其他组件的引用，通常用<strong>测试替身</strong>独立出来，这是测试中替代组件的一个通用术语，如Stub(打桩)或Mock(模拟)。</li>
+<li>集成测试用来测试一个完整的组件或子系统。集成测试的一个典型场景就是验证产品代码和数据库之间的交互。</li>
+<li>功能测试通常用于测试应用程序的端到端功能，包括从用户的角度与所有外部系统的交互。</li>
+</ul>
+<p><strong>P162</strong>：Java插件引入了两个新的配置，用来声明测试代码<strong>编译或执行</strong>所需的依赖类库：testCompile和testRuntime。比如声明一个<strong>编译器</strong>的依赖JUnit：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  	testCompile <span class="string">'junit:junit:4.11'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P164</strong>：自动化测试检测</p>
+<ul>
+<li>继承junit.framework.TestCase或groovy.unitGrooveTestCase的任何类或父类</li>
+<li>使用@RunWith注解的任何类或父类</li>
+<li>至少包含一个使用@Test注解的方法的任何类或父类</li>
+</ul>
+<p><strong>P184</strong>：每个source set定义中的源代码都需要在执行之前被编译，并且拷贝到正确的目录下。</p>
+<p><strong>P200</strong>：Gradle将插件分为两类：脚本插件和对象插件。一个脚本插件只不过是一个普通的Gradle构建脚本，它可以被导入到其他的构建脚本中。使用脚本插件，你可以做你学到的任何事情。对象插件需要实现org.gralde.api.Plugin接口。对象插件的源代码通常放在buildSrc目录下，要么和项目在一起，哟啊么是一个独立的项目，并且作为独立的JAR文件发布。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ck82f1b690023lu26d6y1hk3r" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          RxJava2『基础』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java『基础知识』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jni/" rel="tag">jni</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/" rel="tag">ndk</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" rel="tag">布局相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" rel="tag">数据转换，protobuf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/jni/" style="font-size: 10px;">jni</a> <a href="/tags/ndk/" style="font-size: 10px;">ndk</a> <a href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" style="font-size: 10px;">布局相关</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" style="font-size: 10px;">数据转换，protobuf</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E7%B1%BB%E5%BA%93%E5%AD%A6%E4%B9%A0%E3%80%8EProtocolBuffers%E3%80%8F/">Java类库学习『ProtocolBuffers』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

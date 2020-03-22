@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Java『数据容器』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="HashMap先从Java中Object的hashCode()方法说起，从方法注释的第一行可以看到该方法的存在主要是为了支持HashMap： 1234&#x2F;&#x2F;Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java『数据容器』">
+<meta property="og:url" content="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="HashMap先从Java中Object的hashCode()方法说起，从方法注释的第一行可以看到该方法的存在主要是为了支持HashMap： 1234&#x2F;&#x2F;Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-04-09T05:53:02.000Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:49.087Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Java『数据容器』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T05:53:02.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java『数据容器』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h4><p>先从Java中Object的hashCode()方法说起，从方法注释的第一行可以看到该方法的存在主要是为了支持HashMap：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by HashMap.</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> identityHashCode(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>结构</strong>：HashMap的设计初衷是为了在有限的容器内放置若干范围很大的数据。<strong>JDK1.8之前底层使用的是数组+链表，1.8之后当链表长度大于阈值(默认为8)时，会将链表转换成红黑树，以减少搜索时间</strong>；HashMap中有一个hash方法用来得到元素Key的hashCode值，这个hash方法是对Object的HashCode再做了一次优化，为了减少发生哈希碰撞的次数。</p>
+</li>
+<li><p><strong>问题</strong></p>
+<ul>
+<li><p>为什么HashMap的长度是2的幂次方？</p>
+<p><strong>为了更高效，因为如果除数是2的幂次方，那么取余操作等同于右移一位(hash % length) == (hash &amp; (length -1))</strong></p>
+</li>
+</ul>
+</li>
+<li><p><strong>注意</strong></p>
+<ul>
+<li>循环引用，当在多线程环境下，对HashMap进行put操作，可能会出发扩容；扩容意味着数组元素及元素下挂载的链表的复制，所以可能在扩容是会发生循环引用。</li>
+</ul>
+</li>
+<li><p><font color="#dd0000"><strong>equals和hashCode</strong></font></p>
+</li>
+</ul>
+  <a id="more"></a>
+
+<h3 id="Hashtable"><a href="#Hashtable" class="headerlink" title="Hashtable"></a>Hashtable</h3><ul>
+<li><strong>结构</strong>：Hashtable是基于数组+链表(和JDK 1.8之前的HashMap一样)，<strong>继承自Dictionary(一个比较陈旧的类)</strong>；<font color="#dd0000"><strong>Hashtable是线程安全的</strong></font>，其内部方法通过使用synchronized修饰来实现线程安全，(相应的效率会低一些，如果需要使用线程安全的哈希表，可以使用ConcurrentHashMap)；</li>
+<li><strong>注意</strong>：影响Hashtable性能的有两个参数：<strong>初始容量</strong>和<strong>加载因子</strong>。Hashtable默认的初始大小为<strong>11</strong>，扩容方式为<strong>2n+1</strong>，而HashMap的扩容方式为扩充为2的冥次方。另外，<font color="#dd0000"><strong>Hashtable中key和null都不能为null</strong></font>。</li>
+</ul>
+<h4 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h4><ul>
+<li><strong>结构</strong>：JDK 1.8之前采用<strong>分段的数组+链表</strong>实现，JDK1.8开始数据结构和JDK 1.8下的HashMap 一样，采用<strong>数组+链表/红黑树</strong>。</li>
+<li><strong>注意</strong>：在JDK 1.8之前，对整个桶进行分割分段(Segment)，每一把锁只锁定其中一部分数据，多线程访问容器中不同数据段的数据时就不存在锁竞争了。在JDK 1.8中摒弃了Segment的概念，而是使用JDK 1.8 HashMap的数据结构配合Synchronized和CAS来操作，<strong>看起来就像是优化过且线程安全的HashMap</strong>。</li>
+</ul>
+<h4 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h4><ul>
+<li><strong>结构</strong>：继承自HashMap，底层数据基本和HashMap一样，<strong>只是增加了一条双向链表，使之可以保持键值对的插入顺序。</strong></li>
+</ul>
+<h4 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h4><ul>
+<li><strong>结构</strong>：红黑树</li>
+</ul>
+<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><ul>
+<li><strong>结构</strong>：HashSet是基于HashMap实现的，可以看做一个所有Value都是null的HashMap。所以HashSet中不能存储相同的对象(即HashMap中的Key)</li>
+<li><strong>注意</strong>：当尝试把一个对象add到HashSet时，首先会在HashSet中寻找和该对象的hashCode一样的元素，如果存在，则会比较这两个元素是否equals，如果equals</li>
+</ul>
+<h4 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h4><ul>
+<li><strong>结构</strong>：继承自HashSet，不过其内部是通过LinkedHashMap来实现的。</li>
+</ul>
+<h4 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h4><ul>
+<li><strong>结构</strong>：红黑树，有序，唯一。</li>
+</ul>
+<h4 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h4><ul>
+<li><strong>结构</strong>：ArrayList是基于数组实现，<font color="#dd0000"><strong>非线程安全</strong></font>，因为基于是基于数组实现的，所以检索时间复杂度为<strong>O(1)</strong>，增删时间复杂度为<strong>O(n)</strong>；</li>
+<li><strong>扩容</strong>：</li>
+<li>注意事项：<ul>
+<li>删除元素时，索引移动</li>
+</ul>
+</li>
+</ul>
+<h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h4><ul>
+<li><strong>结构</strong>：LinkedList是基于<strong>双向链表</strong>实现的(JDK 1.7之前是循环列表)，<font color="#dd0000"><strong>非线程安全</strong></font>，因为是基于链表实现的，所以检索时间复杂度为<strong>O(n)</strong>，增删时间复杂度为<strong>O(1)</strong>；</li>
+</ul>
+<h4 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h4><ul>
+<li><strong>结构</strong>：Vector和ArrayList很相似，也是基于数组实现的，<font color="#dd0000"><strong>不同的是它是线程安全的</strong></font>；当容量不足时，会进行扩容(基于扩容系数，如果系数为空，则将容量增加一倍)，扩容会将数组中的元素拷贝到新的数组中去；Vector实现了RandomAccess接口，支持随机访问。</li>
+</ul>
+<h3 id="RandomAccess"><a href="#RandomAccess" class="headerlink" title="RandomAccess"></a>RandomAccess</h3><p>RandomAccess是一个空的标记接口，用来标记对应的数据容器是否支持随机访问。ArrayList、Vector实现了RandomAccess接口，而LinkedList没有实现该接口；举例：在Arrays的binarySearch方法中，会判断数据容器是否被RandomAccess接口标记，进而选择相应的检索逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">binarySearch</span><span class="params">(List&lt;? extends Comparable&lt;? <span class="keyword">super</span> T&gt;&gt; list, T key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (list <span class="keyword">instanceof</span> RandomAccess || list.size()&lt;BINARYSEARCH_THRESHOLD)</span><br><span class="line">            <span class="keyword">return</span> Collections.indexedBinarySearch(list, key);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">   		    <span class="keyword">return</span> Collections.iteratorBinarySearch(list, key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="equals方法和hashCode方法"><a href="#equals方法和hashCode方法" class="headerlink" title="equals方法和hashCode方法"></a>equals方法和hashCode方法</h4><p>hashCode方法用于得到一个对象的整型类型的hashCode值。equals<font color="#dd0000"><strong>通常</strong></font>用来比较两个<strong>对象的值</strong>是否相等。查看Object类中的equals方法的默认实现是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>从这里看出默认不重写equals方法的情况下，调用equals是等同于==的，然而很多类都重写了equals方法，<strong>使之用于比较对象上的值是否相等</strong>，如字符串类String中的equals：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">        String anotherString = (String)anObject;</span><br><span class="line">        <span class="keyword">int</span> n = length();</span><br><span class="line">        <span class="keyword">if</span> (n == anotherString.length()) &#123;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (charAt(i) != anotherString.charAt(i))</span><br><span class="line">                        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们知道一个HashMap中不能存在两个相同的key。<strong>这里的相同的key，指的是hash相等，且key的值相等(==或者equals)。</strong></p>
+<p><strong>为什么重写equals方法必须重写hashCode方法？</strong>可以看hashCode方法注释中三点限制：</p>
+<ol>
+<li><p>同一个对象上调用多次hashCode必须输出相同的整型数据。</p>
+</li>
+<li><p>两个对象如果equals，那么他们必须有相同的hashCode。</p>
+</li>
+<li><p>有相同的hashCode的2个对象，不一定equals。</p>
+</li>
+</ol>
+<p>由第2点可以得出结论，如果重写了equals，必须重写hashCode；因为euqals方法中设计的字段必须得参与到hashCode的计算中去，才能保证第2点能够正确。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//HashMap.hash()</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Implements Map.put and related methods</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> onlyIfAbsent if true, don't change existing value</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">                 <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">      Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">      <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">          n = (tab = resize()).length;</span><br><span class="line">      <span class="comment">//1. 首先使用(n-1) &amp; hash得到key对应HashMap桶上的位置(即数组的索引位置)，如果该位置为空，则直接插入新Node。</span></span><br><span class="line">      <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">          tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">      <span class="keyword">else</span> &#123; <span class="comment">//2. 数组索引位置上已存在对象</span></span><br><span class="line">          Node&lt;K,V&gt; e; K k;</span><br><span class="line">          <span class="comment">//2.1 如果该位置上对象的hash和A的hash相等，且key的引用相等或值相等</span></span><br><span class="line">          <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">              ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">              e = p;</span><br><span class="line">          <span class="comment">//2.2 如果桶上找到了hash相等的对象，但是他们的key不相等，那么判断节点是红黑树节点还是链表节点</span></span><br><span class="line">          <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) </span><br><span class="line">              <span class="comment">//2.3 是红黑树节点，调用putTreeVal()，这个暂不分析</span></span><br><span class="line">              e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">          <span class="keyword">else</span> &#123;</span><br><span class="line">              <span class="comment">//2.4 是链表节点，那么久使用Node.next遍历链表，直至遍历到末尾插入新Node；或者找到一个key相等的，替换之</span></span><br><span class="line">              <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                  <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                      p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                      <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                          treeifyBin(tab, hash);</span><br><span class="line">                      <span class="keyword">break</span>;</span><br><span class="line">                  &#125;</span><br><span class="line">                  <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                      ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                      <span class="keyword">break</span>;</span><br><span class="line">                  p = e;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">              V oldValue = e.value;</span><br><span class="line">              <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                  e.value = value;</span><br><span class="line">              afterNodeAccess(e);</span><br><span class="line">              <span class="keyword">return</span> oldValue;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      ++modCount;</span><br><span class="line">      <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">          resize();</span><br><span class="line">      afterNodeInsertion(evict);</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="HashMap的putVal方法"><a href="#HashMap的putVal方法" class="headerlink" title="HashMap的putVal方法"></a>HashMap的putVal方法</h4><p>设有对象A要添加到HashMap中去，<strong>putVal方法回返回插入对象的旧值(return previous value, or null if none)</strong>，过程如下：</p>
+<ol>
+<li><p>首先使用<font color="#dd0000"><strong>(n-1) &amp; hash</strong></font>得到key对应HashMap数组的索引位置，如果<strong>该位置为空，则直接插入新Node。过程结束</strong>，返回null</p>
+</li>
+<li><p>如果<strong>1</strong>中数组索引位置上<strong>已存在对象</strong>，那么</p>
+<ol>
+<li><p>如果该位置上对象的hash和A的hash相等，且key的引用相等或值相等，直接替换（<strong>即在数组上已经找到了hash和key相同的元素，不需要在从链表或红黑树中查找元素</strong>)</p>
+</li>
+<li><p>如果桶上找到了hash相等的对象，但是他们的key不相等，那么需要判断节点是红黑树节点还是链表节点来选择不同的put方式。</p>
+</li>
+<li><p>是红黑树节点，调用putTreeVal()，<strong>这个本段落暂不分析</strong>。</p>
+</li>
+<li><p>是链表节点，那么久使用Node.next遍历链表，<strong>直至遍历到末尾插入新Node</strong>；或者找到一个key相等的，<strong>替换之</strong>。</p>
+<p>注意此时，记录了遍历的节点数，当<font color="#dd0000"><strong>遍历次数</strong></font>大于等于阈值(TREEIFY_THRESHOLD，默认是8)，会进行树化操作（treeifyBin()）。</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>参考【<a href="https://github.com/Snailclimb/JavaGuide" target="_blank" rel="noopener">https://github.com/Snailclimb/JavaGuide</a>】</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ck82f1b5x001dlu266a4n5tap" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android『消息传递』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Kotlin相关</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jni/" rel="tag">jni</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/" rel="tag">ndk</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" rel="tag">布局相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" rel="tag">数据转换，protobuf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/jni/" style="font-size: 10px;">jni</a> <a href="/tags/ndk/" style="font-size: 10px;">ndk</a> <a href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" style="font-size: 10px;">布局相关</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" style="font-size: 10px;">数据转换，protobuf</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E7%B1%BB%E5%BA%93%E5%AD%A6%E4%B9%A0%E3%80%8EProtocolBuffers%E3%80%8F/">Java类库学习『ProtocolBuffers』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
