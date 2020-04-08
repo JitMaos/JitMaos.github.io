@@ -64,749 +64,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Android基础三部曲『onDraw+onMessage+onLayout』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-09T11:33:54.000Z" itemprop="datePublished">2019-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/">Android基础三部曲『onDraw+onMessage+onLayout』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="View结构图.png"></p>
-<p>Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件</p>
-<ul>
-<li><strong>Window类时一个抽象类，提供绘制窗口的API</strong></li>
-<li><strong>PhoneWindow是继承Window的一个具体的类，该类内部包含了一个DecorView对象，该DectorView对象是所有应用窗口(Activity界面)的根View</strong></li>
-<li><strong>DecorView继承FrameLayout，里面id=content的就是我们传入的布局视图</strong></li>
-</ul>
-<p>依据面向对象从抽象到具体我们可以类比上面关系就像如下：<br> Window是一块电子屏，PhoneWindow是一块手机电子屏，DecorView就是电子屏要显示的内容，Activity就是手机电子屏安装位置</p>
-<h2 id="setContentView流程"><a href="#setContentView流程" class="headerlink" title="setContentView流程"></a>setContentView流程</h2><p><strong>setContentView整个过程主要是如何把Activity的布局文件或者java的View添加至窗口里，重点概括为：</strong></p>
-<ol>
-<li>创建一个DecorView的对象mDecor，该mDecor对象将作为整个应用窗口的根视图。</li>
-<li>依据Feature等style theme创建不同的窗口修饰布局文件，并且通过findViewById获取Activity布局文件该存放的地方（窗口修饰布局文件中id为content的FrameLayout）。</li>
-<li>将Activity的布局文件添加至id为content的FrameLayout内。</li>
-<li>当setContentView设置显示OK以后会回调Activity的onContentChanged方法。Activity的各种View的findViewById()方法等都可以放到该方法中，系统会帮忙回调。</li>
-</ol>
-<h2 id="android的View绘制"><a href="#android的View绘制" class="headerlink" title="android的View绘制"></a>android的View绘制</h2><p>view绘制主要包括三个方面：</p>
-<ul>
-<li>measure 测量组件本身的大小</li>
-<li>layout  确定组件在视图中的位置</li>
-<li>draw    根据位置和大小，将组件画出来</li>
-</ul>
-<p>视图绘制的起点在ViewRootImpl类的performTraversals()方法，该方法完成的工作主要是： <strong>根据之前的状态，判定是否重新计算测试视图大小（measure）、是佛重新放置视图位置（layout）和是否重新重绘视图（draw）</strong> ，部分源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ......</span><br><span class="line">        <span class="comment">//最外层的根视图的widthMeasureSpec和heightMeasureSpec由来</span></span><br><span class="line">        <span class="comment">//lp.width和lp.height在创建ViewGroup实例时等于MATCH_PARENT</span></span><br><span class="line">        <span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</span><br><span class="line">        <span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);</span><br><span class="line">        ......</span><br><span class="line">        mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">        ......</span><br><span class="line">        mView.layout(<span class="number">0</span>, <span class="number">0</span>, mView.getMeasuredWidth(), mView.getMeasuredHeight());</span><br><span class="line">        ......</span><br><span class="line">        mView.draw(canvas);</span><br><span class="line">        ......</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="measure计算视图大小"><a href="#measure计算视图大小" class="headerlink" title="measure计算视图大小"></a>measure计算视图大小</h3><p>几乎所有的组件都是继承View类的，而关于view的测量工作，日常开发用得多的方法就是measure和onMeasure两个方法，measure不可重写，当我们自定义时主要重写onMeasure方法即可，在方法内部我们必须完成组件的mMeasuredWidth和mMeasuredHeight实际尺寸测量，而这个尺寸是需要父视图和子视图共同决定的</p>
-<p>measure流程从根视图measure遍历整个view树结构，如下：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8b81cc0636106469.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onMeasure流程图.png"></p>
-<p>这里写图片描述</p>
-<p>还要注意视图尺寸MeasureSpec是一个组合尺寸，它是一个32位bit值，高两位是尺寸模式specMode，低30位是尺寸大小值，我们可以利用提供的原声库方法很方便的进行尺寸组合和拆解：<br> specMode有三种： MeasureSpec.EXACTLY表示确定大小， MeasureSpec.AT_MOST表示最大大小， MeasureSpec.UNSPECIFIED不确定</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> measureSpec = MeasureSpec.makeMeasureSpec(windowSize, MeasureSpec.EXACTLY);    <span class="comment">//合成</span></span><br><span class="line"><span class="keyword">int</span> specMode = MeasureSpec.getMode(measureSpec);                                   <span class="comment">//拆解</span></span><br><span class="line"><span class="keyword">int</span> specSize = MeasureSpec.getSize(measureSpec);</span><br></pre></td></tr></table></figure>
-
-<p>而在视图测量meause中，父组件传给子组件的一般都是一个组合尺寸，我们可以拿出具体尺寸然后根据其他条件产生一个新的尺寸值，将这个值用setMeasuredDimension设置mMeasuredWidth和mMeasuredHeight具体尺寸，完成测量；</p>
-<h4 id="measure原理总结"><a href="#measure原理总结" class="headerlink" title="measure原理总结"></a>measure原理总结</h4><ul>
-<li>MeasureSpec（View的内部类）测量规格为int型，值由高2位规格模式specMode和低30位具体尺寸specSize组成。其中specMode只有三种值：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MeasureSpec.EXACTLY <span class="comment">//确定模式，父View希望子View的大小是确定的，由specSize决定；</span></span><br><span class="line">MeasureSpec.AT_MOST <span class="comment">//最多模式，父View希望子View的大小最多是specSize指定的值；</span></span><br><span class="line">MeasureSpec.UNSPECIFIED <span class="comment">//未指定模式，父View完全依据子View的设计值来决定；</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>View的measure方法是final的，不允许重载，View子类只能重载onMeasure来完成自己的测量逻辑。</li>
-<li>最顶层DecorView测量时的MeasureSpec是由ViewRootImpl中getRootMeasureSpec方法确定的（LayoutParams宽高参数均为MATCH_PARENT，specMode是EXACTLY，specSize为物理屏幕大小）。</li>
-<li>ViewGroup类提供了measureChild，measureChild和measureChildWithMargins方法，简化了父子View的尺寸计算。</li>
-<li>只要是ViewGroup的子类就必须要求LayoutParams继承子MarginLayoutParams，否则无法使用layout_margin参数。</li>
-<li>View的布局大小由父View和子View共同决定。</li>
-<li>使用View的getMeasuredWidth()和getMeasuredHeight()方法来获取View测量的宽高，必须保证这两个方法在onMeasure流程之后被调用才能返回有效值。</li>
-</ul>
-<h3 id="layout视图位置确定"><a href="#layout视图位置确定" class="headerlink" title="layout视图位置确定"></a>layout视图位置确定</h3><p>layout的流程主要也是遍历整个view树结构，调用view.layout(int l, int t, int r, int b)确定好view的具体坐标位置，流程图如下</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-136df104f5f52329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onLayout流程图.png"></p>
-<p>这里写图片描述</p>
-<p>当我们自定义一个组件时，通常时重写onLayout方法，里面实现好自己的逻辑，最后在调用layout方法完成视图位置确定，如果自定义组件时一个ViewGroup的话，还需要我们去遍历每一个child确定尺寸</p>
-<h4 id="layout原理总结"><a href="#layout原理总结" class="headerlink" title="layout原理总结"></a>layout原理总结</h4><ul>
-<li>整个layout过程比较容易理解，从上面分析可以看出layout也是从顶层父View向子View的递归调用view.layout方法的过程，即父View根据上一步measure子View所得到的布局大小和布局参数，将子View放在合适的位置上。具体layout核心主要有以下几点：</li>
-<li>View.layout方法可被重载，ViewGroup.layout为final的不可重载，ViewGroup.onLayout为abstract的，子类必须重载实现自己的位置逻辑。</li>
-<li>measure操作完成后得到的是对每个View经测量过的measuredWidth和measuredHeight，layout操作完成之后得到的是对每个View进行位置分配后的mLeft、mTop、mRight、mBottom，这些值都是相对于父View来说的。</li>
-<li>凡是layout_XXX的布局属性基本都针对的是包含子View的ViewGroup的，当对一个没有父容器的View设置相关layout_XXX属性是没有任何意义的（前面《Android应用setContentView与LayoutInflater加载解析机制源码分析》也有提到过）。</li>
-<li>使用View的getWidth()和getHeight()方法来获取View测量的宽高，必须保证这两个方法在onLayout流程之后被调用才能返回有效值。</li>
-</ul>
-<h3 id="draw绘制"><a href="#draw绘制" class="headerlink" title="draw绘制"></a>draw绘制</h3><p>完成measure和Layout后，ViewRootImpl中的代码会创建一个Canvas对象，然后调用View的draw()方法来执行具体的绘制工。所以又回归到了ViewGroup与View的树状递归draw过程<br> 先来看下View树的递归draw流程图，如下：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8a05807e997a04ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onDraw流程图.png"></p>
-<p>这里写图片描述</p>
-<h4 id="draw原理总结"><a href="#draw原理总结" class="headerlink" title="draw原理总结"></a>draw原理总结</h4><p>可以看见，绘制过程就是把View对象绘制到屏幕上，整个draw过程需要注意如下细节：</p>
-<ul>
-<li>如果该View是一个ViewGroup，则需要递归绘制其所包含的所有子View。</li>
-<li>View默认不会绘制任何内容，真正的绘制都需要自己在子类中实现。</li>
-<li>View的绘制是借助onDraw方法传入的Canvas类来进行的。</li>
-<li>区分View动画和ViewGroup布局动画，前者指的是View自身的动画，可以通过setAnimation添加，后者是专门针对ViewGroup显示内部子视图时设置的动画，可以在xml布局文件中对ViewGroup设置layoutAnimation属性（譬如对LinearLayout设置子View在显示时出现逐行、随机、下等显示等不同动画效果）。</li>
-<li>在获取画布剪切区（每个View的draw中传入的Canvas）时会自动处理掉padding，子View获取Canvas不用关注这些逻辑，只用关心如何绘制即可。</li>
-<li>默认情况下子View的ViewGroup.drawChild绘制顺序和子View被添加的顺序一致，但是你也可以重载ViewGroup.getChildDrawingOrder()方法提供不同顺序。</li>
-</ul>
-<h2 id="view提供的API控制视图的方法"><a href="#view提供的API控制视图的方法" class="headerlink" title="view提供的API控制视图的方法"></a>view提供的API控制视图的方法</h2><h3 id="invalidate和postInvalidate方法源码分析"><a href="#invalidate和postInvalidate方法源码分析" class="headerlink" title="invalidate和postInvalidate方法源码分析"></a>invalidate和postInvalidate方法源码分析</h3><p>请求重新绘制视图，调用draw</p>
-<ul>
-<li>invalidate在主线程调用</li>
-<li>postInvalidate是在非主线程调用</li>
-</ul>
-<h3 id="View的requestLayout方法"><a href="#View的requestLayout方法" class="headerlink" title="View的requestLayout方法"></a>View的requestLayout方法</h3><p>requestLayout()方法会调用measure过程和layout过程，不会调用draw过程，也不会重新绘制任何View包括该调用者本身。</p>
-<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>Android基础『自定义组件』</p>
-<p>Android基础『布局相关』</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/5ae3356014ed" target="_blank" rel="noopener">Android组件View绘制流程原理分析</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck8qp09gn003alz268qq72jb2" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Android基础三部曲『Handler+Message+Looper』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-09T11:33:35.000Z" itemprop="datePublished">2019-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/">Android『消息传递』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>主流程图</p>
-<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><p>使用场景：<br>订单处理包含一系列操作：减少库存量、增加一条流水台账、修改总账，这几个操作要在<strong>同一个事务</strong>中完成，通常也即同一个线程中进行处理，如果累加公司应收款的操作失败了，则应该把前面的操作回滚，否则，提交所有操作，这要求这些操作使用<strong>相同的数据库连接对象，而这些操作的代码分别位于不同的模块类中</strong>。</p>
-<p>该类提供线程局部变量。这些变量不同于它们的正常变量，即每一个线程访问自身的局部变量时，都有它自己的，独立初始化的副本。<strong>和Thread直接有交互的是ThreadLocalMap，而不是ThreadLocal。我们平时在某个线程中使用ThreadLocal对当前线程的局部变量进行设置时，其内部实现只是ThreadLocal对当前线程的ThreadLocalMap进行操作而已。</strong></p>
-<p>所以<code>一个线程有一个ThreadLocalMap，而一个ThreadLocalMap内部使用Entry(ThreadLocal作为索引的hash对象定位元素，Value是实际存储的内容)数组存储ThreadLocal对象的，一个ThreadLocal仅能存放一个数据对象的副本，使之成为线程局部私有变量</code>。</p>
-<p><strong>虽然我们在ThreadLocal上调用set和get，但ThreadLocal本身并不存储数据对象，其背后都是从ThreadLocalMap中通过hash(ThreadLocal)来定位Entry元素，操作Entry中的value对象的。</strong></p>
-<p>还有一个问题，看源码知道set最后还是通过引用赋值的方式实现的，那么引用是怎么在多线程环境下实现<font color="#dd0000"><strong>独立备份</strong></font>的呢？</p>
-<p>本段参考：<a href="https://www.jianshu.com/p/2a34d30806d4" target="_blank" rel="noopener">Android Handler机制之ThreadLocal</a></p>
-<h3 id="Hanlder构造方法"><a href="#Hanlder构造方法" class="headerlink" title="Hanlder构造方法"></a>Hanlder构造方法</h3><p>在创建Handler时，Handler在其构造方法中<strong><em>尝试从当前线程(创建Hanlder实例对象的线程)的ThreadLocal中取到Looper对象</em></strong>，并将该Looper对象赋值给当前Hanlder对象，同时还会将Looper对象的MessageQueue引用赋值给当前Handler。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Lopper.myLooper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="meta">@Nullable</span> <span class="function">Looper <span class="title">myLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sThreadLocal.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//new Handler()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</span><br><span class="line">		...</span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == <span class="keyword">null</span>) &#123;</span><br><span class="line">    	<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">      <span class="string">"Can't create handler inside thread "</span> + Thread.currentThread()</span><br><span class="line">      + <span class="string">" that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = async;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Looper-prepare"><a href="#Looper-prepare" class="headerlink" title="Looper.prepare()"></a>Looper.prepare()</h3><p>在子线程中尝试创建Handler对象时，检测当前线程是否已经关联Looper对象，不存在就报错(需要调用<strong>Looper.prepare</strong>()进行关联)，存在的话直接返回当前线程关联的Looper对象，使Handler持有Looper和Looper.MessageQueue的引用，从而能够往MessageQueue中添加消息。<strong>一个线程最多只能创建一个Looper，但是多个Handler可以对应同一个Looper，只要在一个线程中。</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="主线程中的Looper"><a href="#主线程中的Looper" class="headerlink" title="主线程中的Looper"></a>主线程中的Looper</h3><p>在主线程中创建Handler不需要手动调用Looper.prepare()，因为主线程的<strong>ActivityThread</strong>变量在<strong>main</strong>方法中调用了<strong>prepareMainLooper</strong>()来初始化了主线程的<strong>Looper</strong>对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ActivityThread.main()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    Looper.prepareMainLooper();</span><br><span class="line"></span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">false</span>, startSeq);</span><br><span class="line">    <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        sMainThreadHandler = thread.getHandler();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</span><br><span class="line">        Looper.myLooper().setMessageLogging(<span class="keyword">new</span></span><br><span class="line">            LogPrinter(Log.DEBUG, <span class="string">"ActivityThread"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    Looper.loop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="sendMessage-和sendMessageAtTime"><a href="#sendMessage-和sendMessageAtTime" class="headerlink" title="sendMessage()和sendMessageAtTime()"></a>sendMessage()和sendMessageAtTime()</h3><p>Handler的sendMessage调用的是MessageQueue.enqueueMessage(Message,uptimeMillis)，因为可能存在多个线程同时往同一个MessageQueue中插入Message，所以<strong>MessageQueue.enqueueMessage是同步方法</strong>。<strong>sendMessage()最终调用sendMessageAtTime()</strong>，只不过它的uptimeMillis参数为0，即不延时执行的意思。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Handler.sendMessage() </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sendMessageDelayed(msg, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Hanlder.sendMessageDelayed</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessageDelayed</span><span class="params">(Message msg, <span class="keyword">long</span> delayMillis)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (delayMillis &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        delayMillis = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sendMessageAtTime(msg, SystemClock.uptimeMillis() + delayMillis);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的uptimeMillis随Msg存入到MQ，而<strong>sendMessageDelayed()的延迟执行效果是有MQ在取出消息进行dispatch时完成的，取出消息时会比对当前时间和Msg的when属性</strong>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Handler.sendMessageAtTime()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</span><br><span class="line">    MessageQueue queue = mQueue;</span><br><span class="line">    <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</span><br><span class="line">        RuntimeException e = <span class="keyword">new</span> RuntimeException(</span><br><span class="line">                <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</span><br><span class="line">        Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Handler.enqueueMessage()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</span><br><span class="line">    msg.target = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">if</span> (mAsynchronous) &#123;</span><br><span class="line">        msg.setAsynchronous(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//MessageQueue.enqueueMessage()</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(Message msg, <span class="keyword">long</span> when)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (msg.target == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Message must have a target."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (msg.isInUse()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg + <span class="string">" This message is already in use."</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mQuitting) &#123;</span><br><span class="line">                IllegalStateException e = <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">                        msg.target + <span class="string">" sending message to a Handler on a dead thread"</span>);</span><br><span class="line">                Log.w(TAG, e.getMessage(), e);</span><br><span class="line">                msg.recycle();</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            msg.markInUse();</span><br><span class="line">            msg.when = when;</span><br><span class="line">            Message p = mMessages;</span><br><span class="line">            <span class="keyword">boolean</span> needWake;</span><br><span class="line">            <span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</span><br><span class="line">                <span class="comment">// New head, wake up the event queue if blocked.</span></span><br><span class="line">                msg.next = p;</span><br><span class="line">                mMessages = msg;</span><br><span class="line">                needWake = mBlocked;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// Inserted within the middle of the queue.  Usually we don't have to wake</span></span><br><span class="line">                <span class="comment">// up the event queue unless there is a barrier at the head of the queue</span></span><br><span class="line">                <span class="comment">// and the message is the earliest asynchronous message in the queue.</span></span><br><span class="line">                needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</span><br><span class="line">                Message prev;</span><br><span class="line">                <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">                    prev = p;</span><br><span class="line">                    p = p.next;</span><br><span class="line">                    <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</span><br><span class="line">                        needWake = <span class="keyword">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                msg.next = p; <span class="comment">// invariant: p == prev.next</span></span><br><span class="line">                prev.next = msg;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// We can assume mPtr != 0 because mQuitting is false.</span></span><br><span class="line">            <span class="keyword">if</span> (needWake) &#123;</span><br><span class="line">                nativeWake(mPtr);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Looper-loop"><a href="#Looper-loop" class="headerlink" title="Looper.loop()"></a>Looper.loop()</h3><p>Looper调用loop()方法，其中不断从MessageQueue中取出Message(通过message.next()方法)，进行dispatchMessage，<code>其实在Handler调用sendMessage时已经将自己设置为Message.target了，所以dispatch只是将message发给自己的target处理而已</code>。</p>
-<h3 id="主线程如何通过Handler发送Message通信"><a href="#主线程如何通过Handler发送Message通信" class="headerlink" title="主线程如何通过Handler发送Message通信"></a>主线程如何通过Handler发送Message通信</h3><p>定义一个全局的Handler对象mHandler；在子线程A中初始化这个mHandler,并重写handlerMessage()方法；在子线程B中调用mHandler.obtainMessage()方法从Message类自带的Message Pool中返回一个Message对象，然后使用message.sendToTarget()方法，发送消息。</p>
-<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="介绍一下消息传递的机制？"><a href="#介绍一下消息传递的机制？" class="headerlink" title="介绍一下消息传递的机制？"></a>介绍一下消息传递的机制？</h3><h3 id="Looper、Handler、Message、Thread之间的关系是怎样的？"><a href="#Looper、Handler、Message、Thread之间的关系是怎样的？" class="headerlink" title="Looper、Handler、Message、Thread之间的关系是怎样的？"></a>Looper、Handler、Message、Thread之间的关系是怎样的？</h3><p>一个线程对应一个Looper(你想啊，如果一个线程对应多个Looper，那么线程中创建的Handler发消息时是发到哪个Looper里呢？再说，创建Handler时，就要求初始化一个Looper，而在初始化Looper时，就将当前线程的ThreadLocal关联了)，一个Looper对应一个MessageQueue(这个很好理解，在调用Looper.prepare中创建了一个MessageQueue)，一个MessageQueue包含多个Message，一个Message对应一个Handler(Message对象有一个叫target的handler成员变量，在消息循环时，只是将message发送给他的target而已)。</p>
-<h3 id="主线程的Looper-loop-一直无限循环-为何没有ANR？"><a href="#主线程的Looper-loop-一直无限循环-为何没有ANR？" class="headerlink" title="主线程的Looper.loop()一直无限循环,为何没有ANR？"></a>主线程的Looper.loop()一直无限循环,为何没有ANR？</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Looper.loop()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        Message msg = queue.next(); <span class="comment">// might block</span></span><br><span class="line">        <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// No message indicates that the message queue is quitting.</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>首先需要知道造成ANR的原因：</p>
-<ol>
-<li><strong>当前的事件没有机会得到处理</strong>（即主线程正在处理前一个事件，没有及时的完成或者looper被某种原因阻塞住了）。</li>
-<li><strong>当前的事件正在处理，但没有及时完成。</strong>执行时间超过了ANR的阈值：按键事件 5s ，broadcast 10s、前台service无响应的超时时间为20秒，后台service为200秒。</li>
-</ol>
-<p>这样就可以解释为什么主线程的Looper.loop()一直无限循环但是为什么没有造成ANR了，从上面的代码可以看出当没有Message需要处理时，<strong>主线程没有进行任何和造成ANR有关的事件的处理</strong>，虽然是在无限循环，但是比起频繁的开启、关闭消息循环动作，这样的开销反而更小吧。</p>
-<h3 id="Q：没有主线程Handler引用，如何通过Handler往主线程发消息"><a href="#Q：没有主线程Handler引用，如何通过Handler往主线程发消息" class="headerlink" title="Q：没有主线程Handler引用，如何通过Handler往主线程发消息?"></a>Q：没有主线程Handler引用，如何通过Handler往主线程发消息?</h3><p>查看Looper源码，可以找到一个Looper的变量定义，可以看到该sMainLooper是个<code>内部静态变量</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Looper sMainLooper;  <span class="comment">// guarded by Looper.class</span></span><br></pre></td></tr></table></figure>
-
-<p>我们知道Activity在ActivityThread中调用prepareMainLooper()自动为主线程关联了一个Looper，这个sMainLooper就保存了主线程Looper的引用。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Initialize the current thread as a looper, marking it as an</span></span><br><span class="line"><span class="comment">* application's main looper. The main looper for your application</span></span><br><span class="line"><span class="comment">* is created by the Android environment, so you should never need</span></span><br><span class="line"><span class="comment">* to call this function yourself.  See also: &#123;<span class="doctag">@link</span> #prepare()&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  prepare(<span class="keyword">false</span>);</span><br><span class="line">  <span class="keyword">synchronized</span> (Looper<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sMainLooper != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sMainLooper = myLooper();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>同时Looper还提供了一个外部访问sMainLooper的方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Returns the application's main looper, which lives in the main thread of the application.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Looper <span class="title">getMainLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (Looper<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sMainLooper;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>基于以上，我们可以在没有调用prepare()的情况下，在子线程中创建一个Handler，并使用它与主线程进行通信</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">testMainLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">new</span> Thread()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">new</span> Handler(Looper.getMainLooper())&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">          <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">          <span class="keyword">if</span>(msg.what == <span class="number">2019</span>) &#123;</span><br><span class="line">            ((Button)findViewById(R.id.btnTestMainLooper))</span><br><span class="line">            .setText(<span class="string">"收到来自子线程的消息"</span> + msg.what);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;.sendEmptyMessageDelayed(<span class="number">2019</span>,<span class="number">5000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Handler如何在子线程之间通过Message传递数据？"><a href="#Handler如何在子线程之间通过Message传递数据？" class="headerlink" title="Handler如何在子线程之间通过Message传递数据？"></a>Handler如何在<code>子线程之间</code>通过Message传递数据？</h3><p>定义一个全局的Handler对象mHandler；在子线程A中初始化这个mHandler,并重写handlerMessage()方法；在子线程B中调用mHandler.obtainMessage()方法从Message类自带的Message Pool中返回一个Message对象，然后使用message.sendToTarget()方法，发送消息。</p>
-<h3 id="Handler是如何关联线程"><a href="#Handler是如何关联线程" class="headerlink" title="Handler是如何关联线程?"></a>Handler是如何关联线程?</h3><h3 id="子线程是如何发Message给主线程的，底层是怎么实现的？"><a href="#子线程是如何发Message给主线程的，底层是怎么实现的？" class="headerlink" title="子线程是如何发Message给主线程的，底层是怎么实现的？"></a>子线程是如何发Message给主线程的，底层是怎么实现的？</h3><p>首先线程不同于进程，两个线程之间是不存在内存隔离。因此他们可以访问所在进程的公共内存空间，这里具体说的就是java运行时数据区的堆中的对象。所以这里可以直接访问主线程中定义的Handler对象，然后，在子线程中进行的操作<strong>仅仅是将Message放到Handler对应的MessageQueue中去而已</strong>，至于后面消息是怎么在MessageQueue中流转的，得</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck8qp09gm0037lz26d74n8ej4" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Java『数据容器』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-09T05:53:02.000Z" itemprop="datePublished">2019-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/">Java『数据容器』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h4><p>先从Java中Object的hashCode()方法说起，从方法注释的第一行可以看到该方法的存在主要是为了支持HashMap：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by HashMap.</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> identityHashCode(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p><strong>结构</strong>：HashMap的设计初衷是为了在有限的容器内放置若干范围很大的数据。<strong>JDK1.8之前底层使用的是数组+链表，1.8之后当链表长度大于阈值(默认为8)时，会将链表转换成红黑树，以减少搜索时间</strong>；HashMap中有一个hash方法用来得到元素Key的hashCode值，这个hash方法是对Object的HashCode再做了一次优化，为了减少发生哈希碰撞的次数。</p>
-</li>
-<li><p><strong>问题</strong></p>
-<ul>
-<li><p>为什么HashMap的长度是2的幂次方？</p>
-<p><strong>为了更高效，因为如果除数是2的幂次方，那么取余操作等同于右移一位(hash % length) == (hash &amp; (length -1))</strong></p>
-</li>
-</ul>
-</li>
-<li><p><strong>注意</strong></p>
-<ul>
-<li>循环引用，当在多线程环境下，对HashMap进行put操作，可能会出发扩容；扩容意味着数组元素及元素下挂载的链表的复制，所以可能在扩容是会发生循环引用。</li>
-</ul>
-</li>
-<li><p><font color="#dd0000"><strong>equals和hashCode</strong></font></p>
-</li>
-</ul>
-        
-          <p class="article-more-link">
-            <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ck8qp09h20047lz26ahgidp54" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Kotlin相关" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" class="article-date">
-  <time datetime="2019-04-08T08:58:45.000Z" itemprop="datePublished">2019-04-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/">Kotlin相关</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="一、Kotlin基础"><a href="#一、Kotlin基础" class="headerlink" title="一、Kotlin基础"></a>一、Kotlin基础</h3><h4 id="1-构造方法"><a href="#1-构造方法" class="headerlink" title="1.构造方法"></a>1.构造方法</h4><h4 id="1-1-主构造方法"><a href="#1-1-主构造方法" class="headerlink" title="1.1 主构造方法"></a>1.1 主构造方法</h4><p>在类的顶部声明，初始化语句块包含在类被创建时执行的代码，并与主构造方法一起使用。因为<strong>主构造方法不能包含初始化代码</strong>，所以需要使用初始化语句块。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class User constructor(_nickname: String) &#123; &#x2F;&#x2F; 带一个参数的主构造方法</span><br><span class="line">    val nickname: String</span><br><span class="line">    init &#123; &#x2F;&#x2F; 初始化代码块</span><br><span class="line">        nickname &#x3D; _nickname</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以简化为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class User(_nickname: String) &#123;</span><br><span class="line">    val nickname &#x3D; _nickname &#x2F;&#x2F; 不使用初始化代码块，用参数来初始化属性</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>进一步简化：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class User(val nickname: String) &#x2F;&#x2F; &quot;val&quot; 表示相应的属性会用构造方法的参数来初始化</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2"><a href="#1-2" class="headerlink" title="1.2"></a>1.2</h4><ul>
-<li>@LayoutRes</li>
-</ul>
-<p>用来标注当前方法返回一个Int类型的资源。</p>
-<ul>
-<li>重写Setting方法</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> title: CharSequence? = <span class="string">""</span></span><br><span class="line">        set(value) &#123;</span><br><span class="line">            field = value</span><br><span class="line">            toolbarTitle?.text = title</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>apply函数，变换对象，返回自身 &amp;&amp; 动态设置按钮点击效果</li>
-</ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">tintIcon</span><span class="params">(imageView: <span class="type">ImageView</span>, colors: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">  imageView.apply &#123;</span><br><span class="line">    <span class="keyword">val</span> wrappedDrawable = DrawableCompat.wrap(drawable)</span><br><span class="line">      DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(colors))</span><br><span class="line">      setImageDrawable(wrappedDrawable)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Kotlin实现单例</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AppManager</span> <span class="title">private</span> <span class="title">constructor</span>()</span>&#123;</span><br><span class="line">    companion object &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> instance:AppManager? = <span class="keyword">null</span></span><br><span class="line">        <span class="meta">@Synchronized</span></span><br><span class="line">        <span class="function">fun <span class="title">instance</span><span class="params">()</span>:AppManager </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                instance = AppManager()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> instance!!</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>高阶函数使用</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> fun <span class="title">process</span> <span class="params">(b:(Activity)</span> -&gt; Boolean) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(list.isEmpty()) &#123;</span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   val iterator = list.iterator()</span><br><span class="line">     <span class="keyword">while</span>(iterator.hasNext()) &#123;</span><br><span class="line">       val next = iterator.next()</span><br><span class="line">         <span class="keyword">if</span>(b(next)) &#123;</span><br><span class="line">           <span class="keyword">if</span>(!next.isFinishing) &#123;</span><br><span class="line">             next.finish()</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="comment">//测试</span></span><br><span class="line"><span class="function">fun <span class="title">pop</span><span class="params">(activity:Activity)</span> </span>&#123;</span><br><span class="line">  process &#123; it == activity &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>Extensions使用</p>
-<p>定义好Extensions后，需要导入才能使用</p>
-</li>
-</ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> View.<span class="title">visible</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (visibility != View.VISIBLE) &#123;</span><br><span class="line">        visibility = View.VISIBLE</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>By lazy 使用</li>
-</ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> compositeDisposable:CompositeDisposable <span class="keyword">by</span> lazy &#123; CompositeDisposable() &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用类的simpleName</li>
-</ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> TAG = <span class="string">"BaseView_<span class="subst">$&#123;javaClass.simpleName&#125;</span>"</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在类中定义别的类得扩展函数，<font color="#dd0000"><strong>这怎么想得到？</strong></font></li>
-</ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//BaseViewModel.kt</span></span><br><span class="line"><span class="comment">//TODO WTF.ZMXDD</span></span><br><span class="line"><span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> Disposable.<span class="title">add</span><span class="params">()</span></span> &#123;</span><br><span class="line">  compositeDisposable.add(<span class="keyword">this</span>) <span class="comment">//this指代Disposable</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="二、Kotlin函数"><a href="#二、Kotlin函数" class="headerlink" title="二、Kotlin函数"></a>二、Kotlin函数</h3><h4 id="1-高阶函数"><a href="#1-高阶函数" class="headerlink" title="1.高阶函数"></a>1.高阶函数</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义</span></span><br><span class="line"><span class="keyword">var</span> itemLongClickListener: ((View, T, <span class="built_in">Int</span>) -&gt; <span class="built_in">Boolean</span>)? = <span class="literal">null</span></span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line">adapter.itemClickListener = &#123; view, item, position -&gt; <span class="built_in">Boolean</span></span><br><span class="line">    view.background = ColorDrawable(resources.getColor(R.color.red))</span><br><span class="line">    <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-<h3 id="Kotlin协程"><a href="#Kotlin协程" class="headerlink" title="Kotlin协程"></a>Kotlin协程</h3><p><strong>介绍</strong>：一个线程中可以包含多个协程，协程中可以嵌套协程；当线程需要执行阻塞任务时，可以把阻塞任务放到线程的协程中完成，相对于线程，<strong>协程更轻量，开销更少</strong>。总得来说使用协程可以提高CPU的利用率，减少多线程切换带来的开销。</p>
-<p><strong>使用</strong>：</p>
-<h3 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h3><ol>
-<li>Kotlin中创建的类的属性默认是private的，所以使用Dagger进行注入时会报<strong>Dagger does not support injection into private fields</strong>，解决办法使用@JvmField注释要注入的字段即可。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ck8qp09h9004jlz26aoycdtrj" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-开源项目——RxJava2『基础』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-08T06:27:58.000Z" itemprop="datePublished">2019-04-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/">RxJava2『基础』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="RxJava介绍"><a href="#RxJava介绍" class="headerlink" title="RxJava介绍"></a>RxJava介绍</h3><p>RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.</p>
-<p>RxJava – 基于JVM的响应式编程扩展 – 一个为Java虚拟机编写的基于可观察序列来实现异步及事件驱动编程的类库(<strong>英语水平有限，翻译的不好，见谅</strong>)。</p>
-<p>It extends the <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="_blank" rel="noopener">observer pattern</a> to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.</p>
-<p>RxJava基于了观察者设计模式实现对一个数据或事件队列的观察，同时允许你在抽离一些抽象概念(如：低层次的线程，同步，线程安全，并发数据结构等)时指定操作(adds operators)，来显式(declaratively)的将多个序列整合在一起？？(翻译的是个啥，先不管了，先往下看，回过头再来整理)</p>
-<h3 id="一些专有名词"><a href="#一些专有名词" class="headerlink" title="一些专有名词"></a>一些专有名词</h3><h4 id="Upstream-downstream-上游，下游"><a href="#Upstream-downstream-上游，下游" class="headerlink" title="Upstream, downstream 上游，下游"></a>Upstream, downstream 上游，下游</h4><p>The dataflows in RxJava consist of a source, zero or more intermediate steps followed by a data consumer or combinator step (where the step is responsible to consume the dataflow by some means):</p>
-<p>RxJava中的数据流由一个源数据、零个或者多个中间步骤</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source.operator1().operator2().operator3().subscribe(consumer);</span><br><span class="line">source.flatMap(value -&gt; source.operator1().operator2().operator3());</span><br></pre></td></tr></table></figure>
-
-<p>Here, if we imagine ourselves on <code>operator2</code>, looking to the left towards the source, is called the <strong>upstream</strong>. Looking to the right towards the subscriber/consumer, is called the <strong>downstream</strong>. This is often more apparent when each element is written on a separate line:</p>
-<p>现在，假设我们位于Operator 2，那么往左是上游，往右通向订阅者/消费者的是下游。</p>
-<h4 id="Objects-in-motion-流动中的对象"><a href="#Objects-in-motion-流动中的对象" class="headerlink" title="Objects in motion 流动中的对象"></a>Objects in motion 流动中的对象</h4><p>在RxJava文档中, <strong>发射物</strong>, <strong>发射</strong>, <strong>项目</strong>, <strong>事件</strong>, <strong>信号</strong>, <strong>数据</strong> 和<strong>消息</strong> 都是用来标识在数据流中流动的对象。</p>
-<p>In RxJava’s documentation, <strong>emission</strong>, <strong>emits</strong>, <strong>item</strong>, <strong>event</strong>, <strong>signal</strong>, <strong>data</strong> and <strong>message</strong> are considered synonyms and represent the object traveling along the dataflow.</p>
-<h4 id="Backpressure-背压"><a href="#Backpressure-背压" class="headerlink" title="Backpressure 背压"></a>Backpressure 背压</h4><p>当数据流在多个异步行为中流动时，不同的操作有不同的速率。为了避免超出预期的内存开销，或者为了满足跳过、舍弃某些数据的需求，所谓的背压就产生了。背压是一种不同操作能够表达他们能处理多少数据的流控制机制。背压用来在不知道上游将会发送多少数据量的时候，用来限制内存开销的。</p>
-<p>When the dataflow runs through asynchronous steps, each step may perform different things with different speed. To avoid overwhelming such steps, which usually would manifest itself as increased memory usage due to temporary buffering or the need for skipping/dropping data, a so-called backpressure is applied, which is a form of flow control where the steps can express how many items are they ready to process. This allows constraining the memory usage of the dataflows in situations where there is generally no way for a step to know how many items the upstream will send to it.</p>
-<p>在RxJava中，<font color="#dd0000"><strong>Flowable类是设计成专门用于处理背压的</strong></font>，而Observable是用来专门处理非背压操作的(短序列，UI交互等)。<font color="#dd0000"><strong>???.其他的类型，单一的，可能的和可完成的类型不支持也不应该支持背压；总有地方能放下一个对象。</strong></font></p>
-<p>In RxJava, the dedicated <code>Flowable</code> class is designated to support backpressure and <code>Observable</code> is dedicated for the non-backpressured operations (short sequences, GUI interactions, etc.). The other types, <code>Single</code>, <code>Maybe</code> and <code>Completable</code> don’t support backpressure nor should they; there is always room to store one item temporarily.</p>
-<h4 id="Assembly-time-装配时"><a href="#Assembly-time-装配时" class="headerlink" title="Assembly time 装配时"></a>Assembly time 装配时</h4><p>准备数据流时指定的各种中间操作发生在所谓的：<strong>装配时</strong></p>
-<p>The preparation of dataflows by applying various intermediate operators happens in the so-called <strong>assembly time</strong>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;Integer&gt; flow = Flowable.range(<span class="number">1</span>, <span class="number">5</span>)</span><br><span class="line">.map(v -&gt; v * v)</span><br><span class="line">.filter(v -&gt; v % <span class="number">3</span> == <span class="number">0</span>)</span><br><span class="line">;</span><br></pre></td></tr></table></figure>
-
-<p>此时，数据还未开始流转，并且没有</p>
-<p>At this point, the data is not flowing yet and no side-effects are happening. </p>
-<h4 id="Subscription-time-订阅时"><a href="#Subscription-time-订阅时" class="headerlink" title="Subscription time 订阅时"></a>Subscription time 订阅时</h4><p>这是调用在流上调用subscribe()后的临时状态，它建立了处理步骤之间的连接</p>
-<p>This is a temporary state when <code>subscribe()</code> is called on a flow that establishes the chain of processing steps internally:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flow.subscribe(System.out::println)</span><br></pre></td></tr></table></figure>
-
-<p>这时订阅作用生效了，某些数据源阻塞或者马上开始发射数据。</p>
-<p>This is when the <strong>subscription side-effects</strong> are triggered (see <code>doOnSubscribe</code>). Some sources block or start emitting items right away in this state.</p>
-<h4 id="Runtime-运行时"><a href="#Runtime-运行时" class="headerlink" title="Runtime 运行时"></a>Runtime 运行时</h4><p>当处于运行时，数据流可以正常的发送数据、异常信号及完成信号</p>
-<p>This is the state when the flows are actively emitting items, errors or completion signals: </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Observable.create(emitter -&gt; &#123;</span><br><span class="line">     <span class="keyword">while</span> (!emitter.isDisposed()) &#123;</span><br><span class="line">         <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">         emitter.onNext(time);</span><br><span class="line">         <span class="keyword">if</span> (time % <span class="number">2</span> != <span class="number">0</span>) &#123;</span><br><span class="line">             emitter.onError(<span class="keyword">new</span> IllegalStateException(<span class="string">"Odd millisecond!"</span>));</span><br><span class="line">             <span class="keyword">break</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;).subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
-
-<p>事实上，上面这个方法的方法体执行的时候就是运行时。</p>
-<p>Practically, this is when the body of the given example above executes.</p>
-<h3 id="Simple-background-computation-简单后台计算"><a href="#Simple-background-computation-简单后台计算" class="headerlink" title="Simple background computation 简单后台计算"></a>Simple background computation 简单后台计算</h3><p><strong>一个使用RxJava最常见的场景是在后台线程进行一些计算、网络请求，然后在UI线程中显示结果</strong></p>
-<p>One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.reactivex.schedulers.Schedulers;</span><br><span class="line"></span><br><span class="line">Flowable.fromCallable(() -&gt; &#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>); <span class="comment">//  imitate expensive computation</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Done"</span>;</span><br><span class="line">&#125;)</span><br><span class="line">  .subscribeOn(Schedulers.io())</span><br><span class="line">  .observeOn(Schedulers.single())</span><br><span class="line">  .subscribe(System.out::println, Throwable::printStackTrace);</span><br><span class="line"></span><br><span class="line">Thread.sleep(<span class="number">2000</span>); <span class="comment">// &lt;--- wait for the flow to finish</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>这种链式的方法调用方式成为流式API，和建造者模式很相似。不过RxJava的响应类型(reactive types)是不可变的；每个方法返回一个增加了更多行为的新的Flowable对象。</strong></p>
-<p>This style of chaining methods is called a <strong>fluent API</strong> which resembles the <strong>builder pattern</strong>. However, RxJava’s reactive types are immutable; each of the method calls returns a new <code>Flowable</code> with added behavior. To illustrate, the example can be rewritten as follows:</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;String&gt; source = Flowable.fromCallable(() -&gt; &#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>); <span class="comment">//  imitate expensive computation</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Done"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Flowable&lt;String&gt; runBackground = source.subscribeOn(Schedulers.io());</span><br><span class="line"></span><br><span class="line">Flowable&lt;String&gt; showForeground = runBackground.observeOn(Schedulers.single());</span><br><span class="line"></span><br><span class="line">showForeground.subscribe(System.out::println, Throwable::printStackTrace);</span><br><span class="line"></span><br><span class="line">Thread.sleep(<span class="number">2000</span>);</span><br></pre></td></tr></table></figure>
-
-<p><strong><em>通常情况下，你可以将一些计算操作合作密集的IO操作通过subscribeOn制定到其他线程，只要数据准备好了，你可以通过observeOn来指定前台线程或UI线程来处理。</em></strong></p>
-<p>Typically, you can move computations or blocking IO to some other thread via <code>subscribeOn</code>. Once the data is ready, you can make sure they get processed on the foreground or GUI thread via <code>observeOn</code>.</p>
-<h3 id="Schedulers-调度"><a href="#Schedulers-调度" class="headerlink" title="Schedulers 调度"></a>Schedulers 调度</h3><p><strong><em>RxJava操作符不直接和Threads或者ExecutorServices打交道，而是通过Schedulers(调度器)的通用API来实现对具体并发代码的抽象。RxJava通过工具类Schedulers提供了几个标准的调度方式</em></strong></p>
-<p>RxJava operators don’t work with <code>Thread</code>s or <code>ExecutorService</code>s directly but with so called <code>Scheduler</code>s that abstract away sources of concurrency behind a uniform API. RxJava 2 features several standard schedulers accessible via <code>Schedulers</code> utility class.</p>
-<ul>
-<li><p><code>Schedulers.computation()</code>: 在后台的固定数量的专用线程上运行计算密集型工作。大多数异步操作符使用这个作为默认的调度器  </p>
-<p>Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default <code>Scheduler</code>.</p>
-</li>
-<li><p><code>Schedulers.io()</code>: 在一个动态线程集合上运行类似I/O或阻塞的操作。</p>
-<p> Run I/O-like or blocking operations on a dynamically changing set of threads.</p>
-</li>
-<li><p><code>Schedulers.single()</code>: 以顺序和FIFO方式在单个线程上运行工作。  </p>
-<p>Run work on a single thread in a sequential and FIFO manner.</p>
-</li>
-<li><p><code>Schedulers.trampoline()</code>: ???在一个参与线程中以顺序和FIFO方式运行工作，通常用于测试目的。 </p>
-<p>Run work in a sequential and FIFO manner in one of the participating threads, usually for testing purposes.</p>
-</li>
-</ul>
-<p>这几个调度模型在所有JVM平台上都是可用的，但是一些特定的平台，比如Android，有他们自己的典型调度器。</p>
-<p>These are available on all JVM platforms but some specific platforms, such as Android, have their own typical <code>Scheduler</code>s defined: <code>AndroidSchedulers.mainThread()</code>, <code>SwingScheduler.instance()</code> or <code>JavaFXSchedulers.gui()</code>.</p>
-<p>此外，可以通过schedulers.from(Executor)来包装一个现有的Executor。比如可以实现数量巨大且数量固定的线程池(不同于computation()或io()的实现方式)</p>
-<p>In addition, there is option to wrap an existing <code>Executor</code> (and its subtypes such as <code>ExecutorService</code>) into a <code>Scheduler</code> via <code>Schedulers.from(Executor)</code>. This can be used, for example, to have a larger but still fixed pool of threads (unlike <code>computation()</code> and <code>io()</code> respectively).</p>
-<p>最后一行的Thread.sleep(2000)并不是不小心添加的，在RxJava中默认的调度器运行在守护线程上，这意味着只要Java主线程退出，所有这些默认的调度器会停止，同时后台计算也不会发生。这个例子中让线程sleep一点时间是<strong>为了主线程存活时间久一点从而保证守护线程能够持续调度任务，让你能够看到console信息</strong>。</p>
-<p>The <code>Thread.sleep(2000);</code> at the end is no accident. In RxJava the default <code>Scheduler</code>s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations lets you see the output of the flow on the console with time to spare.</p>
-<h3 id="Concurrency-within-a-flow-流中的并发"><a href="#Concurrency-within-a-flow-流中的并发" class="headerlink" title="Concurrency within a flow 流中的并发"></a>Concurrency within a flow 流中的并发</h3><p>RxJava中的流</p>
-<p>Flows in RxJava are sequential in nature split into processing stages that may run <strong>concurrently</strong> with each other:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .observeOn(Schedulers.computation())</span><br><span class="line">  .map(v -&gt; v * v)</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<p>这个例子中数字1到10的平方运算被指定在计算线程中进行，而其结果被指定在主线程中使用。这个流中的lambda表达式v -&gt; v * v不是并行进行的，而是从1到10一个一个在同一个计算线程中进行的。</p>
-<p>This example flow squares the numbers from 1 to 10 on the <strong>computation</strong> <code>Scheduler</code> and consumes the results on the “main” thread (more precisely, the caller thread of <code>blockingSubscribe</code>). However, the lambda <code>v -&gt; v * v</code> doesn’t run in parallel for this flow; it receives the values 1 to 10 on the same computation thread one after the other.</p>
-<h3 id="Parallel-processing-并行处理"><a href="#Parallel-processing-并行处理" class="headerlink" title="Parallel processing 并行处理"></a>Parallel processing 并行处理</h3><p>并行的处理数字1到10会稍微复杂一点：</p>
-<p>Processing the numbers 1 to 10 in parallel is a bit more involved:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .flatMap(v -&gt;</span><br><span class="line">      Flowable.just(v)</span><br><span class="line">        .subscribeOn(Schedulers.computation())</span><br><span class="line">        .map(w -&gt; w * w)</span><br><span class="line">  )</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<p>事实上，并行在RxJava中意味着运行在独立的流中，然后再将他们的结果合并到同一个流中去。操作符flatMap会将首次map到的每一个数放置止到独立的Flowable中计算，然后再合并他们的结果。</p>
-<p>Practically, parallelism in RxJava means running independent flows and merging their results back into a single flow. The operator <code>flatMap</code> does this by first mapping each number from 1 to 10 into its own individual <code>Flowable</code>, runs them and merges the computed squares.</p>
-<p>注意，无论如何，flatMap不保证执行顺序，并且从内层flow得到最后的结果可能是交叉出现的。有其他能够保证执行顺序的操作符：</p>
-<p>Note, however, that <code>flatMap</code> doesn’t guarantee any order and the end result from the inner flows may end up interleaved. There are alternative operators:</p>
-<ul>
-<li>concatMap每次只映射并结算一个inner flow</li>
-</ul>
-<ul>
-<li><code>concatMap</code> that maps and runs one inner flow at a time and</li>
-<li>concatMatEager一次性运行所有的inner flows，但是输出flow会按照inner flows的创建顺序输出。</li>
-<li><code>concatMapEager</code> which runs all inner flows “at once” but the output flow will be in the order those inner flows were created.</li>
-</ul>
-<p>另外，Flowable.parllel()操作符和ParallelFlowable类型可以实现同样的并行处理方式：</p>
-<p>Alternatively, the <code>Flowable.parallel()</code> operator and the <code>ParallelFlowable</code> type help achieve the same parallel processing pattern:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .parallel()</span><br><span class="line">  .runOn(Schedulers.computation())</span><br><span class="line">  .map(v -&gt; v * v)</span><br><span class="line">  .sequential()</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<h3 id="Dependent-sub-flows-流的依赖处理"><a href="#Dependent-sub-flows-流的依赖处理" class="headerlink" title="Dependent sub-flows 流的依赖处理"></a>Dependent sub-flows 流的依赖处理</h3><p>flatMap是一个强大的操作符，在很多场景下十分有效。比如，已有一个返回Flowable的service A，我们想要调用另一个使用service A的返回值的service B：</p>
-<p>flatMap<code>is a powerful operator and helps in a lot of situations. For example, given a service that returns a</code>Flowable`, we’d like to call another service with values emitted by the first service:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;Inventory&gt; inventorySource &#x3D; warehouse.getInventoryAsync();</span><br><span class="line"></span><br><span class="line">inventorySource.flatMap(inventoryItem -&gt;</span><br><span class="line">    erp.getDemandAsync(inventoryItem.getId())</span><br><span class="line">    .map(demand </span><br><span class="line">        -&gt; System.out.println(&quot;Item &quot; + inventoryItem.getName() + &quot; has demand &quot; + demand));</span><br><span class="line">  )</span><br><span class="line">  .subscribe();</span><br></pre></td></tr></table></figure>
-
-<h3 id="Continuations-后续操作"><a href="#Continuations-后续操作" class="headerlink" title="Continuations 后续操作"></a>Continuations 后续操作</h3><p>有时当一个对象变得可用时，我们希望在它上面进行一些依赖操作。这就是所谓的后续操作，根据不同的情况以及不同的类型，可以使用多种操作符来完成后续操作。</p>
-<p>Sometimes, when an item has become available, one would like to perform some dependent computations on it. This is sometimes called <strong>continuations</strong> and, depending on what should happen and what types are involved, may involve various operators to accomplish.</p>
-<h4 id="Dependent-依赖"><a href="#Dependent-依赖" class="headerlink" title="Dependent 依赖"></a>Dependent 依赖</h4><p>最典型场景是给定一个值，去调用另外一个服务，等待并使用结果。</p>
-<p>The most typical scenario is to given a value, invoke another service, await and continue with its result:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service.apiCall()</span><br><span class="line">.flatMap(value -&gt; service.anotherApiCall(value))</span><br><span class="line">.flatMap(next -&gt; service.finalCall(next))</span><br></pre></td></tr></table></figure>
-
-<p>通常情况下后续的操作序列依赖于早些时候的map结果。这可以通过将外层flatMap移动到前一个flatMap的内部来实现，比如：</p>
-<p>It is often the case also that later sequences would require values from earlier mappings. This can be achieved by moving the outer <code>flatMap</code> into the inner parts of the previous <code>flatMap</code> for example:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">service.apiCall()</span><br><span class="line">.flatMap(value -&gt;</span><br><span class="line">    service.anotherApiCall(value)</span><br><span class="line">    .flatMap(next -&gt; service.finalCallBoth(value, next))</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p>此时，原始的value在内部的flatMap也是可用的，这得益于lambda的变量捕获能力。 </p>
-<p>Here, the original <code>value</code> will be available inside the inner <code>flatMap</code>, courtesy of lambda variable capture.</p>
-<h4 id="Non-dependent-非依赖"><a href="#Non-dependent-非依赖" class="headerlink" title="Non-dependent 非依赖"></a>Non-dependent 非依赖</h4><p>In other scenarios, the result(s) of the first source/dataflow is irrelevant and one would like to continue with a quasi independent another source. Here, <code>flatMap</code> works as well:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Observable continued &#x3D; sourceObservable.flatMapSingle(ignored -&gt; someSingleSource)</span><br><span class="line">continued.map(v -&gt; v.toString())</span><br><span class="line">  .subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
-
-<p>however, the continuation in this case stays <code>Observable</code> instead of the likely more appropriate <code>Single</code>. (This is understandable because from the perspective of <code>flatMapSingle</code>, <code>sourceObservable</code> is a multi-valued source and thus the mapping may result in multiple values as well).</p>
-<p>Often though there is a way that is somewhat more expressive (and also lower overhead) by using <code>Completable</code> as the mediator and its operator <code>andThen</code> to resume with something else:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sourceObservable</span><br><span class="line">  .ignoreElements()           &#x2F;&#x2F; returns Completable</span><br><span class="line">  .andThen(someSingleSource)</span><br><span class="line">  .map(v -&gt; v.toString())</span><br></pre></td></tr></table></figure>
-
-<p>The only dependency between the <code>sourceObservable</code> and the <code>someSingleSource</code> is that the former should complete normally in order for the latter to be consumed.</p>
-<h4 id="Deferred-dependent-延期依赖"><a href="#Deferred-dependent-延期依赖" class="headerlink" title="Deferred-dependent  延期依赖"></a>Deferred-dependent  延期依赖</h4><p>Sometimes, there is an implicit data dependency between the previous sequence and the new sequence that, for some reason, was not flowing through the “regular channels”. One would be inclined to write such continuations as follows:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.just(count.get()))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<p>Unfortunately, this prints <code>0</code> because <code>Single.just(count.get())</code> is evaluated at <strong>assembly time</strong> when the dataflow hasn’t even run yet. We need something that defers the evaluation of this <code>Single</code> source until <strong>runtime</strong> when the main source completes:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.defer(() -&gt; Single.just(count.get())))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<p>or</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.fromCallable(() -&gt; count.get()))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
-
-<h3 id="Type-conversions-类型转换"><a href="#Type-conversions-类型转换" class="headerlink" title="Type conversions 类型转换"></a>Type conversions 类型转换</h3><p>Sometimes, a source or service returns a different type than the flow that is supposed to work with it. For example, in the inventory example above, <code>getDemandAsync</code> could return a <code>Single&lt;DemandRecord&gt;</code>. If the code example is left unchanged, this will result in a compile time error (however, often with misleading error message about lack of overload).</p>
-<p>In such situations, there are usually two options to fix the transformation: 1) convert to the desired type or 2) find and use an overload of the specific operator supporting the different type.</p>
-<h4 id="Converting-to-the-desired-type-转换成目标数据类型"><a href="#Converting-to-the-desired-type-转换成目标数据类型" class="headerlink" title="Converting to the desired type 转换成目标数据类型"></a>Converting to the desired type 转换成目标数据类型</h4><p>Each reactive base class features operators that can perform such conversions, including the protocol conversions, to match some other type. The following matrix shows the available conversion options:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Flowable</th>
-<th>Observable</th>
-<th>Single</th>
-<th>Maybe</th>
-<th>Completable</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Flowable</strong></td>
-<td></td>
-<td><code>toObservable</code></td>
-<td><code>first</code>, <code>firstOrError</code>, <code>single</code>, <code>singleOrError</code>, <code>last</code>, <code>lastOrError</code>1</td>
-<td><code>firstElement</code>, <code>singleElement</code>, <code>lastElement</code></td>
-<td><code>ignoreElements</code></td>
-</tr>
-<tr>
-<td><strong>Observable</strong></td>
-<td><code>toFlowable</code>2</td>
-<td></td>
-<td><code>first</code>, <code>firstOrError</code>, <code>single</code>, <code>singleOrError</code>, <code>last</code>, <code>lastOrError</code>1</td>
-<td><code>firstElement</code>, <code>singleElement</code>, <code>lastElement</code></td>
-<td><code>ignoreElements</code></td>
-</tr>
-<tr>
-<td><strong>Single</strong></td>
-<td><code>toFlowable</code>3</td>
-<td><code>toObservable</code></td>
-<td></td>
-<td><code>toMaybe</code></td>
-<td><code>ignoreElement</code></td>
-</tr>
-<tr>
-<td><strong>Maybe</strong></td>
-<td><code>toFlowable</code>3</td>
-<td><code>toObservable</code></td>
-<td><code>toSingle</code></td>
-<td></td>
-<td><code>ignoreElement</code></td>
-</tr>
-<tr>
-<td><strong>Completable</strong></td>
-<td><code>toFlowable</code></td>
-<td><code>toObservable</code></td>
-<td><code>toSingle</code></td>
-<td><code>toMaybe</code></td>
-<td></td>
-</tr>
-</tbody></table>
-<p>1: When turning a multi-valued source into a single valued source, one should decide which of the many source values should be considered as the result.</p>
-<p>2: Turning an <code>Observable</code> into <code>Flowable</code> requires an additional decision: what to do with the potential unconstrained flow of the source <code>Observable</code>? There are several strategies available (such as buffering, dropping, keeping the latest) via the <code>BackpressureStrategy</code> parameter or via standard <code>Flowable</code> operators such as <code>onBackpressureBuffer</code>, <code>onBackpressureDrop</code>, <code>onBackpressureLatest</code> which also allow further customization of the backpressure behavior.</p>
-<p>3: When there is only (at most) one source item, there is no problem with backpressure as it can be always stored until the downstream is ready to consume.</p>
-<h4 id="Using-an-overload-with-the-desired-type"><a href="#Using-an-overload-with-the-desired-type" class="headerlink" title="Using an overload with the desired type"></a>Using an overload with the desired type</h4><p>Many frequently used operator has overloads that can deal with the other types. These are usually named with the suffix of the target type:</p>
-<table>
-<thead>
-<tr>
-<th>Operator</th>
-<th>Overloads</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>flatMap</code></td>
-<td><code>flatMapSingle</code>, <code>flatMapMaybe</code>, <code>flatMapCompletable</code>, <code>flatMapIterable</code></td>
-</tr>
-<tr>
-<td><code>concatMap</code></td>
-<td><code>concatMapSingle</code>, <code>concatMapMaybe</code>, <code>concatMapCompletable</code>, <code>concatMapIterable</code></td>
-</tr>
-<tr>
-<td><code>switchMap</code></td>
-<td><code>switchMapSingle</code>, <code>switchMapMaybe</code>, <code>switchMapCompletable</code></td>
-</tr>
-</tbody></table>
-<p>The reason these operators have a suffix instead of simply having the same name with different signature is type erasure. Java doesn’t consider signatures such as <code>operator(Function&lt;T, Single&lt;R&gt;&gt;)</code> and <code>operator(Function&lt;T, Maybe&lt;R&gt;&gt;)</code> different (unlike C#) and due to erasure, the two <code>operator</code>s would end up as duplicate methods with the same signature.</p>
-<h3 id="Operator-naming-conventions"><a href="#Operator-naming-conventions" class="headerlink" title="Operator naming conventions"></a>Operator naming conventions</h3><p>Naming in programming is one of the hardest things as names are expected to be not long, expressive, capturing and easily memorable. Unfortunately, the target language (and pre-existing conventions) may not give too much help in this regard (unusable keywords, type erasure, type ambiguities, etc.).</p>
-<h4 id="Unusable-keywords"><a href="#Unusable-keywords" class="headerlink" title="Unusable keywords"></a>Unusable keywords</h4><p>In the original Rx.NET, the operator that emits a single item and then completes is called <code>Return(T)</code>. Since the Java convention is to have a lowercase letter start a method name, this would have been <code>return(T)</code> which is a keyword in Java and thus not available. Therefore, RxJava chose to name this operator <code>just(T)</code>. The same limitation exists for the operator <code>Switch</code>, which had to be named <code>switchOnNext</code>. Yet another example is <code>Catch</code> which was named <code>onErrorResumeNext</code>.</p>
-<h4 id="Type-erasure"><a href="#Type-erasure" class="headerlink" title="Type erasure"></a>Type erasure</h4><p>Many operators that expect the user to provide some function returning a reactive type can’t be overloaded because the type erasure around a <code>Function&lt;T, X&gt;</code> turns such method signatures into duplicates. RxJava chose to name such operators by appending the type as suffix as well:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;R&gt; flatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt; mapper)</span><br><span class="line"></span><br><span class="line">Flowable&lt;R&gt; flatMapMaybe(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt; mapper)</span><br></pre></td></tr></table></figure>
-
-<h4 id="Type-ambiguities"><a href="#Type-ambiguities" class="headerlink" title="Type ambiguities"></a>Type ambiguities</h4><p>Even though certain operators have no problems from type erasure, their signature may turn up being ambiguous, especially if one uses Java 8 and lambdas. For example, there are several overloads of <code>concatWith</code> taking the various other reactive base types as arguments (for providing convenience and performance benefits in the underlying implementation):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concatWith(Publisher&lt;? extends T&gt; other);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; concatWith(SingleSource&lt;? extends T&gt; other);</span><br></pre></td></tr></table></figure>
-
-<p>Both <code>Publisher</code> and <code>SingleSource</code> appear as functional interfaces (types with one abstract method) and may encourage users to try to provide a lambda expression:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someSource.concatWith(s -&gt; Single.just(2))</span><br><span class="line">.subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
-
-<p>Unfortunately, this approach doesn’t work and the example does not print <code>2</code> at all. In fact, since version 2.1.10, it doesn’t even compile because at least 4 <code>concatWith</code> overloads exist and the compiler finds the code above ambiguous.</p>
-<p>The user in such situations probably wanted to defer some computation until the <code>someSource</code> has completed, thus the correct unambiguous operator should have been <code>defer</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someSource.concatWith(Single.defer(() -&gt; Single.just(2)))</span><br><span class="line">.subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
-
-<p>Sometimes, a suffix is added to avoid logical ambiguities that may compile but produce the wrong type in a flow:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; merge(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; mergeArray(Publisher&lt;? extends T&gt;... sources);</span><br></pre></td></tr></table></figure>
-
-<p>This can get also ambiguous when functional interface types get involved as the type argument <code>T</code>.</p>
-<h4 id="Error-handling"><a href="#Error-handling" class="headerlink" title="Error handling"></a>Error handling</h4><p>Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice whether or not wait for all of them to complete or fail. To indicate this opportunity, many operator names are suffixed with the <code>DelayError</code> words (while others feature a <code>delayError</code> or <code>delayErrors</code> boolean flag in one of their overloads):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concat(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; concatDelayError(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br></pre></td></tr></table></figure>
-
-<p>Of course, suffixes of various kinds may appear together:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concatArrayEagerDelayError(Publisher&lt;? extends T&gt;... sources);</span><br></pre></td></tr></table></figure>
-
-<h4 id="Base-class-vs-base-type"><a href="#Base-class-vs-base-type" class="headerlink" title="Base class vs base type"></a>Base class vs base type</h4><p>The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 2’s design was heavily influenced by the <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams" target="_blank" rel="noopener">Reactive Streams</a> specification, therefore, the library features a class and an interface per each reactive type:</p>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Class</th>
-<th>Interface</th>
-<th>Consumer</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0..N backpressured</td>
-<td><code>Flowable</code></td>
-<td><code>Publisher</code>1</td>
-<td><code>Subscriber</code></td>
-</tr>
-<tr>
-<td>0..N unbounded</td>
-<td><code>Observable</code></td>
-<td><code>ObservableSource</code>2</td>
-<td><code>Observer</code></td>
-</tr>
-<tr>
-<td>1 element or error</td>
-<td><code>Single</code></td>
-<td><code>SingleSource</code></td>
-<td><code>SingleObserver</code></td>
-</tr>
-<tr>
-<td>0..1 element or error</td>
-<td><code>Maybe</code></td>
-<td><code>MaybeSource</code></td>
-<td><code>MaybeObserver</code></td>
-</tr>
-<tr>
-<td>0 element or error</td>
-<td><code>Completable</code></td>
-<td><code>CompletableSource</code></td>
-<td><code>CompletableObserver</code></td>
-</tr>
-</tbody></table>
-<p>1The <code>org.reactivestreams.Publisher</code> is part of the external Reactive Streams library. It is the main type to interact with other reactive libraries through a standardized mechanism governed by the <a href="https://github.com/reactive-streams/reactive-streams-jvm#specification" target="_blank" rel="noopener">Reactive Streams specification</a>.</p>
-<p>2The naming convention of the interface was to append <code>Source</code> to the semi-traditional class name. There is no <code>FlowableSource</code> since <code>Publisher</code> is provided by the Reactive Streams library (and subtyping it wouldn’t have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.</p>
-<p>参考：</p>
-<p><a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="noopener">https://github.com/ReactiveX/RxJava</a></p>
-<p><a href="https://www.jianshu.com/p/464fa025229e" target="_blank" rel="noopener">https://www.jianshu.com/p/464fa025229e</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ck8qp09hf004vlz265uah7ery" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-读书笔记『Gradle实战』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-05T07:34:50.000Z" itemprop="datePublished">2019-04-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Gradle实战』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>项目自动化的类型：按需构建、触发构建、预定构建，基于时间的程序调度方案。</p>
-<p><strong>P15</strong>：Ant的缺点</p>
-<ul>
-<li>使用XML作为构建逻辑的定义语言相比于其他简明的定义语言，会导致构建脚本过于臃肿和啰嗦。</li>
-<li>复杂的构建逻辑会导致又长又难维护的构建脚本。当尝试用标记语言去定义类似if-then/if-then-else的逻辑语言时，它完全就成了一种负担。</li>
-<li>Ant没有提供任何指导来告诉你如何构建项目。在一个企业级配置中，这常常会导致一个build文件每一次看上去都不一样。常用功能时常被到处拷贝。项目中每一个新的开发人员都需要去理解构建中每一个独立的部分。</li>
-<li>在没有Ivy的情况下，使用Ant很难管理依赖。在通常情况下，你需要将JAR文件提交到版本控制系统中，并且手动管理组织结构。</li>
-</ul>
-<p><strong>P16</strong>：Maven选择约定优于配置的思想，同时是基于构建生命周期的思想。Maven有如下缺点：</p>
-<ul>
-<li>Maven推荐一个默认的结构和生命周期，常常会太过限制，也许不适合你的项目。</li>
-<li>为Maven写定制的扩展过于累赘。你需要学习Mojos.</li>
-</ul>
-<p><strong>P26</strong>：Gradle提供了具有表达性的DSL，约定优于配置的方法和强大的依赖管理。摒弃了XML，引入了动态语言Groovy来定义构建逻辑。</p>
-<p><strong>P33</strong>：对于一个Java项目，Gradle已经提供了默认的有意义的任务。例如，你可以编译Java产品源代码，运行测试和组装JAR文件。每个Java项目都以一个标准的目录布局开始。它定义了在哪里可以找到源代码、资源文件和测试代码。可以通过约定属性改变它们的默认值。</p>
-        
-          <p class="article-more-link">
-            <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ck8qp09hh0053lz262pi2dx6i" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-Java『基础知识』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" class="article-date">
@@ -840,7 +97,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ck8qp09gz0045lz26ann29lr0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ck8r2sff6003ai9263alcaopp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -909,7 +166,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/" data-id="ck8qp09gr003llz26cipb1tvw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/" data-id="ck8r2sff1002wi9261vy3hm9k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -946,15 +203,15 @@
 <p><strong>P12</strong>：module的Application合并过程中，<strong>主module的优先级高于功能module</strong>，如果功能module中定义了两个Application，则需要解决冲突(每个功能module的Applicationg节点需要添加<strong>tools:replace</strong>)。</p>
 <p><strong>P15</strong>：通过在manifest中声明android:shareUserId可以指定多个不同的App运行在<font color="#dd0000"><strong>同一个进程中，且默认数据可以互相访问</strong></font>，只有在主module中声明sharedUserId才能最终打包到full AndroidManifest中。</p>
 <p><strong>P17</strong>：在Application中通过ActivityLifecycleCallbacks接口监听Activity的生命周期，可以获得当前的栈顶Activity，可以使用该Activity实现<strong>全局弹框</strong>。</p>
-<p><strong>P23</strong>：本地广播LocalBroadcastManager是Android Support包提供的一个工具，用来在<font color="#dd0000"><strong>同一个应用内</strong></font>的不同组件间发送广播，基于观察者模式。因为设定为本地广播，所以无法像全局广播那样注册到AndroidManifest。<font color="#dd0000"><strong>本地广播传播信息的过程，无法干预自定义</strong></font>。</p>
-<p><strong>P29</strong>：EventBus 2.x使用的是运行时注解，基于Java的反射机制，反射是耗费效率的。EventBus 3.0是基于编译时注解，使用AnnotationProcessor在编译器创建出对文件或类的索引关系，在使用时直接使用。</p>
-<p><strong>P32</strong>：使用xxxBus事件总线类机制实现组件间通信的问题：事件总线需要放置在BaseModule中，每个模块增删时，都需要删除或添加BaseModule中的事件信息，不删除又会造成项目臃肿。<font color="#dd0000"><strong>关键在于如何动态的将信息模型添加到公共的地方，然后能被其他模块索引到</strong></font>。</p>
-<p><strong>P37</strong>：如果要确保只有自己的APP能启动组件，可以设置<strong>exported=false</strong>，这样别的APP将无法通过隐式intent启动APP中的Activity。</p>
-
+        
+          <p class="article-more-link">
+            <a href="/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ck8qp09hh0050lz26c73l4opd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ck8r2sffk0048i9265d986xnj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -966,12 +223,16 @@
 
 
   
-    <article id="post-2019周计划" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-读书笔记『Kotlin实战』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/03/25/2019%E5%91%A8%E8%AE%A1%E5%88%92/" class="article-date">
-  <time datetime="2019-03-25T02:15:10.000Z" itemprop="datePublished">2019-03-25</time>
+    <a href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" class="article-date">
+  <time datetime="2019-03-21T09:10:20.000Z" itemprop="datePublished">2019-03-21</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -980,7 +241,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/25/2019%E5%91%A8%E8%AE%A1%E5%88%92/">2019周计划</a>
+      <a class="article-title" href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Kotlin实战』</a>
     </h1>
   
 
@@ -988,282 +249,39 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="剩余计划"><a href="#剩余计划" class="headerlink" title="剩余计划"></a>剩余计划</h3><ol>
-<li>十大Android开源框架源码解析</li>
-<li>Android JetPack源码分析</li>
-<li>Flutter学习</li>
-<li>使用Flutter开发优惠券项目一个</li>
-<li>使用Flutter开发英语学习项目一个</li>
-<li>看书算法、JVM、Android Framework、设计模式</li>
-<li>学习NDK，语音处理</li>
-<li>基于Android原生开发视音频项目一个</li>
-<li></li>
-</ol>
-<p>=&gt;12.08</p>
-<ol>
-<li>Kotlin/RxJava2/Dagger2复习</li>
-<li>WanAndroid代码浏览</li>
-<li>RxJava源码解析博客</li>
-<li>英语学习APP原型框架回顾</li>
-<li>排序算法专题</li>
-<li></li>
-</ol>
-<h3 id="十一月计划"><a href="#十一月计划" class="headerlink" title="十一月计划"></a>十一月计划</h3><ol>
-<li>Flutter基础学习</li>
-<li>OkHttp源码解析、Retrofit源码解析、Glide源码解析 </li>
-<li>Flutter 携程2019视频学习</li>
-</ol>
-<h4 id="看书"><a href="#看书" class="headerlink" title="看书"></a>看书</h4><ol>
-<li><p>《算法导论》</p>
-</li>
-<li><p>《Java并发编程实践》</p>
-</li>
-<li><p>《HTTP权威指南》</p>
-</li>
-<li><p>《深入理解Java虚拟机》</p>
-</li>
-<li><p>《JavaScript高级程序设计》</p>
-</li>
-<li><p>《Python程序设计》</p>
-</li>
-<li><p>《JAVA核心技术：高级特性》</p>
-</li>
-<li><p>《Android音视频开发》</p>
-</li>
-<li><p>《Android自定义控件入门与实践》</p>
-</li>
-<li><p>《深入分析Java Web技术内幕》</p>
-</li>
-<li><p>《Head First 设计模式》</p>
-</li>
-<li><p>《Effective Java 中文版》</p>
-</li>
-<li><p>《人工智能入门与实战》</p>
-</li>
-<li><p>《Java程序性能优化》</p>
-<p>=====================</p>
-</li>
-<li><p>《Kotlin实战》</p>
-</li>
-<li><p>《精通Git》</p>
-</li>
-<li><p>《Android进阶解密》</p>
-</li>
-<li><p>《Android Gradle权威指南》</p>
-</li>
-</ol>
-<h4 id="待学习内容"><a href="#待学习内容" class="headerlink" title="待学习内容"></a>待学习内容</h4><ol>
-<li><p>Android</p>
-</li>
-<li><p>JavaScript</p>
-</li>
-<li><p>Python</p>
-</li>
-<li><p>Kotlin</p>
-</li>
-<li><p>Flutter</p>
-</li>
-<li><p>算法</p>
-</li>
-</ol>
-<h4 id="待完成项目"><a href="#待完成项目" class="headerlink" title="待完成项目"></a>待完成项目</h4><ol>
-<li><p>公司项目优化</p>
-</li>
-<li><p>英语学习软件</p>
-<p>使用原生代码实现</p>
-</li>
-<li><p>音视频SDK开发</p>
-<p>使用C++实现</p>
-</li>
-<li><p>基于机器学习的音频处理APP</p>
-<ol>
-<li>使用C++实现</li>
-</ol>
-</li>
-<li><p>《时间盒子》</p>
-<p>时间分配管理APP</p>
-<p>使用Flutter实现</p>
-</li>
-</ol>
-<p>国庆前计划：</p>
-<p>完成读书：Android音视频开发、Android自定义控件入门与实践、Head First 设计模式</p>
-<p>做好笔记：Android音视频开发、Android自定义控件入门与实践、Head First 设计模式、Java并发编程实践、Android进阶解密、Android Gradle权威指南</p>
-<p>写好代码：《外语学习》Android版本</p>
-<p>看源码：okio源码解析</p>
-<h3 id="七月计划"><a href="#七月计划" class="headerlink" title="七月计划"></a>七月计划</h3><ol>
-<li><p>看书《JavaScript高级教程》；0.1</p>
-</li>
-<li><p>看书《Android音视频开发》；0.2</p>
-</li>
-<li><p>看书《设计模式》；0.1</p>
-</li>
-<li><p>笔记整理《Android进阶解密》；0.1</p>
-</li>
-<li><p>笔记整理《Android_Gradle》；0.05</p>
-</li>
-<li><p>背单词Android开发(MVVM+ROOM+Dagger2+Kotlin学习)；0.1</p>
-</li>
-<li><p>研究进程保活总结；0.05</p>
-</li>
-<li><p>小知识点；0.1</p>
-<ol>
-<li>刘海屏适配；0.01</li>
-<li>已有计划管理页面优化(月度计划、周计划、柱状图)；0.02</li>
-<li>多平台博客格式转换JAR；0.01</li>
-<li>学习CoordinatorLayout、Behavior；0.02</li>
-<li>Android 8.0/9.0兼容性特性；0.02</li>
-</ol>
-</li>
-</ol>
-<h3 id="八月计划"><a href="#八月计划" class="headerlink" title="八月计划"></a>八月计划</h3><ol>
-<li>看完《谢孟媛发音篇视频》；0.05</li>
-<li>T_Reader.Server 开发； 0.1</li>
-<li>看书《MySQL必知必会》；0.05</li>
-<li>看书《操作系统》；0.1</li>
-<li>看书《深入理解Java虚拟机》；0.1</li>
-<li>MySQL学习；0.05</li>
-<li><font color="#dd00dd"><strong>Retrofit原理学习；0.1 x 0.5</strong></font></li>
-<li>Glide学习，及源码分析，写博客；0.1</li>
-<li>看书《HTTP权威指南》;0.1</li>
-<li>RxJava原理学习；0.1</li>
-<li>OKHTTP 3原理学习；0.1</li>
-<li>Kotlin高级(协程)学习；0.05</li>
-<li>其他；0.1<ol>
-<li>Shell命令学习；0.02</li>
-</ol>
-</li>
-</ol>
-<h3 id="九月计划"><a href="#九月计划" class="headerlink" title="九月计划"></a>九月计划</h3><ol>
-<li>OC回顾；0.05 / Flutter学习；0.15</li>
-</ol>
-<h3 id="三月计划"><a href="#三月计划" class="headerlink" title="三月计划"></a>三月计划</h3><p><strong>一、Android开源组件源码学习(Arouter)  + Android项目架构、组件化思考总结；0.25</strong></p>
-<p><strong>二、T_Reader中集成Spofix；  0.05</strong></p>
-<p><strong>三、看书《Android进阶解密》；0.2</strong></p>
-<p><strong>四、使用Kotlin编写T_Reader.Android； 0.2</strong></p>
-<p><strong>五、Hexo博客搭建； 0.05</strong></p>
-<p><strong>六、再读一遍《Kotlin实战》；0.1</strong></p>
-<p><strong>六、Java核心(线程、集合、类加载、反射等)； 0.1</strong></p>
-<p><strong>七、T_Reader.Server 开发； 0.15</strong></p>
-<p><strong>八、RecyclerView源码学习，及自定义View的实现</strong>； 0.1</p>
-<p><font color="#dd0000"><strong>总结：(0.05 + 0 + 0.05 + 0 + 0.05 + 0.05 + 0 + 0 + 0) * 100 = 20</strong></font></p>
-<p><strong>0225-0303</strong></p>
-<p>一、Arouter源码学习 0.4</p>
-<p>二、博客三篇学习及打印整理 0.4</p>
-<p>三、《Kotlin实战》0.4</p>
-<p><strong>总结：(0 + 0 + 0) * 100 = 0</strong></p>
-<p><strong>0304-0310</strong></p>
-<p>一、Arouter源码学习； 0.3</p>
-<p>二、博客三篇学习及打印整理； 0.3</p>
-<p>三、《Kotlin实战》；0.2</p>
-<p>四、Java核心工具类学习(Map、Set、List等)； 0.2</p>
-<p>五、T_Reader.Android原型设计、数据库设计； 0.1</p>
-<p>六、T_DayTask原型设计； 0.1</p>
-<p><strong>总结：(0 + 0 + 0.1 + 0.05 + 0 + 0.05)  * 100 = 20</strong></p>
-<p><strong>0311-0317</strong></p>
-<p>一、Arouter源码学习； 0.2</p>
-<p>二、博客三篇学习及打印整理； 0.15</p>
-<p>三、《Kotlin实战》；0.1</p>
-<p>四、Java核心工具类学习(Map、Set、List等)； 0.2</p>
-<p>五、T_Reader.Android原型设计、数据库设计； 0.1</p>
-<p><strong>六、T_DayTask原型设计； 0.1</strong></p>
-<p>七、使用Kotlin编写T_Reader.Android； 0.35</p>
-<p><strong>总结：(0 + 0 + 0 + 0 + 0.05 + 0.05 + 0)  * 100 = 10</strong></p>
-<p><strong>0318-0324</strong></p>
-<p>一、Arouter源码学习； 0.2</p>
-<p>二、博客三篇学习及打印整理； 0.1</p>
-<p>三、《Kotlin实战》；0.1</p>
-<p>四、Java核心工具类学习(Map、Set、List等)； 0.2</p>
-<p>五、T_Reader.Android原型设计、数据库设计； 0.05</p>
-<p>六、RecyclerView源码研读、自定义ReaderView实现 0.2</p>
-<p>七、使用Kotlin编写T_Reader.Android； 0.35</p>
-<p><strong>总结：(0 + 0 + 0.05 + 0 + 0.05 + 0 + 0)  * 100 = 10</strong></p>
-<p><strong>0325-0331</strong></p>
-<p>一、Arouter源码学习； 0.2</p>
-<p>二、博客三篇学习及打印整理； 0.1</p>
-<p>三、《Kotlin实战》；0.05</p>
-<p>四、Java核心工具类学习(Map、Set、List等)； 0.1</p>
-<p>五、RecyclerView源码研读、自定义ReaderView实现 0.2</p>
-<p>六、使用Kotlin编写T_Reader.Android； 0.35</p>
-<p>七、学习研究Spofix；  0.05</p>
-<p>八、看书《Android进阶解密》；0.15</p>
-<p><strong>总结：(0 + 0 + 0 + 0 + 0.05 + 0 + 0 + 0)  * 100 = 5</strong></p>
-<h3 id="四月计划"><a href="#四月计划" class="headerlink" title="四月计划"></a>四月计划</h3><ol>
-<li><font color="#00dd6d">Android开源组件源码学习(Arouter)? + Android项目架构、组件化思考总结；0.15</font></li>
-<li><font color="#00dd6d">交接工作，i云保代码整理；0.05</font></li>
-<li><font color="#00dd6d">Rxjava学习及使用；0.05</font></li>
-<li><font color="#00dd6d">OKHTTP 3学习及使用；0.05</font></li>
-<li><font color="#00dd6d">Retrofit学习及使用；0.05</font></li>
-<li><font color="#00dd6d">基础、容器、并发； 0.05</font></li>
-<li><font color="#00dd6d">视频学习，看完《操作系统》视频教程；0.05</font></li>
-<li><font color="#00dd6d">俯卧撑 1500个；0.05</font></li>
-<li><font color="#dd0000">*<em>MVVM学习；0.05  *</em></font></li>
-<li><font color="#dd0000">*<em>MVP学习，有一个模块使用MVP编写；0.05  *</em></font></li>
-<li><font color="#dd0000"><strong>组件化+MVVM+Kotlin+RxJava+Retrofit 应用；0.15</strong></font></li>
-<li><font color="#dd0000"><strong>使用Kotlin编写T_Reader.Android；0.15</strong></font></li>
-<li><font color="#dd0000"><strong>OKHTTP 3原理学习；0.1</strong></font></li>
-<li><font color="#dd0000"><strong>Retrofit原理学习；0.1</strong></font></li>
-<li><font color="#dd0000"><strong><del>快速看完《实战Gradle》；0.1</del></strong></font> 看完一半</li>
-</ol>
-<p>总结：<strong>(0.15 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05) * 100 = 55</strong></p>
-<p>###规则：</p>
-<ul>
-<li><p>计划按月计算，满分100，有20的额外分数；达到80分后有奖励，奖励为1分10块钱；达到100分后，奖励为1分20块钱；可以看电影，或者买东西。</p>
-</li>
-<li><p>当月未达成100分，未完成项目如需延迟到下月执行，则完成后得分<strong>逐月减半</strong>。<strong>其中有20分额外分可以保留得分不减半</strong>。</p>
-</li>
-<li><p>当月已完成用<font color="#00dd6d">绿色</font>表示，当月未完成使用<font color="#dd0000"><strong>红色</strong></font>表示，上月未完成迁移减半任务用<font color="#dd00dd"><strong>紫色</strong></font>表示。</p>
-</li>
-<li><p><font color="#dd0000"><strong>卧槽，搞什么鬼！！这点事情都控制不好！！工作日晚上玩游戏的，默认扣2分，睡眠时间小于5小时的扣5分，小于4小时的扣10分！！工作日实在管不住自己，就把键盘带到公司去！！</strong></font></p>
-</li>
-</ul>
-<h3 id="五月计划"><a href="#五月计划" class="headerlink" title="五月计划"></a>五月计划</h3><ol>
-<li><del><font color="#dd00dd"><strong>MVP学习；0.05 x 0.5</strong></font></del></li>
-<li><font color="#dd00dd">*<em>MVVM学习；0.05 x 0.5  *</em></font></li>
-<li><font color="#dd00dd"><strong>Retrofit原理学习；0.1 x 0.5</strong></font></li>
-<li><font color="#dd00dd"><strong>OKHTTP 3原理学习；0.1 x 0.5</strong></font></li>
-<li>kotlin_wanandroid 重写一遍；0.15</li>
-<li>RxJava原理学习； 0.1  </li>
-<li>Glide学习，及源码分析，写博客；0.1</li>
-<li><font color="#00dd6d">WIFI业务逻辑学习；0.05</font></li>
-<li>WIFI源码学习(安全、服务、保活)；0.1</li>
-<li>看书《设计模式》;0.05</li>
-<li>看书《TCP/IP入门经典》；0.05</li>
-<li>看书《HTTP权威指南》；0.1</li>
-<li><font color="#00dd6d">听完《赖世雄教你学语法》前30集MP3及笔记; 0.05</font></li>
-<li><del>阅读《Java Web项目开发案例导航》选择合适的项目学习；0.05</del></li>
-<li>小知识点&amp;实践；0.1<ol>
-<li><font color="#00dd6d">WIFI代码提交流程掌握；0.01</font></li>
-<li>已有计划管理页面优化(月度计划、周计划、柱状图)；0.02</li>
-<li>多平台博客格式转换JAR；0.01</li>
-<li><font color="#00dd6d">看书《大象Thinking in UML》中类图相关章节；0.01</font></li>
-<li><font color="#00dd6d">学习UML类图相关；0.01</font></li>
-<li><font color="#00dd6d">AnnotationProcessor学习；0.01</font></li>
-<li>Room学习；0.02</li>
-<li><font color="#00dd6d">SourceTree学习使用；0.01</font></li>
-</ol>
-</li>
-<li><font color="#00dd6d">俯卧撑1800个；0.05</font></li>
-<li>网络探测研究；0.05</li>
-</ol>
-<p><font color="#dd0000"><strong>总结：(0.05 + 0.05  + 0.05 + 0.05 ) * 100 = 20</strong></font></p>
-<h3 id="规划"><a href="#规划" class="headerlink" title="规划"></a>规划</h3><p>5-6月：HTTP协议、HTTPS协议、Android(Android进阶解密、MVP、MVVM）、Android开源库源码学习(OKHTTP源码、RxJava源码、Retrofit源码、Glide源码)、JavaWeb基础及实践、EBM Kotlin版本、赖世雄英语语法、</p>
-<p>7-8月：服务端深入学习、JavaScript基础、Flutter学习、英语单词、英语语音</p>
-<p>9-10月：。。。</p>
-<p>2019·电影</p>
-<p>影院观看：复仇者联盟4、白蛇:缘起、毒液、海王、阿丽塔、流浪地球、玩具总动员4、哪吒:魔童降世</p>
-<p>在家观看：复仇者联盟3、飞驰人生、遍地狼烟、绅士特工2、调音师、天上有朵雨做的云、权利的游戏第八季、帕丁顿熊2、有希望的男人、了不起的盖茨比、蜘蛛侠：平行宇宙、何以为家、神奇女侠、雷神1、小偷家族、雷神2、雷神3、蜘蛛侠-英雄远征、阿拉丁真人版、印度合伙人、</p>
-<p>2019·书</p>
-<p>学习相关：《Kotlin实战》、《Android组件化架构》、《Java并发编程实战》、《Android Gradle权威指南》、《Android进阶解密》、《深入探索Android热修复技术原理》、《TCP/IP入门经典》</p>
-<p>杂书：《儒林外史》</p>
-<p>推荐的有：《Kotlin实战》、《Java并发编程实战》、《Android进阶解密》、《深入探索Android热修复技术原理》</p>
-<p>不推荐的有：《TCP/IP入门经典》、《Android组件化架构》、《Android Gradle权威指南》</p>
+        <p><strong>P18</strong>：在Kotlin中没有声明数组类型的特殊语法，<strong>数组就是类</strong></p>
+<p><strong>P19</strong>：在Kotlin中if是有结果的表达式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">mac</span><span class="params">(a:Int,b:Int)</span>:Int</span>&#123; <span class="keyword">return</span> <span class="keyword">if</span>(a&gt;b) a <span class="keyword">else</span> b&#125;</span><br></pre></td></tr></table></figure>
 
+<p><strong>P25</strong>：自定义访问器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Retangle(val height:Int, val width:Int) &#123;</span><br><span class="line">  val isSqual:Boolean</span><br><span class="line">    gen() &#123; <span class="keyword">return</span> height == width &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P30</strong>：在”when”中使用任意对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">mix</span><span class="params">(cl:Color, c2:Color)</span> </span>&#123;</span><br><span class="line">  when(setOf(c1, c2)) &#123;</span><br><span class="line">    setOf(RED, YELLOW) -&gt; ORANGE</span><br><span class="line">    setOf(YELLOW, BLUE) -&gt; GREEN</span><br><span class="line">    setOf(Blue, VIOLET) -&gt; INDIGO</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P37</strong>：迭代数字：区间和数列</p>
+<ul>
+<li>区间：for( i in 1 .. 100 )  { print( i ) }</li>
+<li>步长区间：for( i in 100 <font color="#dd0000"><strong>downTo 1 step 2</strong></font> )</li>
+<li>半闭合区间：for( x in 0 <strong>util</strong> size )，等同于for( x in 0 .. size-1 )</li>
+</ul>
+<p><strong>P38</strong>：迭代map</p>
+<ul>
+<li>for( letter.binary ) in list.<strong>withIndex()</strong>  { “<strong>$index: $element</strong>“}</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/25/2019%E5%91%A8%E8%AE%A1%E5%88%92/" data-id="ck8qp09fs002clz266rgk9jek" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ck8r2sffy004hi92698bz4wos" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
     </footer>
   </div>
   
@@ -1275,7 +293,7 @@
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">Next &amp;raquo;</a>
+    <a class="extend prev" rel="prev" href="/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
   </nav>
 
 </section>
@@ -1296,7 +314,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jni/" rel="tag">jni</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/" rel="tag">ndk</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" rel="tag">布局相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" rel="tag">数据转换，protobuf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
     </div>
   </div>
 
@@ -1306,7 +324,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/jni/" style="font-size: 10px;">jni</a> <a href="/tags/ndk/" style="font-size: 10px;">ndk</a> <a href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" style="font-size: 10px;">布局相关</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" style="font-size: 10px;">数据转换，protobuf</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
     </div>
   </div>
 
@@ -1315,7 +333,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -1340,11 +358,11 @@
           </li>
         
           <li>
-            <a href="/2020/03/19/Java%E7%B1%BB%E5%BA%93%E5%AD%A6%E4%B9%A0%E3%80%8EProtocolBuffers%E3%80%8F/">Java类库学习『ProtocolBuffers』</a>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
           </li>
         
           <li>
-            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+            <a href="/2020/03/19/Java%E3%80%8E%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E3%80%8F/">Java『线程相关』</a>
           </li>
         
       </ul>

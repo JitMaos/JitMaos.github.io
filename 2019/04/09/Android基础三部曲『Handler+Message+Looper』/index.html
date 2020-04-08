@@ -15,7 +15,7 @@
 <meta property="og:description" content="主流程图 ThreadLocal使用场景：订单处理包含一系列操作：减少库存量、增加一条流水台账、修改总账，这几个操作要在同一个事务中完成，通常也即同一个线程中进行处理，如果累加公司应收款的操作失败了，则应该把前面的操作回滚，否则，提交所有操作，这要求这些操作使用相同的数据库连接对象，而这些操作的代码分别位于不同的模块类中。 该类提供线程局部变量。这些变量不同于它们的正常变量，即每一个线程访问自身的">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-04-09T11:33:35.000Z">
-<meta property="article:modified_time" content="2020-03-19T07:54:49.077Z">
+<meta property="article:modified_time" content="2020-04-08T08:33:22.253Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="Framework">
@@ -96,6 +96,8 @@
 <p>所以<code>一个线程有一个ThreadLocalMap，而一个ThreadLocalMap内部使用Entry(ThreadLocal作为索引的hash对象定位元素，Value是实际存储的内容)数组存储ThreadLocal对象的，一个ThreadLocal仅能存放一个数据对象的副本，使之成为线程局部私有变量</code>。</p>
 <p><strong>虽然我们在ThreadLocal上调用set和get，但ThreadLocal本身并不存储数据对象，其背后都是从ThreadLocalMap中通过hash(ThreadLocal)来定位Entry元素，操作Entry中的value对象的。</strong></p>
 <p>还有一个问题，看源码知道set最后还是通过引用赋值的方式实现的，那么引用是怎么在多线程环境下实现<font color="#dd0000"><strong>独立备份</strong></font>的呢？</p>
+<a id="more"></a>
+
 <p>本段参考：<a href="https://www.jianshu.com/p/2a34d30806d4" target="_blank" rel="noopener">Android Handler机制之ThreadLocal</a></p>
 <h3 id="Hanlder构造方法"><a href="#Hanlder构造方法" class="headerlink" title="Hanlder构造方法"></a>Hanlder构造方法</h3><p>在创建Handler时，Handler在其构造方法中<strong><em>尝试从当前线程(创建Hanlder实例对象的线程)的ThreadLocal中取到Looper对象</em></strong>，并将该Looper对象赋值给当前Hanlder对象，同时还会将Looper对象的MessageQueue引用赋值给当前Handler。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Lopper.myLooper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="meta">@Nullable</span> <span class="function">Looper <span class="title">myLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sThreadLocal.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -143,7 +145,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck8qp09gm0037lz26d74n8ej4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck8r2sfey002oi9260ojxbs22" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
@@ -192,7 +194,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jni/" rel="tag">jni</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ndk/" rel="tag">ndk</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" rel="tag">布局相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" rel="tag">数据转换，protobuf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
     </div>
   </div>
 
@@ -202,7 +204,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/jni/" style="font-size: 10px;">jni</a> <a href="/tags/ndk/" style="font-size: 10px;">ndk</a> <a href="/tags/%E5%B8%83%E5%B1%80%E7%9B%B8%E5%85%B3/" style="font-size: 10px;">布局相关</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%EF%BC%8Cprotobuf/" style="font-size: 10px;">数据转换，protobuf</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
     </div>
   </div>
 
@@ -211,7 +213,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -236,11 +238,11 @@
           </li>
         
           <li>
-            <a href="/2020/03/19/Java%E7%B1%BB%E5%BA%93%E5%AD%A6%E4%B9%A0%E3%80%8EProtocolBuffers%E3%80%8F/">Java类库学习『ProtocolBuffers』</a>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
           </li>
         
           <li>
-            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+            <a href="/2020/03/19/Java%E3%80%8E%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E3%80%8F/">Java『线程相关』</a>
           </li>
         
       </ul>
