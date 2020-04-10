@@ -64,6 +64,65 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Android代码片段" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/Android%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/" class="article-date">
+  <time datetime="2020-03-19T07:54:49.076Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/19/Android%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/">Android代码片段</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="集成Arouter"><a href="#集成Arouter" class="headerlink" title="集成Arouter"></a>集成Arouter</h4><ol>
+<li><p>在lib_base的build.gradle中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  com.alibaba:arouter-api:<span class="number">1.4</span><span class="number">.1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在功能Module的build.gralde中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">     ...</span><br><span class="line">        <span class="comment">//阿里路由框架配置</span></span><br><span class="line">        javaCompileOptions &#123;</span><br><span class="line">            annotationProcessorOptions &#123;</span><br><span class="line">                arguments = [AROUTER_MODULE_NAME: project.getName()]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;</span><br><span class="line">    annotationProcessor <span class="string">'com.alibaba:arouter-compiler:1.1.4'</span></span><br><span class="line">    <span class="function">implementation <span class="title">project</span><span class="params">(<span class="string">':lib_base'</span>)</span> <span class="comment">//引用lib_base</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="配置功能Module的共同引用的config-gradle"><a href="#配置功能Module的共同引用的config-gradle" class="headerlink" title="配置功能Module的共同引用的config.gradle"></a>配置功能Module的共同引用的config.gradle</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isModule.toBoolean()) &#123;</span><br><span class="line">    <span class="comment">//作为独立App应用运行</span></span><br><span class="line">    apply plugin: <span class="string">'com.android.application'</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//作为组件运行</span></span><br><span class="line">    apply plugin: <span class="string">'com.android.library'</span></span><br><span class="line">&#125;</span><br><span class="line">android &#123;</span><br><span class="line">    ...</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">//阿里路由框架配置</span></span><br><span class="line">        javaCompileOptions &#123;</span><br><span class="line">            annotationProcessorOptions &#123;</span><br><span class="line">                arguments = [AROUTER_MODULE_NAME: project.getName()]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sourceSets &#123;</span><br><span class="line">        main &#123;</span><br><span class="line">            jniLibs.srcDirs = [<span class="string">'libs'</span>]</span><br><span class="line">            <span class="keyword">if</span> (isModule.toBoolean()) &#123;</span><br><span class="line">                <span class="comment">//独立运行</span></span><br><span class="line">                manifest.srcFile <span class="string">'src/main/module/AndroidManifest.xml'</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//合并到宿主</span></span><br><span class="line">                manifest.srcFile <span class="string">'src/main/AndroidManifest.xml'</span></span><br><span class="line">                resources &#123;</span><br><span class="line">                    <span class="comment">//正式版本时，排除alone文件夹下所有调试文件</span></span><br><span class="line">                    exclude <span class="string">'src/module/alone/*'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">       ...</span><br><span class="line">    &#125;</span><br><span class="line">    dataBinding &#123;</span><br><span class="line">        enabled <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置lib-base的build-gradle"><a href="#配置lib-base的build-gradle" class="headerlink" title="配置lib_base的build.gradle"></a>配置lib_base的build.gradle</h4><p>在lib_base中配置功能Module需要用到的support、Glide、Kotlin、Arouter等类库，其自身因为不需要进行页面跳转，所以不用引用Arouter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'com.android.library'</span></span><br><span class="line">apply plugin: <span class="string">'kotlin-android-extensions'</span></span><br><span class="line">apply plugin: <span class="string">'kotlin-android'</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    compileSdkVersion rootProject.ext.android.compileSdkVersion</span><br><span class="line">    buildToolsVersion rootProject.ext.android.buildToolsVersion</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        minSdkVersion rootProject.ext.android.minSdkVersion</span><br><span class="line">        targetSdkVersion rootProject.ext.android.targetSdkVersion</span><br><span class="line">        versionCode rootProject.ext.android.versionCode</span><br><span class="line">        versionName rootProject.ext.android.versionName</span><br><span class="line">    &#125;</span><br><span class="line">    sourceSets &#123;</span><br><span class="line">        main &#123;</span><br><span class="line">            jniLibs.srcDirs = [<span class="string">'libs'</span>]</span><br><span class="line">            <span class="keyword">if</span> (isModule) &#123;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                resources &#123;</span><br><span class="line">                    <span class="comment">//正式版本时，排除debug文件夹下所有调试文件</span></span><br><span class="line">                    exclude <span class="string">'src/debug/*'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled <span class="keyword">false</span></span><br><span class="line">            <span class="function">proguardFiles <span class="title">getDefaultProguardFile</span><span class="params">(<span class="string">'proguard-android-optimize.txt'</span>)</span>, 'proguard-rules.pro'</span></span><br><span class="line"><span class="function">        &#125;</span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//Retrofit/RxJava/Glide/RxBinding/OKHttp/Kotlin/RecyclerViewHelper/EventBus/ButterKnife</span></span></span><br><span class="line"><span class="function">dependencies </span>&#123;</span><br><span class="line">    <span class="function">api <span class="title">files</span><span class="params">(<span class="string">'libs/afinal_0.5.jar'</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">//公用的support相关库在base中依赖</span></span></span><br><span class="line"><span class="function">    api rootProject.ext.support["design"]</span></span><br><span class="line"><span class="function">    api rootProject.ext.support["appcompat-v7"]</span></span><br><span class="line"><span class="function">    api rootProject.ext.support["recyclerview-v7"]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">//Recycler-Helper</span></span></span><br><span class="line"><span class="function">    api rootProject.ext.dependencies["recyclerHelper"]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">// Glide</span></span></span><br><span class="line"><span class="function">    api rootProject.ext.dependencies["glide"]</span></span><br><span class="line"><span class="function">    annotationProcessor rootProject.ext.dependencies["glide-compiler"]</span></span><br><span class="line"><span class="function">    <span class="comment">// OKHttp</span></span></span><br><span class="line"><span class="function">    api rootProject.ext.dependencies["okhttp"]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">//kotlin</span></span></span><br><span class="line"><span class="function">    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"</span></span><br><span class="line"><span class="function">      </span></span><br><span class="line"><span class="function">    <span class="comment">//阿里路由框架</span></span></span><br><span class="line"><span class="function">    api rootProject.ext.dependencies["arouter-api"]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function">repositories </span>&#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="集成Kotlin"><a href="#集成Kotlin" class="headerlink" title="集成Kotlin"></a>集成Kotlin</h4><ol>
+<li><p>在项目根目录下的build.gradle添加</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext.kotlin_version = <span class="string">'1.3.21'</span></span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath <span class="string">"org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在module的build.gradle中，注意是<font color="#dd0000"><strong>jdk7</strong></font>，不是<strong>jre7</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'kotlin-android'</span></span><br><span class="line">apply plugin: <span class="string">'kotlin-android-extensions'</span></span><br><span class="line">dependencies &#123;</span><br><span class="line">  <span class="comment">//$&#123;kotlin_version&#125;会读取根目录的build.gralde的ext.kotlin_version值填入</span></span><br><span class="line">	api <span class="string">"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="集成Glide"><a href="#集成Glide" class="headerlink" title="集成Glide"></a>集成Glide</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/Android%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/" data-id="ck8tzfdzw002r3426d549f0kt" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Android『保活相关』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" class="article-date">
@@ -151,7 +210,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" data-id="ck8tzedg2002mzn26g18e3387" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" data-id="ck8tzfdzr002m3426eyutbvla" class="article-share-link">Share</a>
       
       
     </footer>
@@ -208,7 +267,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8EAnnotationProcessor%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ck8tzedg8002pzn26bbf29wjz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8EAnnotationProcessor%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ck8tzfdzl002j3426cwgebhdu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li></ul>
@@ -253,7 +312,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94MVVM%E3%80%8E%E5%8E%9F%E7%90%86%E3%80%8F/" data-id="ck8tzedif004vzn265mc3606u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94MVVM%E3%80%8E%E5%8E%9F%E7%90%86%E3%80%8F/" data-id="ck8tzfe1w005034261by4ag6e" class="article-share-link">Share</a>
       
       
     </footer>
@@ -298,7 +357,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" data-id="ck8tzedhz004hzn265rln9e5v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" data-id="ck8tzfe1h004l34269u74g7ng" class="article-share-link">Share</a>
       
       
     </footer>
@@ -373,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck8tzedi2004jzn26g4d04f15" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck8tzfe1l004p3426g6l75erp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li></ul>
@@ -469,7 +528,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck8tzedi4004nzn267meo44gi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck8tzfe1o004s3426ewvqeyrc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li></ul>
@@ -538,7 +597,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJavaScript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E3%80%8F/" data-id="ck8tzedhu004bzn26g868fw2h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJavaScript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E3%80%8F/" data-id="ck8tzfe1f004g3426drnh4jao" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -585,7 +644,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="ck8tzedhs0049zn26hkm4cu6r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="ck8tzfe1c004e3426f7kg6xqt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li></ul>
@@ -684,114 +743,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ck8tzedhn0043zn265s6a7vru" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ck8tzfe0x004534260tgcbiig" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-开源项目——Dragger2「基础使用」" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" class="article-date">
-  <time datetime="2020-03-19T07:54:48.983Z" itemprop="datePublished">2020-03-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/">Dragger2「基础使用」</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h4><p>首先Dagger是一个Android上用于实现依赖注入功能的开源库，之所以要使用依赖注入是<strong>为了解耦</strong>。今天简单聊一下Dagger的基本使用。Dagger的注入主要有2中方式：</p>
-<ul>
-<li>@Injector注释构造方法提供实例；</li>
-</ul>
-<ol>
-<li><p>在app的build.gradle中添加依赖：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">compile <span class="string">'com.google.dagger:dagger:2.22.1'</span></span><br><span class="line">annotationProcessor <span class="string">'com.google.dagger:dagger-compiler:2.22.1'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用依赖注解@Inject</p>
-<p>Man有一辆Car，现在要把Car注入到Man中去，新建Car和Man，注意这里的注入注解@Inject</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Car.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    Car() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Man.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Man</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    Car car;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>编译一下代码，会在build/generated/source/apt/debug/package下生成Car_Factory和Man_MembersInjector。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Car_Factory.java</span></span><br><span class="line"><span class="comment">//Car的提供者</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Car_Factory</span> <span class="keyword">implements</span> <span class="title">Factory</span>&lt;<span class="title">Car</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Car_Factory INSTANCE = <span class="keyword">new</span> Car_Factory();</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Car <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Car();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Car_Factory <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> INSTANCE;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Car <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Car();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Man_MembersInjector.java</span></span><br><span class="line"><span class="comment">//Car的注入目标</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Man_MembersInjector</span> <span class="keyword">implements</span> <span class="title">MembersInjector</span>&lt;<span class="title">Man</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Provider&lt;Car&gt; carProvider;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Man_MembersInjector</span><span class="params">(Provider&lt;Car&gt; carProvider)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.carProvider = carProvider;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MembersInjector&lt;Man&gt; <span class="title">create</span><span class="params">(Provider&lt;Car&gt; carProvider)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Man_MembersInjector(carProvider);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">injectMembers</span><span class="params">(Man instance)</span> </span>&#123;</span><br><span class="line">    injectCar(instance, carProvider.get());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">injectCar</span><span class="params">(Man instance, Car car)</span> </span>&#123;</span><br><span class="line">    instance.car = car;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面的代码可以看出来，，好吧，，可能一下子不容易看出来。Car_Factory是Car的提供者；Man_MembersInjector是Man上面的Car的注入器，在其中有Provider&lt;Car&gt;用于提供Car的实例。问题是前面明明是Factory，怎么这里需要的是Provider呢？其实<strong>Factory是一种特殊的Provider，它继承自Provider</strong>。可以看源码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * An &#123;<span class="doctag">@linkplain</span> Scope unscoped&#125; &#123;<span class="doctag">@link</span> Provider&#125;. While a &#123;<span class="doctag">@link</span> Provider&#125; &lt;i&gt;may&lt;/i&gt; apply scoping semantics while providing an instance, a factory implementation is guaranteed to exercise the binding logic (&#123;<span class="doctag">@link</span> Inject&#125; constructors, &#123;<span class="doctag">@link</span> Provides&#125; methods) upon each call to &#123;<span class="doctag">@link</span> #get&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Note that while subsequent calls to &#123;<span class="doctag">@link</span> #get&#125; will create new instances for bindings such as those created by &#123;<span class="doctag">@link</span> Inject&#125; constructors, a new instance is not guaranteed by all bindings. For example, &#123;<span class="doctag">@link</span> Provides&#125; methods may be implemented in ways that return the same instance for each call.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Provider</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>现在，只有<strong>Car_Factory</strong>和<strong>Man_MembersInjector</strong>是不能完成注入动作的，<strong>因为没有触发注入动作的时机</strong>，那么此时我们需要一个<strong>桥梁</strong>来连接<strong>Car_Factory</strong>和<strong>Man_MembersInjector</strong>，那就是Componant。新建一个ManComponant(<strong>名字其实可以随意</strong>)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ManComponant</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">injectMan</span><span class="params">(Man man)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Build或make之后，会自动生成DaggerManComponant：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DaggerManComponant</span> <span class="keyword">implements</span> <span class="title">ManComponant</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">DaggerManComponant</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Builder <span class="title">builder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Builder();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ManComponant <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Builder().build();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">injectMan</span><span class="params">(Man man)</span> </span>&#123;</span><br><span class="line">    injectMan2(man);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">private</span> Man <span class="title">injectMan2</span><span class="params">(Man instance)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//这里的new Car()其实是Car_Factory.get()里面的代码逻辑</span></span><br><span class="line">    Man_MembersInjector.injectCar(instance, <span class="keyword">new</span> Car());</span><br><span class="line"> 		<span class="keyword">return</span> instance;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Builder</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ManComponant <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> DaggerManComponant();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<p>   最后，可以使用注入了：</p>
-   <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">findViewById&lt;View&gt;(R.id.btnTestInject).setOnClickListener &#123;</span><br><span class="line">    <span class="keyword">val</span> man = Man()</span><br><span class="line">    Log.d(TAG, man.car.toString())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用Factory方式注入有以下几个问题：</p>
-<ul>
-<li>接口没有构造函数</li>
-<li>第三方库的类不能被标注</li>
-<li>构造函数中的参数必须配置</li>
-</ul>
-<ul>
-<li>使用@Module提供实例;</li>
-</ul>
-<h5 id="Provider方式"><a href="#Provider方式" class="headerlink" title="Provider方式"></a>Provider方式</h5><p>假设有一个火箭Rocket，需要注入一个发动机(Engine)，使用Provider+Module实现</p>
-<ol>
-<li><p>新建Engine</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Engine.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Engine</span> </span>&#123;</span><br><span class="line">    String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建Rocket</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Rocket.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Rocket</span> </span>&#123;</span><br><span class="line">    String name;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    Engine engine;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建EngineModule，用于提供Engine对象</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EngineModule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> Engine <span class="title">provideEngine</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Engine();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建RocketComponent，用于关联Rocket和EngineModule</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span>(modules = EngineModule<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">RocketComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">inject</span><span class="params">(Rocket rocket)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>make一下代码，生成编译类DaggerCommonComponent</p>
-</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//输出</span></span><br><span class="line">D/Main: test.dagger.method2_provider.Rocket@<span class="number">99f</span>b92f</span><br><span class="line">D/Main: test.dagger.method2_provider.Rocket@<span class="number">5</span>def28</span><br><span class="line">D/Main: test.dagger.method2_provider.Rocket<span class="meta">@f</span>77d37d</span><br><span class="line">D/Main: test.dagger.method2_provider.Rocket@<span class="number">15023</span>be</span><br></pre></td></tr></table></figure>
-
-<p>还有Factory接口，注意这里Factory和Provider是继承关系的，后面还会聊到Provider接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于提供T的实例，通常由injector使用。对于可以注入的类型T，你可以注入一个Provider&lt;T&gt;，而不是直接注入一个T，这样有以下好处：</span></span><br><span class="line"><span class="comment"> 	接收多个实例对象</span></span><br><span class="line"><span class="comment"> 	懒加载或者选择只接收一个实例对象</span></span><br><span class="line"><span class="comment"> 	中断循环依赖</span></span><br><span class="line"><span class="comment"> 	虚拟的作用域使你可以从一个作用域中的更小的作用域中查找实例</span></span><br><span class="line"><span class="comment"> * Provides instances of &#123;<span class="doctag">@code</span> T&#125;. Typically implemented by an injector. For</span></span><br><span class="line"><span class="comment"> * any type &#123;<span class="doctag">@code</span> T&#125; that can be injected, you can also inject</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Provider&lt;T&gt;&#125;. Compared to injecting &#123;<span class="doctag">@code</span> T&#125; directly, injecting</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Provider&lt;T&gt;&#125; enables:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;retrieving multiple instances.&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;lazy or optional retrieval of an instance.&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;breaking circular dependencies.&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;abstracting scope so you can look up an instance in a smaller scope</span></span><br><span class="line"><span class="comment"> *      from an instance in a containing scope.&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;For example:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;pre&gt;</span></span><br><span class="line"><span class="comment"> *   class Car &#123;</span></span><br><span class="line"><span class="comment"> *     &amp;#064;Inject Car(Provider&amp;lt;Seat&gt; seatProvider) &#123;</span></span><br><span class="line"><span class="comment"> *       Seat driver = seatProvider.get();</span></span><br><span class="line"><span class="comment"> *       Seat passenger = seatProvider.get();</span></span><br><span class="line"><span class="comment"> *       ...</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *   &#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Provider</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Provides a fully-constructed and injected instance of &#123;<span class="doctag">@code</span> T&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> RuntimeException if the injector encounters an error while</span></span><br><span class="line"><span class="comment">     *  providing an instance. For example, if an injectable member on</span></span><br><span class="line"><span class="comment">     *  &#123;<span class="doctag">@code</span> T&#125; throws an exception, the injector may wrap the exception</span></span><br><span class="line"><span class="comment">     *  and throw it to the caller of &#123;<span class="doctag">@code</span> get()&#125;. Callers should not try</span></span><br><span class="line"><span class="comment">     *  to handle such exceptions as the behavior may vary across injector</span></span><br><span class="line"><span class="comment">     *  implementations and even different configurations of the same injector.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">T <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>从注释中可以看到：一个Factory是一个未指定Scope的Provider，一个Factory是为了保证当调用get方法时，能够实现构造方法的Intect绑定逻辑；注意后续每次在构造方法上使用Inject都会创建新的对象；而Provider不一样，他可能每次调用都返回相同的对象。</p>
-<h4 id="Scope、Lazy、Qualifier"><a href="#Scope、Lazy、Qualifier" class="headerlink" title="Scope、Lazy、Qualifier"></a>Scope、Lazy、Qualifier</h4><h4 id="Component、SubComponent"><a href="#Component、SubComponent" class="headerlink" title="Component、SubComponent"></a>Component、SubComponent</h4><h4 id="MVP结合Dagger2"><a href="#MVP结合Dagger2" class="headerlink" title="MVP结合Dagger2"></a>MVP结合Dagger2</h4>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" data-id="ck8tzedhe003tzn261w4z55jg" class="article-share-link">Share</a>
-      
-      
     </footer>
   </div>
   
@@ -843,7 +799,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -854,6 +810,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
         
           <li>
             <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
@@ -869,10 +829,6 @@
         
           <li>
             <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/03/19/Java%E3%80%8E%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E3%80%8F/">Java『线程相关』</a>
           </li>
         
       </ul>
