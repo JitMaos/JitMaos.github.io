@@ -15,7 +15,7 @@
 <meta property="og:description" content="基础概念 签名：在 APK 中写入一个「指纹」。指纹写入以后，APK 中有任何修改，都会导致这个指纹无效，Android 系统在安装 APK 进行签名校验时就会不通过，从而保证了安全性。 摘要算法：使用一段简单的看上去随机的不可逆向的固定长度的字符串来表示一个文件的唯一性。常见的摘要算法如MD5(128个比特位)、SHA-1算法(160&#x2F;192&#x2F;256个比特位)。 公钥密码体制：也称非对称算法，">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-10T07:24:34.404Z">
-<meta property="article:modified_time" content="2020-04-10T09:23:41.068Z">
+<meta property="article:modified_time" content="2020-04-10T10:21:51.811Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
@@ -115,7 +115,16 @@
 <p>修改(含增删改)了apk中的文件，则：校验时计算出的文件的摘要值与MANIFEST.MF文件中的条目不匹配，失败。<br>修改apk中的文件+MANIFEST.MF,则：MANIFEST.MF修改过的条目的摘要与[CERT].SF对应的条目不匹配，失败。<br>修改apk中的文件+MANIFEST.MF+[CERT].SF，则：计算出的[CERT].SF签名与[CERT].RSA中记录的签名值不匹配，失败。<br>修改apk中的文件+MANIFEST.MF+[CERT].SF+[CERT].RSA，则：由于证书不可伪造，[CERT].RSA无法伪造。</p>
 <hr>
 <p><font color="#dd0000"><strong>V2</strong></font>：7.0新增的</p>
-<p>签名后的包会被分为四部分 </p>
+<p>为啥要做V2，因为V1存在问题：</p>
+<ul>
+<li><p>签名校验速度慢</p>
+<p>校验过程中需要对apk中所有文件进行摘要计算，在 APK 资源很多、性能较差的机器上签名校验会花费较长时间，导致安装速度慢。</p>
+</li>
+<li><p>完整性保障不够</p>
+<p>META-INF 目录用来存放签名，自然此目录本身是不计入签名校验过程的，可以随意在这个目录中添加文件，比如一些快速批量打包方案就选择在这个目录中添加渠道文件。(<strong>所以在V2上这种多渠道打包的方式生效了</strong>)</p>
+</li>
+</ul>
+<p>V2签名后的包会被分为四部分 </p>
 <pre><code>1. Contents of ZIP entries（from offset 0 until the start of APK Signing Block） 
 2. APK Signing Block 
 3. ZIP Central Directory 
@@ -141,7 +150,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/" data-id="ck8tzgwjg002q7f26e08i8ihn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/" data-id="ck91fgnl4003exa267nrv84e4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
