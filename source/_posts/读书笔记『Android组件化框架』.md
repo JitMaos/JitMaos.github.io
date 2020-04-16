@@ -1,7 +1,7 @@
 ---
 title: 读书笔记『Android组件化框架』
 date: 2019-03-26 05:50:12
-tags: 读书笔记
+tags: [读书笔记,组件化]
 ---
 
 **P3**：组件：指的是单一的功能组件，如视频组件(VideoSDK)、支付组件(PaySDK)、路由组件(Router)等；模块：指的是独立的业务模块，如直播模块(LiveModule)、首页模块(HomeModule)、即时通讯模块(IMModule)等。

@@ -1,6 +1,6 @@
 ---
 title: 读书笔记『深入理解Java虚拟机』
-tags:
+tags: [读书笔记,JVM]
 ---
 
 ### 第1章 走进Java
