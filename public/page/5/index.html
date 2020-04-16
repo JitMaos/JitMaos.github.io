@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/page/5/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-读书笔记『Gradle实战』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-05T07:34:50.000Z" itemprop="datePublished">2019-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Gradle实战』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>项目自动化的类型：按需构建、触发构建、预定构建，基于时间的程序调度方案。</p>
+<p><strong>P15</strong>：Ant的缺点</p>
+<ul>
+<li>使用XML作为构建逻辑的定义语言相比于其他简明的定义语言，会导致构建脚本过于臃肿和啰嗦。</li>
+<li>复杂的构建逻辑会导致又长又难维护的构建脚本。当尝试用标记语言去定义类似if-then/if-then-else的逻辑语言时，它完全就成了一种负担。</li>
+<li>Ant没有提供任何指导来告诉你如何构建项目。在一个企业级配置中，这常常会导致一个build文件每一次看上去都不一样。常用功能时常被到处拷贝。项目中每一个新的开发人员都需要去理解构建中每一个独立的部分。</li>
+<li>在没有Ivy的情况下，使用Ant很难管理依赖。在通常情况下，你需要将JAR文件提交到版本控制系统中，并且手动管理组织结构。</li>
+</ul>
+<p><strong>P16</strong>：Maven选择约定优于配置的思想，同时是基于构建生命周期的思想。Maven有如下缺点：</p>
+<ul>
+<li>Maven推荐一个默认的结构和生命周期，常常会太过限制，也许不适合你的项目。</li>
+<li>为Maven写定制的扩展过于累赘。你需要学习Mojos.</li>
+</ul>
+<p><strong>P26</strong>：Gradle提供了具有表达性的DSL，约定优于配置的方法和强大的依赖管理。摒弃了XML，引入了动态语言Groovy来定义构建逻辑。</p>
+<p><strong>P33</strong>：对于一个Java项目，Gradle已经提供了默认的有意义的任务。例如，你可以编译Java产品源代码，运行测试和组装JAR文件。每个Java项目都以一个标准的目录布局开始。它定义了在哪里可以找到源代码、资源文件和测试代码。可以通过约定属性改变它们的默认值。</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ck91fgnlu004dxa26cajm8b8r" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java『基础知识』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-01T02:29:31.000Z" itemprop="datePublished">2019-04-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/">Java『基础知识』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h4><p>JVM是运行Java字节码的虚拟机。<strong>JVM有针对不同系统的特定实现</strong>，目的在不同的系统平台上运行相同的字节码。<strong>.java文件经过JDK的javac编译为.class文件，.class文件又被JVM编译成机器可执行的二进制机器码。</strong></p>
+<p>我们需要格外注意的是 .class-&gt;机器码 这一步。在这一步 jvm 类加载器首先加载字节码文件，然后通过解释器<font color="#dd0000"><strong>逐行</strong></font>解释执行，这种方式的执行速度会相对比较慢。而且，有些方法和代码块是经常需要被调用的，也就是所谓的热点代码，所以后面引进了 JIT 编译器，JIT 属于运行时编译。<strong>当 JIT 编译器完成第一次编译后，其会将字节码对应的机器码保存下来，下次可以直接使用</strong>。而我们知道，机器码的运行效率肯定是高于 Java 解释器的。这也解释了我们 为什么经常会说 Java 是编译与解释共存的语言。    </p>
+<p>HotSpot采用了惰性评估(Lazy Evaluation)的做法，根据二八定律，消耗大部分系统资源的只有那一小部分的代码（热点代码），而这也就是JIT所需要编译的部分。JVM会根据代码每次被执行的情况收集信息并相应地做出一些优化，因此执行的次数越多，它的速度就越快。<strong>JDK 9引入了一种新的编译模式AOT(Ahead of Time Compilation)，它是直接将字节码编译成机器码</strong>，这样就避免了JIT预热等各方面的开销。JDK支持分层编译和AOT协作使用。但是 ，AOT 编译器的编译质量是肯定比不上 JIT 编译器的。</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ck91fgnl5003gxa2637xr68ms" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Android组件化相关" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/" class="article-date">
+  <time datetime="2019-03-28T22:09:54.000Z" itemprop="datePublished">2019-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/">Android组件化相关</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、新建需要的module，appModule、ModuleA、ModuleB、lib_common、lib_base</p>
+<p>二、配置Arouter</p>
+<ol>
+<li><p>在gradle.properies配置isModule</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">isModule = <span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在各个组件Module的build.gradle中配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(isModule.toBoolean()) &#123;</span><br><span class="line">    apply plugin: <span class="string">'com.android.application'</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    apply plugin: <span class="string">'com.android.library'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置组件Module的开发AndroidManifest.xml</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    sourceSets &#123;</span><br><span class="line">        main &#123;</span><br><span class="line">            <span class="keyword">if</span> (isModule.toBoolean()) &#123;</span><br><span class="line">                <span class="comment">//指定组件Module独立开发时的Manifest</span></span><br><span class="line">                manifest.srcFile <span class="string">'src/main/module/AndroidManifest.xml'</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                manifest.srcFile <span class="string">'src/main/AndroidManifest.xml'</span></span><br><span class="line">                <span class="comment">//集成开发模式下排除debug文件夹中的所有Java文件</span></span><br><span class="line">                java &#123;</span><br><span class="line">                    <span class="comment">//集成开发时需排除Application文件</span></span><br><span class="line">                    exclude <span class="string">'debug/**'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在module的build.gradle中添加</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        <span class="comment">//ARouter</span></span><br><span class="line">        javaCompileOptions &#123;</span><br><span class="line">            annotationProcessorOptions &#123;</span><br><span class="line">                arguments = [moduleName: project.getName()]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;</span><br><span class="line">    annotationProcessor deps.arouter.compiler</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p>三、配置编译条件</p>
+<p>四、测试跳转</p>
+<p>五、继承MVVM，(Kotlin+双向绑定)</p>
+<p>六、功能开发</p>
+<p>七、基础library完善</p>
+<p>八、其他</p>
+<ol>
+<li><p><strong>资源冲突</strong></p>
+<p>可以在module的gradle中配置前缀，可以使用自定义名称，或者直接使用module名称，<strong>不过这个设置只能在作为library编译时起作用</strong>，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    resourcePrefix <span class="string">'im_'</span></span><br><span class="line">    <span class="comment">// resourcePrefix '$&#123;project.name&#125;_'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li></li>
+<li></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/" data-id="ck91fgnkx0036xa264zwc00kv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-读书笔记『Android组件化框架』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" class="article-date">
+  <time datetime="2019-03-25T21:50:12.000Z" itemprop="datePublished">2019-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/">读书笔记『Android组件化框架』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>P3</strong>：组件：指的是单一的功能组件，如视频组件(VideoSDK)、支付组件(PaySDK)、路由组件(Router)等；模块：指的是独立的业务模块，如直播模块(LiveModule)、首页模块(HomeModule)、即时通讯模块(IMModule)等。</p>
+<p><strong>P7</strong>：每个module都有一份AndroidManifest文件用来记载其信息，最终生成一个App时只合成一份Manifest文件，生成地址:app/build/intermediates/manifests/full/debug/AndroidManifest.xml。</p>
+<p><strong>P12</strong>：module的Application合并过程中，<strong>主module的优先级高于功能module</strong>，如果功能module中定义了两个Application，则需要解决冲突(每个功能module的Applicationg节点需要添加<strong>tools:replace</strong>)。</p>
+<p><strong>P15</strong>：通过在manifest中声明android:shareUserId可以指定多个不同的App运行在<font color="#dd0000"><strong>同一个进程中，且默认数据可以互相访问</strong></font>，只有在主module中声明sharedUserId才能最终打包到full AndroidManifest中。</p>
+<p><strong>P17</strong>：在Application中通过ActivityLifecycleCallbacks接口监听Activity的生命周期，可以获得当前的栈顶Activity，可以使用该Activity实现<strong>全局弹框</strong>。</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ck91fgnlx004kxa26dhk3hf59" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-读书笔记『Kotlin实战』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" class="article-date">
+  <time datetime="2019-03-21T09:10:20.000Z" itemprop="datePublished">2019-03-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Kotlin实战』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>P18</strong>：在Kotlin中没有声明数组类型的特殊语法，<strong>数组就是类</strong></p>
+<p><strong>P19</strong>：在Kotlin中if是有结果的表达式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">mac</span><span class="params">(a:Int,b:Int)</span>:Int</span>&#123; <span class="keyword">return</span> <span class="keyword">if</span>(a&gt;b) a <span class="keyword">else</span> b&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P25</strong>：自定义访问器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Retangle(val height:Int, val width:Int) &#123;</span><br><span class="line">  val isSqual:Boolean</span><br><span class="line">    gen() &#123; <span class="keyword">return</span> height == width &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P30</strong>：在”when”中使用任意对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">mix</span><span class="params">(cl:Color, c2:Color)</span> </span>&#123;</span><br><span class="line">  when(setOf(c1, c2)) &#123;</span><br><span class="line">    setOf(RED, YELLOW) -&gt; ORANGE</span><br><span class="line">    setOf(YELLOW, BLUE) -&gt; GREEN</span><br><span class="line">    setOf(Blue, VIOLET) -&gt; INDIGO</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>P37</strong>：迭代数字：区间和数列</p>
+<ul>
+<li>区间：for( i in 1 .. 100 )  { print( i ) }</li>
+<li>步长区间：for( i in 100 <font color="#dd0000"><strong>downTo 1 step 2</strong></font> )</li>
+<li>半闭合区间：for( x in 0 <strong>util</strong> size )，等同于for( x in 0 .. size-1 )</li>
+</ul>
+<p><strong>P38</strong>：迭代map</p>
+<ul>
+<li>for( letter.binary ) in list.<strong>withIndex()</strong>  { “<strong>$index: $element</strong>“}</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ck91fgnm1004qxa264fgr29sl" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

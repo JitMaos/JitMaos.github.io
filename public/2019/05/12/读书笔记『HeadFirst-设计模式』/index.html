@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>读书笔记『HeadFirst-设计模式』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="时隔5年，重读《Head First 设计模式》，这本书写的很很好，语言生动，举的例子很形象。看着很顺畅，下面按内容顺序略做笔记。 策略模式模式定义定义了算法族，分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的客户。 个人理解 封装所有可能发生变化的算法成一个独立的算法族。 对象持有算法族接口对象的引用。 对象方法委托算法族接口对象去实现。 有一个比是一个更好，或者说多用组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记『HeadFirst-设计模式』">
+<meta property="og:url" content="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="时隔5年，重读《Head First 设计模式》，这本书写的很很好，语言生动，举的例子很形象。看着很顺畅，下面按内容顺序略做笔记。 策略模式模式定义定义了算法族，分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的客户。 个人理解 封装所有可能发生变化的算法成一个独立的算法族。 对象持有算法族接口对象的引用。 对象方法委托算法族接口对象去实现。 有一个比是一个更好，或者说多用组">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019051213434533.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190512134139882.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190512180629148.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190513224943906.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190521071512403.jpg">
+<meta property="article:published_time" content="2019-05-12T05:44:35.000Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:49.097Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019051213434533.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记『HeadFirst-设计模式』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" class="article-date">
+  <time datetime="2019-05-12T05:44:35.000Z" itemprop="datePublished">2019-05-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      读书笔记『HeadFirst-设计模式』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>时隔5年，重读《Head First 设计模式》，这本书写的很很好，语言生动，举的例子很形象。看着很顺畅，下面按内容顺序略做笔记。</p>
+<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><h4 id="模式定义"><a href="#模式定义" class="headerlink" title="模式定义"></a>模式定义</h4><p>定义了算法族，分别封装起来，让它们之间可以相互替换，<strong>此模式让算法的变化独立于使用算法的客户。</strong></p>
+<h4 id="个人理解"><a href="#个人理解" class="headerlink" title="个人理解"></a>个人理解</h4><ol>
+<li>封装所有可能发生变化的算法成一个独立的算法族。</li>
+<li>对象持有算法族接口对象的引用。</li>
+<li>对象方法委托算法族接口对象去实现。</li>
+<li><strong>有一个</strong>比<strong>是一个</strong>更好，或者说<strong>多用组合，少用继承</strong>。</li>
+</ol>
+<a id="more"></a>
+
+<h4 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h4><p>场景说明：设计有很多鸭子(如橡皮鸭，红头鸭子，木头鸭子等)有2个行为，不同的鸭子有不同的<strong>叫声</strong>和<strong>飞行模式</strong>，使用<strong>策略模式</strong>设计类图结构。</p>
+<p><img src="https://img-blog.csdnimg.cn/2019051213434533.jpg" alt="未使用策略模式实例"></p>
+<p><img src="https://img-blog.csdnimg.cn/20190512134139882.jpg" alt="策略模式实例"></p>
+<h4 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h4><p><strong>设计原则</strong>：把会变化的部分取出并封装起来，以便以后可以轻易地改动或扩展此部分，而不影响不需要变化的其他部分。</p>
+<p><strong>P9</strong>：Java接口不包含具体实现代码，所以继承接口无法达到代码的复用。</p>
+<h3 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h3><h4 id="模式定义-1"><a href="#模式定义-1" class="headerlink" title="模式定义"></a>模式定义</h4><p>定义了对象之间的<font color="#dd0000"><strong>一对多</strong></font>依赖，这样一来当一个对象改变状态时，它所有的依赖者都会手动通知并自动更新。</p>
+<h4 id="类图-1"><a href="#类图-1" class="headerlink" title="类图"></a>类图</h4><p>场景说明：有一个气象站可以通过气象数据，有不同的公告牌(如：根据气压计显示天气预报的ForecastDisplay、显示平均值的统计显示板StaticsDisplay、基于当前观测值的显示板CurrentDisplay等)<strong>都需要</strong>监听天气数据的变化并刷新显示内容。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190512180629148.jpg" alt="观察者模式"></p>
+<h4 id="笔记-1"><a href="#笔记-1" class="headerlink" title="笔记"></a>笔记</h4><p><strong>P51：</strong>当你试图 够了观察者模式时，可以利用<strong>报纸订阅服务，以及出版者和订阅者比拟这一切。</strong></p>
+<p><strong>P53：</strong>松耦合的设计之所以能让我们建立有弹性的OO系统，能够应对变化，是因为对象之间的相互依赖降到了最低。</p>
+<h3 id="装饰者模式"><a href="#装饰者模式" class="headerlink" title="装饰者模式"></a>装饰者模式</h3><h4 id="模式定义-2"><a href="#模式定义-2" class="headerlink" title="模式定义"></a>模式定义</h4><p>动态地将责任附加到对象上，若要扩展功能，装饰者提供比继承更具有弹性的替代方案。</p>
+<h4 id="场景举例"><a href="#场景举例" class="headerlink" title="场景举例"></a>场景举例</h4><p>咖啡店里不同咖啡的有不同的价格，且用户自行选择添加不同的配料(牛奶，奶泡，摩卡等)，不同的配料价格不一样。而且还需要考虑后期的扩展，比如：咖啡店开发了一个新品种的咖啡、某种配料的价格改变了等等。<strong>这种场景下使用装饰者比较合适</strong>，可以这么理解：<font color="#dd0000"><strong>首先咖啡有价格，咖啡加上配料后还是一杯咖啡，这里的配料只是起装饰的作用，同时配料也有价格属性。</strong></font></p>
+<h4 id="笔记-2"><a href="#笔记-2" class="headerlink" title="笔记"></a>笔记</h4><p><strong>P85：</strong>利用继承设计子类的行为，是在<strong>编译时静态决定的</strong>，而且所有的子类都会继承到相同的行为。然而，如果能够利用组合的做法扩展对象的行为，就可以在<strong>运行时动态地进行扩展。</strong></p>
+<p><font color="#dd0000"><strong>P86：类应该对扩展开放，对修改关闭——开闭原则。</strong></font></p>
+<p><strong>P90：</strong><font color="#dd0000"><strong>装饰者和被装饰对象有相同的超类型</strong></font>(这一点和Builder模式及Factory模式有显著的区别，可以作为区分的依据)。</p>
+<p><strong>P93：</strong>当我们将被装饰者与组件组合时，就是在加入新的行为。所得到的新的行为，<strong>并不是继承自超类，而是由组合对象得来的。</strong></p>
+<p><strong>P102：</strong>Java I/O库就是使用装饰者模式实现的，可以以此编写自己的InputStream实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LowerCaseInputStream.java</span></span><br><span class="line"><span class="keyword">import</span> java.io.FilterInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LowerCaseInputStream</span> <span class="keyword">extends</span> <span class="title">FilterInputStream</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">LowerCaseInputStream</span><span class="params">(InputStream in)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(in);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> c = <span class="keyword">super</span>.read();</span><br><span class="line">        <span class="keyword">return</span> (c == -<span class="number">1</span> ? c : Character.toLowerCase((<span class="keyword">char</span>)c));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span>[] b,<span class="keyword">int</span> offset,<span class="keyword">int</span> len)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="keyword">super</span>.read(b,offset,len);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=offset;i&lt;offset+result;i++) &#123;</span><br><span class="line">            b[i] = (<span class="keyword">byte</span>)Character.toLowerCase((<span class="keyword">char</span>)b[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  InputStream in = <span class="keyword">new</span> LowerCaseInputStream(</span><br><span class="line">    <span class="keyword">new</span> BufferedInputStream(</span><br><span class="line">      <span class="keyword">new</span> FileInputStream(<span class="string">"TestCustomInputStream.txt"</span>)));</span><br><span class="line">  <span class="keyword">while</span>((c = in.read()) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    System.out.print((<span class="keyword">char</span>)c);</span><br><span class="line">  &#125;</span><br><span class="line">  in.close();</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>文件TestCustomInputStream.txt：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AAbbCCdDEfghi</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aabbccddefghi</span><br></pre></td></tr></table></figure>
+
+<p><strong>P104：</strong>装饰者模式也有缺点，就是有时会在设计中加入大量的小类，者偶尔会导致别人不容易理解。以Java I/O库来说，人们第一次接触到这个库时，往往无法轻易地理解它。但是如果能认识到这些类都是用来包装InputStream的，一切都会变得简单多了。</p>
+<h4 id="类图-2"><a href="#类图-2" class="headerlink" title="类图"></a>类图</h4><p><img src="https://img-blog.csdnimg.cn/20190513224943906.jpg" alt="装饰者模式"></p>
+<h3 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h3><h4 id="模式定义-3"><a href="#模式定义-3" class="headerlink" title="模式定义"></a>模式定义</h4><p><strong>定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个，工厂方法让类把实例化推迟到子类。</strong></p>
+<p>所谓<strong>决定</strong>并不是指模式允许子类本身在运行时做决定，<strong>而是指创建类的时候，不需要知道实际创建的产品是哪个</strong>，<font color="#dd0000"><strong>选择使用哪个子类，自然就决定了实际创建的产品是什么。</strong></font></p>
+<p><strong>设计原则：要依赖抽象，不要依赖具体类。</strong></p>
+<h4 id="场景举例-1"><a href="#场景举例-1" class="headerlink" title="场景举例"></a>场景举例</h4><p>设有一个披萨品牌，在多个城市都有连锁店，不同的区域有不同的风味，每家店有多种披萨产品。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PizzaTestDrive</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        PizzaFactory nyFactory = <span class="keyword">new</span> NYPizzaFactory();</span><br><span class="line">        nyFactory.createPizza(<span class="string">"cheese"</span>);</span><br><span class="line">        </span><br><span class="line">        PizzaFactory chicagoFactory = <span class="keyword">new</span> ChicagoPizzaFactory();</span><br><span class="line">        chicagoFactory.createPizza(<span class="string">"cheese"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="类图-3"><a href="#类图-3" class="headerlink" title="类图"></a>类图</h4><p><img src="https://img-blog.csdnimg.cn/20190521071512403.jpg" alt="工厂模式"></p>
+<p>###抽象工厂</p>
+<h4 id="模式定义-4"><a href="#模式定义-4" class="headerlink" title="模式定义"></a>模式定义</h4><p>提供一个接口，用于创建相关或依赖对象的家族，而不需要明确指明具体类。</p>
+<h4 id="工厂VS抽象工厂"><a href="#工厂VS抽象工厂" class="headerlink" title="工厂VS抽象工厂"></a>工厂VS抽象工厂</h4><p>工厂模式和抽象工厂模式都是用来创建对象的，工厂模式使用<font color="#dd0000"><strong>继承</strong></font>的方式，抽象工厂使用的是<font color="#dd0000"><strong>组合</strong></font>的方式；工厂方法负责将客户从<font color="#dd0000"><strong>具体类型</strong></font>中解耦，而抽象工厂可以把客户从<font color="#dd0000"><strong>实际具体产品</strong></font>中解耦。 </p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><h4 id="模式定义-5"><a href="#模式定义-5" class="headerlink" title="模式定义"></a>模式定义</h4><p>确保一个类只有一个实例，并提供一个全局访问点。<strong>使用单例模式的一个好处是做到了延迟加载</strong>。</p>
+<p>一般如果在<strong>非多线程</strong>的情况下可以使用最简单的不加锁的形式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBHelper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DBHelper instance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DBHelper</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DBHelper <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> DBHelper();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码，如果在多线程环境下，可能还是会创建多个实例对象，此时对方法进行<strong>同步</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//多线程，但并发情况不多，可以对整个方法进行同步</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBHelper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DBHelper instance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DBHelper</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> DBHelper <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> DBHelper();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果getInstance()的性能对于应用程序很关键，那么应该使用<font color="#dd0000"><strong>双重检测</strong></font>的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//getIntance()对性能影响很关键，使用"双重检测"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBHelper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> DBHelper instance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DBHelper</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> DBHelper <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (DBHelper<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    instance = <span class="keyword">new</span> DBHelper();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，一种更为简单有效的方法是<strong>取消延迟实例化</strong>的方式，避免多线程同步问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一种更为简单有效的方法是"取消延迟实例化"的方式，避免多线程同步问题。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBHelper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DBHelper instance = <span class="keyword">new</span> DBHelper();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DBHelper</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DBHelper <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><p><strong>P196</strong>：命令模式可以将”动作的请求者”从”动作的执行者”对象中解耦。</p>
+<p><strong>P199</strong>：以订单-服务员-厨师为例，<strong>服务员其实不必担心订单的内容是什么，或者由谁来负责餐点。他只需要知道，订单有一个orderUp()方法可以调用，这就够了。</strong></p>
+<h4 id="模式定义-6"><a href="#模式定义-6" class="headerlink" title="模式定义"></a>模式定义</h4><p><strong>命令模式将”请求”封装成对象，以便使用不同的请求、队列或者日志来参数化其他对象。命令模式也支持可撤销的操作。</strong></p>
+<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><h4 id="模式定义-7"><a href="#模式定义-7" class="headerlink" title="模式定义"></a>模式定义</h4><p>代理模式为另一个对象提供一个替身或占位符以控制对整个对象的访问。</p>
+<h4 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h4><p><strong>P471</strong>：和装饰者看起来很像，不过装饰者是为了给对象增加行为，而代理则是为了控制对对象的访问。</p>
+<h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><p>以为Java已经为你创建了Proxy类，所以你需要有办法来告诉Proxy类你需要什么。你不能像以前把代码放到Proxy类中，因为Proxy不是你直接实现的。既然这样的代码不能放在Proxy类中，那么要放在哪里？放在InvocationHandler中。InvocationHandler的工作是响应代理的任何调用。你可以把InvocationHandler想成是代理收到方法调用后，请求做实际工作的对象。</p>
+<p>未完待续~~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck91fgnlv004fxa2693m665oi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Retrofit『源码学习』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Retrofit『使用』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

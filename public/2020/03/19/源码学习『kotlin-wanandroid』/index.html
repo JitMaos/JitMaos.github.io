@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>源码学习『kotlin_wanandroid』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="项目介绍看一个别人的开源项目kotlin_wanandroid，项目规模较小，主要想学习一下MVVM模式的实际应用和Kotlin的实际应用。 项目介绍地址：推荐一个Kotlin项目 项目地址：haoshiy&#x2F;kotlin_wanandroid 学习总结Kotlin实践记录 let扩展函数的实际上是一个作用域函数，当你需要去定义一个变量在一个特定的作用域范围内，let函数的是一个不错的选择；let函">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码学习『kotlin_wanandroid』">
+<meta property="og:url" content="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="项目介绍看一个别人的开源项目kotlin_wanandroid，项目规模较小，主要想学习一下MVVM模式的实际应用和Kotlin的实际应用。 项目介绍地址：推荐一个Kotlin项目 项目地址：haoshiy&#x2F;kotlin_wanandroid 学习总结Kotlin实践记录 let扩展函数的实际上是一个作用域函数，当你需要去定义一个变量在一个特定的作用域范围内，let函数的是一个不错的选择；let函">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-19T07:54:48.999Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:48.999Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="源码学习">
+<meta property="article:tag" content="MVVM">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-源码学习『kotlin-wanandroid』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" class="article-date">
+  <time datetime="2020-03-19T07:54:48.999Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      源码学习『kotlin_wanandroid』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="项目介绍"><a href="#项目介绍" class="headerlink" title="项目介绍"></a>项目介绍</h3><p>看一个别人的开源项目kotlin_wanandroid，项目规模较小，主要想学习一下MVVM模式的实际应用和Kotlin的实际应用。</p>
+<p>项目介绍地址：<a href="https://www.jianshu.com/p/a05b10976b08" target="_blank" rel="noopener">推荐一个Kotlin项目</a></p>
+<p>项目地址：<a href="https://github.com/haoshiy/kotlin_wanandroid" target="_blank" rel="noopener">haoshiy/kotlin_wanandroid</a></p>
+<h3 id="学习总结"><a href="#学习总结" class="headerlink" title="学习总结"></a>学习总结</h3><h4 id="Kotlin实践记录"><a href="#Kotlin实践记录" class="headerlink" title="Kotlin实践记录"></a>Kotlin实践记录</h4><ol>
+<li><p>let扩展函数的实际上是一个<strong>作用域函数</strong>，当你需要去定义一个变量在一个特定的作用域范围内，let函数的是一个不错的选择；let函数另一个作用就是可以避免写一些判断null的操作。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">null</span>?.let &#123; Log.e(<span class="string">"TEST"</span>,<span class="string">"Print:"</span> + <span class="literal">null</span>) &#125;</span><br><span class="line"><span class="comment">//不会输出任何值</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>扩展函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hao.easy.base.extensions</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.hao.easy.base.model.HttpResult</span><br><span class="line"><span class="keyword">import</span> com.socks.library.KLog</span><br><span class="line"><span class="keyword">import</span> io.reactivex.Observable</span><br><span class="line"><span class="keyword">import</span> io.reactivex.android.schedulers.AndroidSchedulers</span><br><span class="line"><span class="keyword">import</span> io.reactivex.schedulers.Schedulers</span><br><span class="line"></span><br><span class="line">fun &lt;D, T : HttpResult&lt;D&gt;&gt; Observable&lt;T&gt;.main() =</span><br><span class="line">      	observeOn(AndroidSchedulers.mainThread())</span><br><span class="line"></span><br><span class="line">fun &lt;D, T : HttpResult&lt;D&gt;&gt; Observable&lt;T&gt;.io_main() =</span><br><span class="line">        subscribeOn(Schedulers.io())</span><br><span class="line">                .observeOn(AndroidSchedulers.mainThread())</span><br><span class="line"></span><br><span class="line">fun &lt;D, T : HttpResult&lt;D&gt;&gt; Observable&lt;T&gt;.subscribeBy(onResponse: (D?) -&gt; Unit) =</span><br><span class="line">        <span class="keyword">this</span>.subscribe(&#123;</span><br><span class="line">            <span class="keyword">if</span> (it.errorCode == <span class="number">0</span>) &#123;</span><br><span class="line">                onResponse(it.data)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            KLog.d(<span class="string">"onFailure"</span>, it)</span><br><span class="line">        &#125;)!!</span><br><span class="line"></span><br><span class="line">fun &lt;D, T : HttpResult&lt;D&gt;&gt; Observable&lt;T&gt;.subscribeBy(onResponse: (D?) -&gt; Unit, onFailure: (String) -&gt; Unit) =</span><br><span class="line">        subscribe(&#123;</span><br><span class="line">            <span class="keyword">if</span> (it.errorCode == <span class="number">0</span>) &#123;</span><br><span class="line">                onResponse(it.data)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                onFailure(it.errorMsg)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            onFailure(it.message!!)</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="3">
+<li><p>委托</p>
+<p>类的委托即一个类中定义的方法实际是调用另一个类的对象的方法来实现的。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> kotlin.reflect.KProperty</span><br><span class="line"><span class="comment">// 定义包含属性委托的类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> p: String <span class="keyword">by</span> Delegate()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 委托的类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Delegate</span> </span>&#123;</span><br><span class="line">    <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">Any</span>?, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: String &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"<span class="variable">$thisRef</span>, 这里委托了 <span class="subst">$&#123;property.name&#125;</span> 属性"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">Any</span>?, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        println(<span class="string">"<span class="variable">$thisRef</span> 的 <span class="subst">$&#123;property.name&#125;</span> 属性赋值为 <span class="variable">$value</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> e = Example()</span><br><span class="line">    println(e.p)     <span class="comment">// 访问该属性，调用 getValue() 函数</span></span><br><span class="line"></span><br><span class="line">    e.p = <span class="string">"Runoob"</span>   <span class="comment">// 调用 setValue() 函数</span></span><br><span class="line">    println(e.p)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>延迟属性Lazy</p>
+<p>lazy() 是一个函数, 接受一个 Lambda 表达式作为参数, 返回一个 Lazy <T> 实例的函数，返回的实例可以作为实现延迟属性的委托： <strong>第一次调用 get() 会执行已传递给 lazy() 的 lamda 表达式并记录结果，</strong><font color="#dd0000">后续调用 get() 只是返回记录的结果。</font></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> lazyValue: String <span class="keyword">by</span> lazy &#123;</span><br><span class="line">    println(<span class="string">"computed!"</span>)     <span class="comment">// 第一次调用输出，第二次调用不执行</span></span><br><span class="line">    <span class="string">"Hello"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    println(lazyValue)   <span class="comment">// 第一次执行，执行两次输出表达式</span></span><br><span class="line">    println(lazyValue)   <span class="comment">// 第二次执行，只输出返回值</span></span><br><span class="line">&#125;</span><br><span class="line">computed!</span><br><span class="line">Hello</span><br><span class="line">Hello</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Kotlin中的四种修饰符</p>
+<p>public：默认修饰符，被其修饰的在任何位置都能访问<br>private：表示只在这个类(以及它的所有成员)之内可以访问<br>protected：在当前类及其子类内访问<br><strong>internal：在同一模块内使用</strong></p>
+</li>
+<li><p>Kotlin中的Pair、Triple</p>
+<p>元组类型Pair和Triple，有二元、三元</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> course=kotlin.Triple(<span class="number">3</span>,<span class="string">"学会"</span>,<span class="string">"Kotlin"</span>)</span><br><span class="line"><span class="keyword">val</span> pay=kotlin.Pair(<span class="string">"学费"</span>,<span class="number">0</span>)</span><br><span class="line">print(<span class="string">"<span class="subst">$&#123;course.first&#125;</span>天<span class="subst">$&#123;course.second&#125;</span><span class="subst">$&#123;course.third&#125;</span>,<span class="subst">$&#123;pay.first&#125;</span><span class="subst">$&#123;pay.second&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>object关键字，有两种用法，一是对象声明，二是对象表达式。</p>
+<p>对象声明：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>这里有一个问题，对象声明的静态类，为什么可以静态访问父类中的非静态方法？？</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="8">
+<li><p>List转vararg</p>
+<p>使用展操作符(spread operator)</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*(List&lt;T&gt;).toTypedArray())</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="9">
+<li><p>kotlin的内部类与java的内部类有点不同<strong>java的内部类可以直接访问外部类的成员，kotlin的内部类不能直接访问外部类的成员，必须用inner标记之后才能访问外部类的成员</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AAA</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="number">0</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">BBB</span></span>&#123;</span><br><span class="line">        <span class="comment">//此时，BBB类的内部是不能直接用a变量的</span></span><br><span class="line">        <span class="keyword">var</span> b = a <span class="comment">//编译无法通过</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AAA</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="number">0</span></span><br><span class="line">    inner <span class="class"><span class="keyword">class</span> <span class="title">BBB</span></span>&#123;</span><br><span class="line">        <span class="comment">//此时，BBB类的内部是可以直接用a变量的</span></span><br><span class="line">        <span class="keyword">var</span> b = a <span class="comment">//编译可以通过</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li></li>
+</ol>
+<h4 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h4><h4 id="LiveData"><a href="#LiveData" class="headerlink" title="LiveData"></a>LiveData</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> android.arch.lifecycle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> android.arch.lifecycle.Lifecycle.State.DESTROYED;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> android.arch.lifecycle.Lifecycle.State.STARTED;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.arch.core.executor.ArchTaskExecutor;</span><br><span class="line"><span class="keyword">import</span> android.arch.core.internal.SafeIterableMap;</span><br><span class="line"><span class="keyword">import</span> android.support.annotation.MainThread;</span><br><span class="line"><span class="keyword">import</span> android.support.annotation.NonNull;</span><br><span class="line"><span class="keyword">import</span> android.support.annotation.Nullable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * LiveData是一个数据支持类，可以在一个生命周期中被观察(observe)。这意味着Observer和LiveData可以在LifecycleOwner中成对保存，并且只有当LifecycleOwner处于活跃(active)状态时，Observer可以收到数据改变的通知。当LifecycleOwner的状态是Lifecycle.State#STARTED和Lifecycle.State#RESUMED时，它被认为是活跃的。如果一个observer是通过observeForever()添加到LifecycleOwner的，那么他将被认为是一直活跃的，此时你需要手动调用removeObserver(Observer)来移除这类observer。</span></span><br><span class="line"><span class="comment"> 一个Lifecycle管理下的observer会在LifecycleOwner的状态转为Lifecycle.State#DESTROYED时被自动移除，这在Activity或Fragment中防止内存泄漏十分有用。</span></span><br><span class="line"><span class="comment"> 另外，LiveData有onActive()和onInactive()方法用来通知活跃的Observer的数量改变(0或1),这可以用来决定何时释放那些不再被观察的重量级的资源。</span></span><br><span class="line"><span class="comment"> 这个类被设计成ViewModel的一个用来存放数据的成员变量。除此之外，它还可以用来在application的不同Module之间进行数据共享。</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &lt;T&gt; The type of data held by this instance</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> ViewModel</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">LiveData</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SafeIterableMap&lt;Observer&lt;T&gt;, ObserverWrapper&gt; mObservers =</span><br><span class="line">            <span class="keyword">new</span> SafeIterableMap&lt;&gt;();</span><br><span class="line">    <span class="comment">// how many observers are in active state</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mActiveCount = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the given observer to the observers list within the lifespan of the given</span></span><br><span class="line"><span class="comment">     * owner. The events are dispatched on the main thread. If LiveData already has data</span></span><br><span class="line"><span class="comment">     * set, it will be delivered to the observer.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * The observer will only receive events if the owner is in &#123;<span class="doctag">@link</span> Lifecycle.State#STARTED&#125;</span></span><br><span class="line"><span class="comment">     * or &#123;<span class="doctag">@link</span> Lifecycle.State#RESUMED&#125; state (active).</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * If the owner moves to the &#123;<span class="doctag">@link</span> Lifecycle.State#DESTROYED&#125; state, the observer will</span></span><br><span class="line"><span class="comment">     * automatically be removed.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * When data changes while the &#123;<span class="doctag">@code</span> owner&#125; is not active, it will not receive any updates.</span></span><br><span class="line"><span class="comment">     * If it becomes active again, it will receive the last available data automatically.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * LiveData keeps a strong reference to the observer and the owner as long as the</span></span><br><span class="line"><span class="comment">     * given LifecycleOwner is not destroyed. When it is destroyed, LiveData removes references to</span></span><br><span class="line"><span class="comment">     * the observer &amp;amp; the owner.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * If the given owner is already in &#123;<span class="doctag">@link</span> Lifecycle.State#DESTROYED&#125; state, LiveData</span></span><br><span class="line"><span class="comment">     * ignores the call.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * If the given owner, observer tuple is already in the list, the call is ignored.</span></span><br><span class="line"><span class="comment">     * If the observer is already in the list with another owner, LiveData throws an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> IllegalArgumentException&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> owner    The LifecycleOwner which controls the observer</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> observer The observer that will receive the events</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@MainThread</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">observe</span><span class="params">(@NonNull LifecycleOwner owner, @NonNull Observer&lt;T&gt; observer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (owner.getLifecycle().getCurrentState() == DESTROYED) &#123;</span><br><span class="line">            <span class="comment">// ignore</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        LifecycleBoundObserver wrapper = <span class="keyword">new</span> LifecycleBoundObserver(owner, observer);</span><br><span class="line">        ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);</span><br><span class="line">        <span class="keyword">if</span> (existing != <span class="keyword">null</span> &amp;&amp; !existing.isAttachedTo(owner)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Cannot add the same observer"</span></span><br><span class="line">                    + <span class="string">" with different lifecycles"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (existing != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        owner.getLifecycle().addObserver(wrapper);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the given observer to the observers list. This call is similar to</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> LiveData#observe(LifecycleOwner, Observer)&#125; with a LifecycleOwner, which</span></span><br><span class="line"><span class="comment">     * is always active. This means that the given observer will receive all events and will never</span></span><br><span class="line"><span class="comment">     * be automatically removed. You should manually call &#123;<span class="doctag">@link</span> #removeObserver(Observer)&#125; to stop</span></span><br><span class="line"><span class="comment">     * observing this LiveData.</span></span><br><span class="line"><span class="comment">     * While LiveData has one of such observers, it will be considered</span></span><br><span class="line"><span class="comment">     * as active.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * If the observer was already added with an owner to this LiveData, LiveData throws an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> IllegalArgumentException&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> observer The observer that will receive the events</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@MainThread</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">observeForever</span><span class="params">(@NonNull Observer&lt;T&gt; observer)</span> </span>&#123;</span><br><span class="line">        AlwaysActiveObserver wrapper = <span class="keyword">new</span> AlwaysActiveObserver(observer);</span><br><span class="line">        ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);</span><br><span class="line">        <span class="keyword">if</span> (existing != <span class="keyword">null</span> &amp;&amp; existing <span class="keyword">instanceof</span> LiveData.LifecycleBoundObserver) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Cannot add the same observer"</span></span><br><span class="line">                    + <span class="string">" with different lifecycles"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (existing != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        wrapper.activeStateChanged(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes the given observer from the observers list.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> observer The Observer to receive events.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@MainThread</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeObserver</span><span class="params">(@NonNull <span class="keyword">final</span> Observer&lt;T&gt; observer)</span> </span>&#123;</span><br><span class="line">        assertMainThread(<span class="string">"removeObserver"</span>);</span><br><span class="line">        ObserverWrapper removed = mObservers.remove(observer);</span><br><span class="line">        <span class="keyword">if</span> (removed == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        removed.detachObserver();</span><br><span class="line">        removed.activeStateChanged(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes all observers that are tied to the given &#123;<span class="doctag">@link</span> LifecycleOwner&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> owner The &#123;<span class="doctag">@code</span> LifecycleOwner&#125; scope for the observers to be removed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"WeakerAccess"</span>)</span><br><span class="line">    <span class="meta">@MainThread</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeObservers</span><span class="params">(@NonNull <span class="keyword">final</span> LifecycleOwner owner)</span> </span>&#123;</span><br><span class="line">        assertMainThread(<span class="string">"removeObservers"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;Observer&lt;T&gt;, ObserverWrapper&gt; entry : mObservers) &#123;</span><br><span class="line">            <span class="keyword">if</span> (entry.getValue().isAttachedTo(owner)) &#123;</span><br><span class="line">                removeObserver(entry.getKey());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Called when the number of active observers change to 1 from 0.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * This callback can be used to know that this LiveData is being used thus should be kept</span></span><br><span class="line"><span class="comment">     * up to date.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActive</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Called when the number of active observers change from 1 to 0.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * This does not mean that there are no observers left, there may still be observers but their</span></span><br><span class="line"><span class="comment">     * lifecycle states aren't &#123;<span class="doctag">@link</span> Lifecycle.State#STARTED&#125; or &#123;<span class="doctag">@link</span> Lifecycle.State#RESUMED&#125;</span></span><br><span class="line"><span class="comment">     * (like an Activity in the back stack).</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * You can check if there are observers via &#123;<span class="doctag">@link</span> #hasObservers()&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onInactive</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns true if this LiveData has observers.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> true if this LiveData has observers</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"WeakerAccess"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasObservers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mObservers.size() &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns true if this LiveData has active observers.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> true if this LiveData has active observers</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"WeakerAccess"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasActiveObservers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mActiveCount &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Paging分页库"><a href="#Paging分页库" class="headerlink" title="Paging分页库"></a>Paging分页库</h4><p>扩展学习</p>
+<p>MVP、MVVM、AAC讨论</p>
+<p>RxJava源码学习</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ck91fgnlq0047xa261syvh38m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          网络协议基础知识
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Dragger2「基础使用」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

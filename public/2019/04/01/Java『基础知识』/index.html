@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Java『基础知识』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="JVMJVM是运行Java字节码的虚拟机。JVM有针对不同系统的特定实现，目的在不同的系统平台上运行相同的字节码。.java文件经过JDK的javac编译为.class文件，.class文件又被JVM编译成机器可执行的二进制机器码。 我们需要格外注意的是 .class-&gt;机器码 这一步。在这一步 jvm 类加载器首先加载字节码文件，然后通过解释器逐行解释执行，这种方式的执行速度会相对比较慢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java『基础知识』">
+<meta property="og:url" content="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="JVMJVM是运行Java字节码的虚拟机。JVM有针对不同系统的特定实现，目的在不同的系统平台上运行相同的字节码。.java文件经过JDK的javac编译为.class文件，.class文件又被JVM编译成机器可执行的二进制机器码。 我们需要格外注意的是 .class-&gt;机器码 这一步。在这一步 jvm 类加载器首先加载字节码文件，然后通过解释器逐行解释执行，这种方式的执行速度会相对比较慢。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-04-01T02:29:31.000Z">
+<meta property="article:modified_time" content="2020-03-19T07:54:49.086Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Java『基础知识』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-01T02:29:31.000Z" itemprop="datePublished">2019-04-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java『基础知识』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h4><p>JVM是运行Java字节码的虚拟机。<strong>JVM有针对不同系统的特定实现</strong>，目的在不同的系统平台上运行相同的字节码。<strong>.java文件经过JDK的javac编译为.class文件，.class文件又被JVM编译成机器可执行的二进制机器码。</strong></p>
+<p>我们需要格外注意的是 .class-&gt;机器码 这一步。在这一步 jvm 类加载器首先加载字节码文件，然后通过解释器<font color="#dd0000"><strong>逐行</strong></font>解释执行，这种方式的执行速度会相对比较慢。而且，有些方法和代码块是经常需要被调用的，也就是所谓的热点代码，所以后面引进了 JIT 编译器，JIT 属于运行时编译。<strong>当 JIT 编译器完成第一次编译后，其会将字节码对应的机器码保存下来，下次可以直接使用</strong>。而我们知道，机器码的运行效率肯定是高于 Java 解释器的。这也解释了我们 为什么经常会说 Java 是编译与解释共存的语言。    </p>
+<p>HotSpot采用了惰性评估(Lazy Evaluation)的做法，根据二八定律，消耗大部分系统资源的只有那一小部分的代码（热点代码），而这也就是JIT所需要编译的部分。JVM会根据代码每次被执行的情况收集信息并相应地做出一些优化，因此执行的次数越多，它的速度就越快。<strong>JDK 9引入了一种新的编译模式AOT(Ahead of Time Compilation)，它是直接将字节码编译成机器码</strong>，这样就避免了JIT预热等各方面的开销。JDK支持分层编译和AOT协作使用。但是 ，AOT 编译器的编译质量是肯定比不上 JIT 编译器的。</p>
+<a id="more"></a>
+
+<h4 id="重载与重写"><a href="#重载与重写" class="headerlink" title="重载与重写"></a>重载与重写</h4><p><strong>重载</strong>：发生在同一类中，方法名相同，方法签名(参数类型、个数、顺序不同)可能不同；注意，<strong>返回类型和访问修饰符不算在方法签名中，不能作为重载的判断依据。</strong></p>
+<p><strong>重写</strong>：发生在继承类中，方法签名需要相同，方访问权限子类中实现需要大于等于父类中实现。</p>
+<h4 id="构造器Constructor是否可以被override？"><a href="#构造器Constructor是否可以被override？" class="headerlink" title="构造器Constructor是否可以被override？"></a>构造器Constructor是否可以被override？</h4><p>父类的构造方法和私有属性不能被继承，所以Constructor也不能被重写(override)，但是可以被重载(overload)。</p>
+<h4 id="Java面向对象编程三大特性"><a href="#Java面向对象编程三大特性" class="headerlink" title="Java面向对象编程三大特性"></a>Java面向对象编程三大特性</h4><p><strong>封装、继承、多态</strong>，其中多态指定是程序的引用变量可以在运行时的向上转型动态确定。Java中可以通过<strong>继承</strong>和<strong>接口</strong>实现多态。</p>
+<h4 id="String、StringBuilder、StringBuffer"><a href="#String、StringBuilder、StringBuffer" class="headerlink" title="String、StringBuilder、StringBuffer"></a>String、StringBuilder、StringBuffer</h4><p><strong>可变性</strong>：首先String是用final修饰的保存字符的数组，因为字符串是不可变的，所以当直接定义字符串(如：”abc”)时，会去<strong>常量池</strong>中寻找该变量值，存在直接返回使用，不存在再行创建；StringBuilder和StringBuffer都是继承自AbstractStringBuilder类，该类也是使用数组保存字符串，和String不同的是没有使用final修饰，所以是可变的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">String</span></span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span>, <span class="title">Comparable</span>&lt;<span class="title">String</span>&gt;, <span class="title">CharSequence</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** The value is used for character storage. */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">char</span> value[];</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>线程安全性</strong>：String是不可变的，所以线程安全；StringBuffer是线程安全的；StringBuilder是非线程安全的，所以性能比StringBuffer高一点。</p>
+<h4 id="为什么不能再静态方法内调用外部类的非静态成员？？"><a href="#为什么不能再静态方法内调用外部类的非静态成员？？" class="headerlink" title="为什么不能再静态方法内调用外部类的非静态成员？？"></a>为什么不能再静态方法内调用外部类的非静态成员？？</h4><p><font color="#dd0000"><strong>待完成</strong></font></p>
+<h4 id="和equals"><a href="#和equals" class="headerlink" title="==和equals()"></a>==和equals()</h4><p>默认情况下==用来比较两个对象的引用地址是否相同，或者比较两个常量(<strong>基础类型分布在常量池中</strong>)是否相等；equals用来比较对象的<strong>具体属性的值</strong>是否相等；有时我们<strong>只需要比较两个对象包含的属性值是否相等</strong>，这时可以重写equals方法来实现。</p>
+<h4 id="Object的hashCode-和HashMap中的hashCode"><a href="#Object的hashCode-和HashMap中的hashCode" class="headerlink" title="Object的hashCode()和HashMap中的hashCode()"></a>Object的hashCode()和HashMap中的hashCode()</h4><p>在使用==判断两个变量是否相等，比较的是两个变量的内存地址，和Object的hashCode()并没有直接的关系；先看<strong>Object中的hashCode()</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a hash code value for the object. This method is</span></span><br><span class="line"><span class="comment">     * supported for the benefit of hash tables such as those provided by</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> java.util.HashMap&#125;.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * The general contract of &#123;<span class="doctag">@code</span> hashCode&#125; is:</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;Whenever it is invoked on the same object more than once during</span></span><br><span class="line"><span class="comment">     *     an execution of a Java application, the &#123;<span class="doctag">@code</span> hashCode&#125; method</span></span><br><span class="line"><span class="comment">     *     must consistently return the same integer, provided no information</span></span><br><span class="line"><span class="comment">     *     used in &#123;<span class="doctag">@code</span> equals&#125; comparisons on the object is modified.</span></span><br><span class="line"><span class="comment">     *     This integer need not remain consistent from one execution of an</span></span><br><span class="line"><span class="comment">     *     application to another execution of the same application.</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;If two objects are equal according to the &#123;<span class="doctag">@code</span> equals(Object)&#125;</span></span><br><span class="line"><span class="comment">     *     method, then calling the &#123;<span class="doctag">@code</span> hashCode&#125; method on each of</span></span><br><span class="line"><span class="comment">     *     the two objects must produce the same integer result.</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;It is &lt;em&gt;not&lt;/em&gt; required that if two objects are unequal</span></span><br><span class="line"><span class="comment">     *     according to the &#123;<span class="doctag">@link</span> java.lang.Object#equals(java.lang.Object)&#125;</span></span><br><span class="line"><span class="comment">     *     method, then calling the &#123;<span class="doctag">@code</span> hashCode&#125; method on each of the</span></span><br><span class="line"><span class="comment">     *     two objects must produce distinct integer results.  However, the</span></span><br><span class="line"><span class="comment">     *     programmer should be aware that producing distinct integer results</span></span><br><span class="line"><span class="comment">     *     for unequal objects may improve the performance of hash tables.</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * As much as is reasonably practical, the hashCode method defined by</span></span><br><span class="line"><span class="comment">     * class &#123;<span class="doctag">@code</span> Object&#125; does return distinct integers for distinct</span></span><br><span class="line"><span class="comment">     * objects. (This is typically implemented by converting the internal</span></span><br><span class="line"><span class="comment">     * address of the object into an integer, but this implementation</span></span><br><span class="line"><span class="comment">     * technique is not required by the</span></span><br><span class="line"><span class="comment">     * Java&amp;trade; programming language.)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  a hash code value for this object.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span>     java.lang.Object#equals(java.lang.Object)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span>     java.lang.System#identityHashCode</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>首先看到这是一个native方法，方法注释</p>
+<ul>
+<li><strong>This method is supported for the benefit of hash tables such as those provided by {@link java.util.HashMap}，所以这是为什么比较两个对象是否相等(值相等使用equals，内存地址相等使用==)没有用到hashCode方法，却非要在Object类中添加对hashCode的支持的原因；</strong></li>
+<li>在同一对象上调用多次hashCode()应该始终返回相同的int值；</li>
+<li>如果ObjA.equals(ObjB)，那么ObjA的hashCode一定等于ObjB；</li>
+<li>两个对象相互equals，不代表他们的hashCode一定不相等(即所谓的哈希碰撞)。</li>
+</ul>
+<p>其次HashMap只是一种数据结构，<strong>其存在的理由是为了集成类似数组的快速查找，又想避免为了存储少数大范围值的数据而创建一个大数组的问题</strong>。通过hash函数可以把这些大范围值的数据<strong>映射</strong>到HashMap的数组中去，如果发生哈希碰撞，则会是使用链表，而在Java 8.0以后，使用红黑树替代了链表；</p>
+<p>具体HashMap可参考：<a href="https://www.cnblogs.com/chengxiao/p/6059914.html" target="_blank" rel="noopener">HashMap实现原理及源码分析</a></p>
+<h4 id="equals-和hashCode"><a href="#equals-和hashCode" class="headerlink" title="equals()和hashCode()"></a>equals()和hashCode()</h4><p>​    以HashSet为例，当需要插入、查询一个对象时，<strong>先计算该对象的hashCode,看是否存在相同的hashCode，如果存在，再对比他们的equals方法是否相等</strong>，如果equals方法也相等，则表明是同一个对象，拒绝插入；如果equals方法不相等，则对对象的重新进行hash，插入到其他位置。</p>
+<h4 id="Java中的序列化和反序列化-Serializable"><a href="#Java中的序列化和反序列化-Serializable" class="headerlink" title="Java中的序列化和反序列化(Serializable)"></a>Java中的序列化和反序列化(Serializable)</h4><p>​    <strong>Java序列化就是将一个对象转化为一个</strong><font color="#dd0000"><strong>二进制表示的字节数组</strong></font>，如果不想对某些字段进行序列化，可以使用<strong>transient</strong>关键字修饰；在反序列化时如果serialVersionUID被修改的话，反序列化会失败；当父类实现了Serializable接口的时候，所有的子类都能被序列化，当子类实现Serializable接口时，父类没有，则父类中的属性不能被序列化。</p>
+<h4 id="Collections类和Arrays工具类的常用方法"><a href="#Collections类和Arrays工具类的常用方法" class="headerlink" title="Collections类和Arrays工具类的常用方法"></a>Collections类和Arrays工具类的常用方法</h4><h5 id="Collections类"><a href="#Collections类" class="headerlink" title="Collections类"></a>Collections类</h5><ul>
+<li>排序：sort(List)、sort(List, Comparator)、swap(list, i , j)</li>
+<li>查找：binarySearch(list , key)、max(Collection)、indexOfSubList(List list, List target)</li>
+<li>替换：replaceAll(List list, Object oldVal, Object newVal)</li>
+</ul>
+<h5 id="Arrays类"><a href="#Arrays类" class="headerlink" title="Arrays类"></a>Arrays类</h5><ul>
+<li>排序：sort(List)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val iArray = intArrayOf(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>)</span><br><span class="line">    Arrays.sort(iArray)</span><br><span class="line">    <span class="keyword">for</span> (v in iArray) &#123;</span><br><span class="line">        print(<span class="string">"$v "</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&gt;&gt;&gt;输出：<span class="number">1</span> <span class="number">3</span> <span class="number">4</span> <span class="number">4</span> <span class="number">5</span> <span class="number">5</span> <span class="number">6</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">8</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>比较：equals()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val arrayA = intArrayOf(<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>)</span><br><span class="line">val arrayB = intArrayOf(<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>)</span><br><span class="line">println(Arrays.equals(arrayA,arrayB))</span><br><span class="line">&gt;&gt;&gt;输出：<span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>转列表：asList()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val names = Arrays.asList(<span class="string">"Larry"</span>, <span class="string">"Moe"</span>, <span class="string">"Curly"</span>)</span><br><span class="line">println(names)</span><br><span class="line">&gt;&gt;&gt;输出：[Larry, Moe, Curly]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Java基础关键字"><a href="#Java基础关键字" class="headerlink" title="Java基础关键字"></a>Java基础关键字</h4><h5 id="final"><a href="#final" class="headerlink" title="final"></a>final</h5><ul>
+<li>当final用来修饰变量时，如果变量是基本数据类型，则其数值不能改变；如果变量时引用类型，则改变量不能在再指向另一个对象。</li>
+<li>当一个方法被final修饰时，表示该方法不能被继承类重写。</li>
+<li>当一个类使用final修饰时，该类不能被继承，<strong>该类中所有方法都会隐式的被定义为final方法</strong>。</li>
+</ul>
+<h5 id="static"><a href="#static" class="headerlink" title="static"></a>static</h5><ul>
+<li>被static修饰的成员属于类，被类中所有对象共享，静态变量被分配在方法区，被所有线程共享。</li>
+<li><strong>静态代码块</strong>，静态代码在非静态代码执行之前执行，且<font color="#dd0000"><strong>不管改类创建多少对象，静态代码只执行一次</strong></font>。</li>
+<li><strong>静态内部类</strong>，和非静态内部类最大的区别在于，<font color="#dd0000"><strong>非静态内部类在编译后会隐含地保存着一个指向创建他的外部类的引用，而静态内部类没有这个引用</strong></font>。经常这里会问到内存泄露的问题。</li>
+</ul>
+<h5 id="为什么static方法中不能使用this和super？"><a href="#为什么static方法中不能使用this和super？" class="headerlink" title="为什么static方法中不能使用this和super？"></a>为什么static方法中不能使用this和super？</h5><p>static修饰静态方法是属于类的；而this指向当前对象，super代表父类对象引用；<strong>静态方法属于类，而this、super针对对象。</strong>同样的问题还有：<strong>为什么不能在静态方法内调用外部类的非静态成员？</strong>一样的答案。</p>
+<h4 id="内部类、System-GC-、弱引用及内存泄漏"><a href="#内部类、System-GC-、弱引用及内存泄漏" class="headerlink" title="内部类、System.GC()、弱引用及内存泄漏"></a>内部类、System.GC()、弱引用及内存泄漏</h4><h5 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h5><p>大题上Java中包含四种内部类，它们分别是：</p>
+<ul>
+<li>静态内部类</li>
+<li>匿名内部类</li>
+<li>实例内部类</li>
+<li>本地内部类(方法内的类)</li>
+</ul>
+<h5 id="System-GC"><a href="#System-GC" class="headerlink" title="System.GC()"></a>System.GC()</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System.gc() <span class="comment">//调用System.gc()并不会马上出发GC操作</span></span><br><span class="line"><span class="comment">//Runtime.getRuntime().runFinalization()</span></span><br><span class="line">System.runFinalization()</span><br><span class="line">System.gc()</span><br></pre></td></tr></table></figure>
+
+<p>#####弱引用</p>
+<h5 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h5><p><strong>当某些对象不再被应用程序所使用,但是由于仍然被引用而导致垃圾收集器不能释放(Remove,移除)他们。</strong>Android中常见的内存泄漏场景：</p>
+<ul>
+<li><p>资源使用未关闭，如：数据库连接、Bitmap、File、BroadcastReceiver等。</p>
+</li>
+<li><p>Java中匿名内部类，默认持有外部对象引用，可能导致外部对象无法及时回收，如Handler和Activity。</p>
+</li>
+<li><p>如果单例中持有外部对象的引用，那么这个外部对象将不能被JVM正常回收。<strong>类似的还有静态集合对象</strong></p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ck91fgnl5003gxa2637xr68ms" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          读书笔记『Gradle实战』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/29/Android%E7%BB%84%E4%BB%B6%E5%8C%96%E7%9B%B8%E5%85%B3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android组件化相关</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

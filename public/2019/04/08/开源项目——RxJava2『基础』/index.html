@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>RxJava2『基础』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="RxJava介绍RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM. RxJava – 基于JVM的响应式编程扩展 – 一个为Java虚拟机编写的基于可观察">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava2『基础』">
+<meta property="og:url" content="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="RxJava介绍RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM. RxJava – 基于JVM的响应式编程扩展 – 一个为Java虚拟机编写的基于可观察">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-04-08T06:27:58.000Z">
+<meta property="article:modified_time" content="2020-04-08T08:31:54.710Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="RxJava2">
+<meta property="article:tag" content="编程语言">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-开源项目——RxJava2『基础』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-08T06:27:58.000Z" itemprop="datePublished">2019-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      RxJava2『基础』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="RxJava介绍"><a href="#RxJava介绍" class="headerlink" title="RxJava介绍"></a>RxJava介绍</h3><p>RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.</p>
+<p>RxJava – 基于JVM的响应式编程扩展 – 一个为Java虚拟机编写的基于可观察序列来实现异步及事件驱动编程的类库(<strong>英语水平有限，翻译的不好，见谅</strong>)。</p>
+<p>It extends the <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="_blank" rel="noopener">observer pattern</a> to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.</p>
+<p>RxJava基于了观察者设计模式实现对一个数据或事件队列的观察，同时允许你在抽离一些抽象概念(如：低层次的线程，同步，线程安全，并发数据结构等)时指定操作(adds operators)，来显式(declaratively)的将多个序列整合在一起？？(翻译的是个啥，先不管了，先往下看，回过头再来整理)</p>
+<h3 id="一些专有名词"><a href="#一些专有名词" class="headerlink" title="一些专有名词"></a>一些专有名词</h3><h4 id="Upstream-downstream-上游，下游"><a href="#Upstream-downstream-上游，下游" class="headerlink" title="Upstream, downstream 上游，下游"></a>Upstream, downstream 上游，下游</h4><p>The dataflows in RxJava consist of a source, zero or more intermediate steps followed by a data consumer or combinator step (where the step is responsible to consume the dataflow by some means):</p>
+<p>RxJava中的数据流由一个源数据、零个或者多个中间步骤</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source.operator1().operator2().operator3().subscribe(consumer);</span><br><span class="line">source.flatMap(value -&gt; source.operator1().operator2().operator3());</span><br></pre></td></tr></table></figure>
+
+<p>Here, if we imagine ourselves on <code>operator2</code>, looking to the left towards the source, is called the <strong>upstream</strong>. Looking to the right towards the subscriber/consumer, is called the <strong>downstream</strong>. This is often more apparent when each element is written on a separate line:</p>
+<p>现在，假设我们位于Operator 2，那么往左是上游，往右通向订阅者/消费者的是下游。</p>
+<a id="more"></a>
+
+<h4 id="Objects-in-motion-流动中的对象"><a href="#Objects-in-motion-流动中的对象" class="headerlink" title="Objects in motion 流动中的对象"></a>Objects in motion 流动中的对象</h4><p>在RxJava文档中, <strong>发射物</strong>, <strong>发射</strong>, <strong>项目</strong>, <strong>事件</strong>, <strong>信号</strong>, <strong>数据</strong> 和<strong>消息</strong> 都是用来标识在数据流中流动的对象。</p>
+<p>In RxJava’s documentation, <strong>emission</strong>, <strong>emits</strong>, <strong>item</strong>, <strong>event</strong>, <strong>signal</strong>, <strong>data</strong> and <strong>message</strong> are considered synonyms and represent the object traveling along the dataflow.</p>
+<h4 id="Backpressure-背压"><a href="#Backpressure-背压" class="headerlink" title="Backpressure 背压"></a>Backpressure 背压</h4><p>当数据流在多个异步行为中流动时，不同的操作有不同的速率。为了避免超出预期的内存开销，或者为了满足跳过、舍弃某些数据的需求，所谓的背压就产生了。背压是一种不同操作能够表达他们能处理多少数据的流控制机制。背压用来在不知道上游将会发送多少数据量的时候，用来限制内存开销的。</p>
+<p>When the dataflow runs through asynchronous steps, each step may perform different things with different speed. To avoid overwhelming such steps, which usually would manifest itself as increased memory usage due to temporary buffering or the need for skipping/dropping data, a so-called backpressure is applied, which is a form of flow control where the steps can express how many items are they ready to process. This allows constraining the memory usage of the dataflows in situations where there is generally no way for a step to know how many items the upstream will send to it.</p>
+<p>在RxJava中，<font color="#dd0000"><strong>Flowable类是设计成专门用于处理背压的</strong></font>，而Observable是用来专门处理非背压操作的(短序列，UI交互等)。<font color="#dd0000"><strong>???.其他的类型，单一的，可能的和可完成的类型不支持也不应该支持背压；总有地方能放下一个对象。</strong></font></p>
+<p>In RxJava, the dedicated <code>Flowable</code> class is designated to support backpressure and <code>Observable</code> is dedicated for the non-backpressured operations (short sequences, GUI interactions, etc.). The other types, <code>Single</code>, <code>Maybe</code> and <code>Completable</code> don’t support backpressure nor should they; there is always room to store one item temporarily.</p>
+<h4 id="Assembly-time-装配时"><a href="#Assembly-time-装配时" class="headerlink" title="Assembly time 装配时"></a>Assembly time 装配时</h4><p>准备数据流时指定的各种中间操作发生在所谓的：<strong>装配时</strong></p>
+<p>The preparation of dataflows by applying various intermediate operators happens in the so-called <strong>assembly time</strong>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;Integer&gt; flow = Flowable.range(<span class="number">1</span>, <span class="number">5</span>)</span><br><span class="line">.map(v -&gt; v * v)</span><br><span class="line">.filter(v -&gt; v % <span class="number">3</span> == <span class="number">0</span>)</span><br><span class="line">;</span><br></pre></td></tr></table></figure>
+
+<p>此时，数据还未开始流转，并且没有</p>
+<p>At this point, the data is not flowing yet and no side-effects are happening. </p>
+<h4 id="Subscription-time-订阅时"><a href="#Subscription-time-订阅时" class="headerlink" title="Subscription time 订阅时"></a>Subscription time 订阅时</h4><p>这是调用在流上调用subscribe()后的临时状态，它建立了处理步骤之间的连接</p>
+<p>This is a temporary state when <code>subscribe()</code> is called on a flow that establishes the chain of processing steps internally:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flow.subscribe(System.out::println)</span><br></pre></td></tr></table></figure>
+
+<p>这时订阅作用生效了，某些数据源阻塞或者马上开始发射数据。</p>
+<p>This is when the <strong>subscription side-effects</strong> are triggered (see <code>doOnSubscribe</code>). Some sources block or start emitting items right away in this state.</p>
+<h4 id="Runtime-运行时"><a href="#Runtime-运行时" class="headerlink" title="Runtime 运行时"></a>Runtime 运行时</h4><p>当处于运行时，数据流可以正常的发送数据、异常信号及完成信号</p>
+<p>This is the state when the flows are actively emitting items, errors or completion signals: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Observable.create(emitter -&gt; &#123;</span><br><span class="line">     <span class="keyword">while</span> (!emitter.isDisposed()) &#123;</span><br><span class="line">         <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">         emitter.onNext(time);</span><br><span class="line">         <span class="keyword">if</span> (time % <span class="number">2</span> != <span class="number">0</span>) &#123;</span><br><span class="line">             emitter.onError(<span class="keyword">new</span> IllegalStateException(<span class="string">"Odd millisecond!"</span>));</span><br><span class="line">             <span class="keyword">break</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;).subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
+
+<p>事实上，上面这个方法的方法体执行的时候就是运行时。</p>
+<p>Practically, this is when the body of the given example above executes.</p>
+<h3 id="Simple-background-computation-简单后台计算"><a href="#Simple-background-computation-简单后台计算" class="headerlink" title="Simple background computation 简单后台计算"></a>Simple background computation 简单后台计算</h3><p><strong>一个使用RxJava最常见的场景是在后台线程进行一些计算、网络请求，然后在UI线程中显示结果</strong></p>
+<p>One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.reactivex.schedulers.Schedulers;</span><br><span class="line"></span><br><span class="line">Flowable.fromCallable(() -&gt; &#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>); <span class="comment">//  imitate expensive computation</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Done"</span>;</span><br><span class="line">&#125;)</span><br><span class="line">  .subscribeOn(Schedulers.io())</span><br><span class="line">  .observeOn(Schedulers.single())</span><br><span class="line">  .subscribe(System.out::println, Throwable::printStackTrace);</span><br><span class="line"></span><br><span class="line">Thread.sleep(<span class="number">2000</span>); <span class="comment">// &lt;--- wait for the flow to finish</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>这种链式的方法调用方式成为流式API，和建造者模式很相似。不过RxJava的响应类型(reactive types)是不可变的；每个方法返回一个增加了更多行为的新的Flowable对象。</strong></p>
+<p>This style of chaining methods is called a <strong>fluent API</strong> which resembles the <strong>builder pattern</strong>. However, RxJava’s reactive types are immutable; each of the method calls returns a new <code>Flowable</code> with added behavior. To illustrate, the example can be rewritten as follows:</p>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;String&gt; source = Flowable.fromCallable(() -&gt; &#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>); <span class="comment">//  imitate expensive computation</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Done"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Flowable&lt;String&gt; runBackground = source.subscribeOn(Schedulers.io());</span><br><span class="line"></span><br><span class="line">Flowable&lt;String&gt; showForeground = runBackground.observeOn(Schedulers.single());</span><br><span class="line"></span><br><span class="line">showForeground.subscribe(System.out::println, Throwable::printStackTrace);</span><br><span class="line"></span><br><span class="line">Thread.sleep(<span class="number">2000</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong><em>通常情况下，你可以将一些计算操作合作密集的IO操作通过subscribeOn制定到其他线程，只要数据准备好了，你可以通过observeOn来指定前台线程或UI线程来处理。</em></strong></p>
+<p>Typically, you can move computations or blocking IO to some other thread via <code>subscribeOn</code>. Once the data is ready, you can make sure they get processed on the foreground or GUI thread via <code>observeOn</code>.</p>
+<h3 id="Schedulers-调度"><a href="#Schedulers-调度" class="headerlink" title="Schedulers 调度"></a>Schedulers 调度</h3><p><strong><em>RxJava操作符不直接和Threads或者ExecutorServices打交道，而是通过Schedulers(调度器)的通用API来实现对具体并发代码的抽象。RxJava通过工具类Schedulers提供了几个标准的调度方式</em></strong></p>
+<p>RxJava operators don’t work with <code>Thread</code>s or <code>ExecutorService</code>s directly but with so called <code>Scheduler</code>s that abstract away sources of concurrency behind a uniform API. RxJava 2 features several standard schedulers accessible via <code>Schedulers</code> utility class.</p>
+<ul>
+<li><p><code>Schedulers.computation()</code>: 在后台的固定数量的专用线程上运行计算密集型工作。大多数异步操作符使用这个作为默认的调度器  </p>
+<p>Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default <code>Scheduler</code>.</p>
+</li>
+<li><p><code>Schedulers.io()</code>: 在一个动态线程集合上运行类似I/O或阻塞的操作。</p>
+<p> Run I/O-like or blocking operations on a dynamically changing set of threads.</p>
+</li>
+<li><p><code>Schedulers.single()</code>: 以顺序和FIFO方式在单个线程上运行工作。  </p>
+<p>Run work on a single thread in a sequential and FIFO manner.</p>
+</li>
+<li><p><code>Schedulers.trampoline()</code>: ???在一个参与线程中以顺序和FIFO方式运行工作，通常用于测试目的。 </p>
+<p>Run work in a sequential and FIFO manner in one of the participating threads, usually for testing purposes.</p>
+</li>
+</ul>
+<p>这几个调度模型在所有JVM平台上都是可用的，但是一些特定的平台，比如Android，有他们自己的典型调度器。</p>
+<p>These are available on all JVM platforms but some specific platforms, such as Android, have their own typical <code>Scheduler</code>s defined: <code>AndroidSchedulers.mainThread()</code>, <code>SwingScheduler.instance()</code> or <code>JavaFXSchedulers.gui()</code>.</p>
+<p>此外，可以通过schedulers.from(Executor)来包装一个现有的Executor。比如可以实现数量巨大且数量固定的线程池(不同于computation()或io()的实现方式)</p>
+<p>In addition, there is option to wrap an existing <code>Executor</code> (and its subtypes such as <code>ExecutorService</code>) into a <code>Scheduler</code> via <code>Schedulers.from(Executor)</code>. This can be used, for example, to have a larger but still fixed pool of threads (unlike <code>computation()</code> and <code>io()</code> respectively).</p>
+<p>最后一行的Thread.sleep(2000)并不是不小心添加的，在RxJava中默认的调度器运行在守护线程上，这意味着只要Java主线程退出，所有这些默认的调度器会停止，同时后台计算也不会发生。这个例子中让线程sleep一点时间是<strong>为了主线程存活时间久一点从而保证守护线程能够持续调度任务，让你能够看到console信息</strong>。</p>
+<p>The <code>Thread.sleep(2000);</code> at the end is no accident. In RxJava the default <code>Scheduler</code>s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations lets you see the output of the flow on the console with time to spare.</p>
+<h3 id="Concurrency-within-a-flow-流中的并发"><a href="#Concurrency-within-a-flow-流中的并发" class="headerlink" title="Concurrency within a flow 流中的并发"></a>Concurrency within a flow 流中的并发</h3><p>RxJava中的流</p>
+<p>Flows in RxJava are sequential in nature split into processing stages that may run <strong>concurrently</strong> with each other:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .observeOn(Schedulers.computation())</span><br><span class="line">  .map(v -&gt; v * v)</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>这个例子中数字1到10的平方运算被指定在计算线程中进行，而其结果被指定在主线程中使用。这个流中的lambda表达式v -&gt; v * v不是并行进行的，而是从1到10一个一个在同一个计算线程中进行的。</p>
+<p>This example flow squares the numbers from 1 to 10 on the <strong>computation</strong> <code>Scheduler</code> and consumes the results on the “main” thread (more precisely, the caller thread of <code>blockingSubscribe</code>). However, the lambda <code>v -&gt; v * v</code> doesn’t run in parallel for this flow; it receives the values 1 to 10 on the same computation thread one after the other.</p>
+<h3 id="Parallel-processing-并行处理"><a href="#Parallel-processing-并行处理" class="headerlink" title="Parallel processing 并行处理"></a>Parallel processing 并行处理</h3><p>并行的处理数字1到10会稍微复杂一点：</p>
+<p>Processing the numbers 1 to 10 in parallel is a bit more involved:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .flatMap(v -&gt;</span><br><span class="line">      Flowable.just(v)</span><br><span class="line">        .subscribeOn(Schedulers.computation())</span><br><span class="line">        .map(w -&gt; w * w)</span><br><span class="line">  )</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>事实上，并行在RxJava中意味着运行在独立的流中，然后再将他们的结果合并到同一个流中去。操作符flatMap会将首次map到的每一个数放置止到独立的Flowable中计算，然后再合并他们的结果。</p>
+<p>Practically, parallelism in RxJava means running independent flows and merging their results back into a single flow. The operator <code>flatMap</code> does this by first mapping each number from 1 to 10 into its own individual <code>Flowable</code>, runs them and merges the computed squares.</p>
+<p>注意，无论如何，flatMap不保证执行顺序，并且从内层flow得到最后的结果可能是交叉出现的。有其他能够保证执行顺序的操作符：</p>
+<p>Note, however, that <code>flatMap</code> doesn’t guarantee any order and the end result from the inner flows may end up interleaved. There are alternative operators:</p>
+<ul>
+<li>concatMap每次只映射并结算一个inner flow</li>
+</ul>
+<ul>
+<li><code>concatMap</code> that maps and runs one inner flow at a time and</li>
+<li>concatMatEager一次性运行所有的inner flows，但是输出flow会按照inner flows的创建顺序输出。</li>
+<li><code>concatMapEager</code> which runs all inner flows “at once” but the output flow will be in the order those inner flows were created.</li>
+</ul>
+<p>另外，Flowable.parllel()操作符和ParallelFlowable类型可以实现同样的并行处理方式：</p>
+<p>Alternatively, the <code>Flowable.parallel()</code> operator and the <code>ParallelFlowable</code> type help achieve the same parallel processing pattern:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Flowable.range(1, 10)</span><br><span class="line">  .parallel()</span><br><span class="line">  .runOn(Schedulers.computation())</span><br><span class="line">  .map(v -&gt; v * v)</span><br><span class="line">  .sequential()</span><br><span class="line">  .blockingSubscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dependent-sub-flows-流的依赖处理"><a href="#Dependent-sub-flows-流的依赖处理" class="headerlink" title="Dependent sub-flows 流的依赖处理"></a>Dependent sub-flows 流的依赖处理</h3><p>flatMap是一个强大的操作符，在很多场景下十分有效。比如，已有一个返回Flowable的service A，我们想要调用另一个使用service A的返回值的service B：</p>
+<p>flatMap<code>is a powerful operator and helps in a lot of situations. For example, given a service that returns a</code>Flowable`, we’d like to call another service with values emitted by the first service:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;Inventory&gt; inventorySource &#x3D; warehouse.getInventoryAsync();</span><br><span class="line"></span><br><span class="line">inventorySource.flatMap(inventoryItem -&gt;</span><br><span class="line">    erp.getDemandAsync(inventoryItem.getId())</span><br><span class="line">    .map(demand </span><br><span class="line">        -&gt; System.out.println(&quot;Item &quot; + inventoryItem.getName() + &quot; has demand &quot; + demand));</span><br><span class="line">  )</span><br><span class="line">  .subscribe();</span><br></pre></td></tr></table></figure>
+
+<h3 id="Continuations-后续操作"><a href="#Continuations-后续操作" class="headerlink" title="Continuations 后续操作"></a>Continuations 后续操作</h3><p>有时当一个对象变得可用时，我们希望在它上面进行一些依赖操作。这就是所谓的后续操作，根据不同的情况以及不同的类型，可以使用多种操作符来完成后续操作。</p>
+<p>Sometimes, when an item has become available, one would like to perform some dependent computations on it. This is sometimes called <strong>continuations</strong> and, depending on what should happen and what types are involved, may involve various operators to accomplish.</p>
+<h4 id="Dependent-依赖"><a href="#Dependent-依赖" class="headerlink" title="Dependent 依赖"></a>Dependent 依赖</h4><p>最典型场景是给定一个值，去调用另外一个服务，等待并使用结果。</p>
+<p>The most typical scenario is to given a value, invoke another service, await and continue with its result:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service.apiCall()</span><br><span class="line">.flatMap(value -&gt; service.anotherApiCall(value))</span><br><span class="line">.flatMap(next -&gt; service.finalCall(next))</span><br></pre></td></tr></table></figure>
+
+<p>通常情况下后续的操作序列依赖于早些时候的map结果。这可以通过将外层flatMap移动到前一个flatMap的内部来实现，比如：</p>
+<p>It is often the case also that later sequences would require values from earlier mappings. This can be achieved by moving the outer <code>flatMap</code> into the inner parts of the previous <code>flatMap</code> for example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">service.apiCall()</span><br><span class="line">.flatMap(value -&gt;</span><br><span class="line">    service.anotherApiCall(value)</span><br><span class="line">    .flatMap(next -&gt; service.finalCallBoth(value, next))</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>此时，原始的value在内部的flatMap也是可用的，这得益于lambda的变量捕获能力。 </p>
+<p>Here, the original <code>value</code> will be available inside the inner <code>flatMap</code>, courtesy of lambda variable capture.</p>
+<h4 id="Non-dependent-非依赖"><a href="#Non-dependent-非依赖" class="headerlink" title="Non-dependent 非依赖"></a>Non-dependent 非依赖</h4><p>In other scenarios, the result(s) of the first source/dataflow is irrelevant and one would like to continue with a quasi independent another source. Here, <code>flatMap</code> works as well:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Observable continued &#x3D; sourceObservable.flatMapSingle(ignored -&gt; someSingleSource)</span><br><span class="line">continued.map(v -&gt; v.toString())</span><br><span class="line">  .subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
+
+<p>however, the continuation in this case stays <code>Observable</code> instead of the likely more appropriate <code>Single</code>. (This is understandable because from the perspective of <code>flatMapSingle</code>, <code>sourceObservable</code> is a multi-valued source and thus the mapping may result in multiple values as well).</p>
+<p>Often though there is a way that is somewhat more expressive (and also lower overhead) by using <code>Completable</code> as the mediator and its operator <code>andThen</code> to resume with something else:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sourceObservable</span><br><span class="line">  .ignoreElements()           &#x2F;&#x2F; returns Completable</span><br><span class="line">  .andThen(someSingleSource)</span><br><span class="line">  .map(v -&gt; v.toString())</span><br></pre></td></tr></table></figure>
+
+<p>The only dependency between the <code>sourceObservable</code> and the <code>someSingleSource</code> is that the former should complete normally in order for the latter to be consumed.</p>
+<h4 id="Deferred-dependent-延期依赖"><a href="#Deferred-dependent-延期依赖" class="headerlink" title="Deferred-dependent  延期依赖"></a>Deferred-dependent  延期依赖</h4><p>Sometimes, there is an implicit data dependency between the previous sequence and the new sequence that, for some reason, was not flowing through the “regular channels”. One would be inclined to write such continuations as follows:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.just(count.get()))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>Unfortunately, this prints <code>0</code> because <code>Single.just(count.get())</code> is evaluated at <strong>assembly time</strong> when the dataflow hasn’t even run yet. We need something that defers the evaluation of this <code>Single</code> source until <strong>runtime</strong> when the main source completes:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.defer(() -&gt; Single.just(count.get())))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AtomicInteger count &#x3D; new AtomicInteger();</span><br><span class="line"></span><br><span class="line">Observable.range(1, 10)</span><br><span class="line">  .doOnNext(ignored -&gt; count.incrementAndGet())</span><br><span class="line">  .ignoreElements()</span><br><span class="line">  .andThen(Single.fromCallable(() -&gt; count.get()))</span><br><span class="line">  .subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Type-conversions-类型转换"><a href="#Type-conversions-类型转换" class="headerlink" title="Type conversions 类型转换"></a>Type conversions 类型转换</h3><p>Sometimes, a source or service returns a different type than the flow that is supposed to work with it. For example, in the inventory example above, <code>getDemandAsync</code> could return a <code>Single&lt;DemandRecord&gt;</code>. If the code example is left unchanged, this will result in a compile time error (however, often with misleading error message about lack of overload).</p>
+<p>In such situations, there are usually two options to fix the transformation: 1) convert to the desired type or 2) find and use an overload of the specific operator supporting the different type.</p>
+<h4 id="Converting-to-the-desired-type-转换成目标数据类型"><a href="#Converting-to-the-desired-type-转换成目标数据类型" class="headerlink" title="Converting to the desired type 转换成目标数据类型"></a>Converting to the desired type 转换成目标数据类型</h4><p>Each reactive base class features operators that can perform such conversions, including the protocol conversions, to match some other type. The following matrix shows the available conversion options:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Flowable</th>
+<th>Observable</th>
+<th>Single</th>
+<th>Maybe</th>
+<th>Completable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Flowable</strong></td>
+<td></td>
+<td><code>toObservable</code></td>
+<td><code>first</code>, <code>firstOrError</code>, <code>single</code>, <code>singleOrError</code>, <code>last</code>, <code>lastOrError</code>1</td>
+<td><code>firstElement</code>, <code>singleElement</code>, <code>lastElement</code></td>
+<td><code>ignoreElements</code></td>
+</tr>
+<tr>
+<td><strong>Observable</strong></td>
+<td><code>toFlowable</code>2</td>
+<td></td>
+<td><code>first</code>, <code>firstOrError</code>, <code>single</code>, <code>singleOrError</code>, <code>last</code>, <code>lastOrError</code>1</td>
+<td><code>firstElement</code>, <code>singleElement</code>, <code>lastElement</code></td>
+<td><code>ignoreElements</code></td>
+</tr>
+<tr>
+<td><strong>Single</strong></td>
+<td><code>toFlowable</code>3</td>
+<td><code>toObservable</code></td>
+<td></td>
+<td><code>toMaybe</code></td>
+<td><code>ignoreElement</code></td>
+</tr>
+<tr>
+<td><strong>Maybe</strong></td>
+<td><code>toFlowable</code>3</td>
+<td><code>toObservable</code></td>
+<td><code>toSingle</code></td>
+<td></td>
+<td><code>ignoreElement</code></td>
+</tr>
+<tr>
+<td><strong>Completable</strong></td>
+<td><code>toFlowable</code></td>
+<td><code>toObservable</code></td>
+<td><code>toSingle</code></td>
+<td><code>toMaybe</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>1: When turning a multi-valued source into a single valued source, one should decide which of the many source values should be considered as the result.</p>
+<p>2: Turning an <code>Observable</code> into <code>Flowable</code> requires an additional decision: what to do with the potential unconstrained flow of the source <code>Observable</code>? There are several strategies available (such as buffering, dropping, keeping the latest) via the <code>BackpressureStrategy</code> parameter or via standard <code>Flowable</code> operators such as <code>onBackpressureBuffer</code>, <code>onBackpressureDrop</code>, <code>onBackpressureLatest</code> which also allow further customization of the backpressure behavior.</p>
+<p>3: When there is only (at most) one source item, there is no problem with backpressure as it can be always stored until the downstream is ready to consume.</p>
+<h4 id="Using-an-overload-with-the-desired-type"><a href="#Using-an-overload-with-the-desired-type" class="headerlink" title="Using an overload with the desired type"></a>Using an overload with the desired type</h4><p>Many frequently used operator has overloads that can deal with the other types. These are usually named with the suffix of the target type:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Overloads</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>flatMap</code></td>
+<td><code>flatMapSingle</code>, <code>flatMapMaybe</code>, <code>flatMapCompletable</code>, <code>flatMapIterable</code></td>
+</tr>
+<tr>
+<td><code>concatMap</code></td>
+<td><code>concatMapSingle</code>, <code>concatMapMaybe</code>, <code>concatMapCompletable</code>, <code>concatMapIterable</code></td>
+</tr>
+<tr>
+<td><code>switchMap</code></td>
+<td><code>switchMapSingle</code>, <code>switchMapMaybe</code>, <code>switchMapCompletable</code></td>
+</tr>
+</tbody></table>
+<p>The reason these operators have a suffix instead of simply having the same name with different signature is type erasure. Java doesn’t consider signatures such as <code>operator(Function&lt;T, Single&lt;R&gt;&gt;)</code> and <code>operator(Function&lt;T, Maybe&lt;R&gt;&gt;)</code> different (unlike C#) and due to erasure, the two <code>operator</code>s would end up as duplicate methods with the same signature.</p>
+<h3 id="Operator-naming-conventions"><a href="#Operator-naming-conventions" class="headerlink" title="Operator naming conventions"></a>Operator naming conventions</h3><p>Naming in programming is one of the hardest things as names are expected to be not long, expressive, capturing and easily memorable. Unfortunately, the target language (and pre-existing conventions) may not give too much help in this regard (unusable keywords, type erasure, type ambiguities, etc.).</p>
+<h4 id="Unusable-keywords"><a href="#Unusable-keywords" class="headerlink" title="Unusable keywords"></a>Unusable keywords</h4><p>In the original Rx.NET, the operator that emits a single item and then completes is called <code>Return(T)</code>. Since the Java convention is to have a lowercase letter start a method name, this would have been <code>return(T)</code> which is a keyword in Java and thus not available. Therefore, RxJava chose to name this operator <code>just(T)</code>. The same limitation exists for the operator <code>Switch</code>, which had to be named <code>switchOnNext</code>. Yet another example is <code>Catch</code> which was named <code>onErrorResumeNext</code>.</p>
+<h4 id="Type-erasure"><a href="#Type-erasure" class="headerlink" title="Type erasure"></a>Type erasure</h4><p>Many operators that expect the user to provide some function returning a reactive type can’t be overloaded because the type erasure around a <code>Function&lt;T, X&gt;</code> turns such method signatures into duplicates. RxJava chose to name such operators by appending the type as suffix as well:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;R&gt; flatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt; mapper)</span><br><span class="line"></span><br><span class="line">Flowable&lt;R&gt; flatMapMaybe(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt; mapper)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Type-ambiguities"><a href="#Type-ambiguities" class="headerlink" title="Type ambiguities"></a>Type ambiguities</h4><p>Even though certain operators have no problems from type erasure, their signature may turn up being ambiguous, especially if one uses Java 8 and lambdas. For example, there are several overloads of <code>concatWith</code> taking the various other reactive base types as arguments (for providing convenience and performance benefits in the underlying implementation):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concatWith(Publisher&lt;? extends T&gt; other);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; concatWith(SingleSource&lt;? extends T&gt; other);</span><br></pre></td></tr></table></figure>
+
+<p>Both <code>Publisher</code> and <code>SingleSource</code> appear as functional interfaces (types with one abstract method) and may encourage users to try to provide a lambda expression:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someSource.concatWith(s -&gt; Single.just(2))</span><br><span class="line">.subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
+
+<p>Unfortunately, this approach doesn’t work and the example does not print <code>2</code> at all. In fact, since version 2.1.10, it doesn’t even compile because at least 4 <code>concatWith</code> overloads exist and the compiler finds the code above ambiguous.</p>
+<p>The user in such situations probably wanted to defer some computation until the <code>someSource</code> has completed, thus the correct unambiguous operator should have been <code>defer</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someSource.concatWith(Single.defer(() -&gt; Single.just(2)))</span><br><span class="line">.subscribe(System.out::println, Throwable::printStackTrace);</span><br></pre></td></tr></table></figure>
+
+<p>Sometimes, a suffix is added to avoid logical ambiguities that may compile but produce the wrong type in a flow:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; merge(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; mergeArray(Publisher&lt;? extends T&gt;... sources);</span><br></pre></td></tr></table></figure>
+
+<p>This can get also ambiguous when functional interface types get involved as the type argument <code>T</code>.</p>
+<h4 id="Error-handling"><a href="#Error-handling" class="headerlink" title="Error handling"></a>Error handling</h4><p>Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice whether or not wait for all of them to complete or fail. To indicate this opportunity, many operator names are suffixed with the <code>DelayError</code> words (while others feature a <code>delayError</code> or <code>delayErrors</code> boolean flag in one of their overloads):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concat(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br><span class="line"></span><br><span class="line">Flowable&lt;T&gt; concatDelayError(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt; sources);</span><br></pre></td></tr></table></figure>
+
+<p>Of course, suffixes of various kinds may appear together:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flowable&lt;T&gt; concatArrayEagerDelayError(Publisher&lt;? extends T&gt;... sources);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Base-class-vs-base-type"><a href="#Base-class-vs-base-type" class="headerlink" title="Base class vs base type"></a>Base class vs base type</h4><p>The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 2’s design was heavily influenced by the <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams" target="_blank" rel="noopener">Reactive Streams</a> specification, therefore, the library features a class and an interface per each reactive type:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Class</th>
+<th>Interface</th>
+<th>Consumer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0..N backpressured</td>
+<td><code>Flowable</code></td>
+<td><code>Publisher</code>1</td>
+<td><code>Subscriber</code></td>
+</tr>
+<tr>
+<td>0..N unbounded</td>
+<td><code>Observable</code></td>
+<td><code>ObservableSource</code>2</td>
+<td><code>Observer</code></td>
+</tr>
+<tr>
+<td>1 element or error</td>
+<td><code>Single</code></td>
+<td><code>SingleSource</code></td>
+<td><code>SingleObserver</code></td>
+</tr>
+<tr>
+<td>0..1 element or error</td>
+<td><code>Maybe</code></td>
+<td><code>MaybeSource</code></td>
+<td><code>MaybeObserver</code></td>
+</tr>
+<tr>
+<td>0 element or error</td>
+<td><code>Completable</code></td>
+<td><code>CompletableSource</code></td>
+<td><code>CompletableObserver</code></td>
+</tr>
+</tbody></table>
+<p>1The <code>org.reactivestreams.Publisher</code> is part of the external Reactive Streams library. It is the main type to interact with other reactive libraries through a standardized mechanism governed by the <a href="https://github.com/reactive-streams/reactive-streams-jvm#specification" target="_blank" rel="noopener">Reactive Streams specification</a>.</p>
+<p>2The naming convention of the interface was to append <code>Source</code> to the semi-traditional class name. There is no <code>FlowableSource</code> since <code>Publisher</code> is provided by the Reactive Streams library (and subtyping it wouldn’t have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.</p>
+<p>参考：</p>
+<p><a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="noopener">https://github.com/ReactiveX/RxJava</a></p>
+<p><a href="https://www.jianshu.com/p/464fa025229e" target="_blank" rel="noopener">https://www.jianshu.com/p/464fa025229e</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ck91fgnly004mxa26ebsw6kfw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Kotlin相关
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">读书笔记『Gradle实战』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

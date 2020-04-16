@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>开源项目『腾讯MMKV存储框架』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MMKV的介绍MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化&#x2F;反序列化使用 protobuf 实现，性能高，稳定性强。从 2015 年中至今在微信上使用，其性能和稳定性经过了时间的验证。 特点 高性能 实时写入 稳定 防crash 多进程访问 通过与 Android 开发同学的沟通，了解到系统自带的 SharedPreferences 对多进程的支持不好。 现有基于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开源项目『腾讯MMKV存储框架』">
+<meta property="og:url" content="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="MMKV的介绍MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化&#x2F;反序列化使用 protobuf 实现，性能高，稳定性强。从 2015 年中至今在微信上使用，其性能和稳定性经过了时间的验证。 特点 高性能 实时写入 稳定 防crash 多进程访问 通过与 Android 开发同学的沟通，了解到系统自带的 SharedPreferences 对多进程的支持不好。 现有基于">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://images0.cnblogs.com/blog2015/571793/201507/200521495513717.png">
+<meta property="og:image" content="https://images0.cnblogs.com/blog2015/571793/201507/200522381763096.png">
+<meta property="article:published_time" content="2020-03-19T07:54:49.095Z">
+<meta property="article:modified_time" content="2020-04-08T08:32:36.406Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images0.cnblogs.com/blog2015/571793/201507/200521495513717.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-开源项目『腾讯MMKV存储框架』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/" class="article-date">
+  <time datetime="2020-03-19T07:54:49.095Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      开源项目『腾讯MMKV存储框架』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="MMKV的介绍"><a href="#MMKV的介绍" class="headerlink" title="MMKV的介绍"></a>MMKV的介绍</h2><p>MMKV 是基于 <font color="#dd0000"><strong>mmap 内存映射</strong></font>的 key-value 组件，<strong>底层序列化/反序列化使用 protobuf 实现</strong>，性能高，稳定性强。从 2015 年中至今在微信上使用，其性能和稳定性经过了时间的验证。</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li><strong>高性能 实时写入</strong></li>
+<li><strong>稳定 防crash</strong></li>
+<li><strong>多进程访问</strong><br> 通过与 Android 开发同学的沟通，了解到系统自带的 SharedPreferences 对多进程的支持不好。<br> 现有基于 ContentProvider 封装的实现，虽然多进程是支持了，但是性能低下，经常导致 ANR。<br> 考虑到 mmap 共享内存本质上的多进程共享的，我们在这个基础上，深入挖掘了 Android 系统的能力，提供了可能是业界最高效的多进程数据共享组件。</li>
+<li><strong>匿名内存</strong><br> 在多进程共享的基础上，考虑到某些敏感数据(例如密码)需要进程间共享，但是不方便落地存储到文件上，直接用 mmap 不合适。<br> 我们了解到 Android 系统提供了 Ashmem 匿名共享内存的能力，发现它在进程退出后就会消失，不会落地到文件上，非常适合这个场景。<br> 我们很愉快地提供了 Ashmem MMKV 的功能。</li>
+<li><strong>数据加密</strong><br> 不像 iOS 提供了硬件层级的加密机制，在 Android 环境里，数据加密是非常必须的。<br> MMKV 使用了 AES CFB-128 算法来加密/解密。我们选择 CFB 而不是常见的 CBC 算法，<br> 主要是因为 MMKV 使用 append-only 实现插入/更新操作，流式加密算法更加合适。</li>
+<li><strong>数据有效性</strong></li>
+</ul>
+<a id="more"></a>
+
+<h3 id="关于mmap内存映射"><a href="#关于mmap内存映射" class="headerlink" title="关于mmap内存映射"></a>关于mmap内存映射</h3><p>mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，<strong>实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对映关系</strong>。实现这样的映射关系后，进程就可以采用指针的方式读写操作这一段内存，而<font color="#dd0000"><strong>系统会自动回写脏页面到对应的文件磁盘上</strong></font>，即完成了对文件的操作而不必再调用read,write等系统调用函数。<font color="#dd0000"><strong>相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享</strong></font>。</p>
+<p>####mmap内存映射原理</p>
+<p>mmap内存映射的实现过程，总的来说可以分为三个阶段：</p>
+<p><strong>（一）进程启动映射过程，并在虚拟地址空间中为映射创建虚拟映射区域</strong></p>
+<p>1、进程在用户空间调用库函数mmap，原型：void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset);</p>
+<p>2、在当前进程的虚拟地址空间中，寻找一段空闲的满足要求的连续的虚拟地址</p>
+<p>3、为此虚拟区分配一个vm_area_struct结构，接着对这个结构的各个域进行了初始化</p>
+<p>4、将新建的虚拟区结构（vm_area_struct）插入进程的虚拟地址区域链表或树中</p>
+<p><strong>（二）调用内核空间的系统调用函数mmap（不同于用户空间函数），实现文件物理地址和进程虚拟地址的一一映射关系</strong></p>
+<p>5、为映射分配了新的虚拟地址区域后，通过待映射的文件指针，在文件描述符表中找到对应的文件描述符，通过文件描述符，链接到内核“已打开文件集”中该文件的文件结构体（struct file），每个文件结构体维护着和这个已打开文件相关各项信息。</p>
+<p>6、通过该文件的文件结构体，链接到file_operations模块，调用内核函数mmap，其原型为：int mmap(struct file *filp, struct vm_area_struct *vma)，不同于用户空间库函数。</p>
+<p>7、内核mmap函数通过虚拟文件系统inode模块定位到文件磁盘物理地址。</p>
+<p>8、通过remap_pfn_range函数建立页表，即实现了文件地址和虚拟地址区域的映射关系。此时，这片虚拟地址并没有任何数据关联到主存中。</p>
+<p><strong>（三）进程发起对这片映射空间的访问，引发缺页异常，实现文件内容到物理内存（主存）的拷贝</strong></p>
+<p>注：前两个阶段仅在于创建虚拟区间并完成地址映射，但是并没有将任何文件数据的拷贝至主存。真正的文件读取是当进程发起读或写操作时。</p>
+<p>9、进程的读或写操作访问虚拟地址空间这一段映射地址，通过查询页表，发现这一段地址并不在物理页面上。因为目前只建立了地址映射，真正的硬盘数据还没有拷贝到内存中，因此引发缺页异常。</p>
+<p>10、缺页异常进行一系列判断，确定无非法操作后，内核发起请求调页过程。</p>
+<p>11、调页过程先在交换缓存空间（swap cache）中寻找需要访问的内存页，如果没有则调用nopage函数把所缺的页从磁盘装入到主存中。</p>
+<p>12、之后进程即可对这片主存进行读或者写的操作，如果写操作改变了其内容，一定时间后系统会自动回写脏页面到对应磁盘地址，也即完成了写入到文件的过程。</p>
+<p>注：修改过的脏页面并不会立即更新回文件中，而是有一段时间的延迟，可以调用msync()来强制同步, 这样所写的内容就能立即保存到文件里了。</p>
+<h4 id="mmap和常规文件操作的区别"><a href="#mmap和常规文件操作的区别" class="headerlink" title="mmap和常规文件操作的区别"></a>mmap和常规文件操作的区别</h4><p>对linux文件系统不了解的朋友，请参阅我之前写的博文《<a href="http://www.cnblogs.com/huxiao-tee/p/4657851.html" target="_blank" rel="noopener">从内核文件系统看文件读写过程</a>》，我们首先简单的回顾一下常规文件系统操作（调用read/fread等类函数）中，函数的调用过程：</p>
+<p>1、进程发起读文件请求。</p>
+<p>2、内核通过查找进程文件符表，定位到内核已打开文件集上的文件信息，从而找到此文件的inode。</p>
+<p>3、inode在address_space上查找要请求的文件页是否已经缓存在页缓存中。如果存在，则直接返回这片文件页的内容。</p>
+<p>4、如果不存在，则通过inode定位到文件磁盘地址，将数据从磁盘复制到页缓存。之后再次发起读页面过程，进而将页缓存中的数据发给用户进程。</p>
+<p>总结来说，常规文件操作为了提高读写效率和保护磁盘，使用了页缓存机制。这样造成读文件时需要先将文件页从磁盘拷贝到页缓存中，由于页缓存处在内核空间，不能被用户进程直接寻址，所以还需要将页缓存中数据页再次拷贝到内存对应的用户空间中。这样，通过了两次数据拷贝过程，才能完成进程对文件内容的获取任务。写操作也是一样，待写入的buffer在内核空间不能直接访问，必须要先拷贝至内核空间对应的主存，再写回磁盘中（延迟写回），也是需要两次数据拷贝。</p>
+<p>而使用mmap操作文件中，创建新的虚拟内存区域和建立文件磁盘地址和虚拟内存区域映射这两步，没有任何文件拷贝操作。而之后访问数据时发现内存中并无数据而发起的缺页异常过程，可以通过已经建立好的映射关系，只使用一次数据拷贝，就从磁盘中将数据传入内存的用户空间中，供进程使用。</p>
+<p><strong>总而言之，常规文件操作需要从磁盘到页缓存再到用户主存的两次数据拷贝。而mmap操控文件，只需要从磁盘到用户主存的一次数据拷贝过程。</strong>说白了，mmap的关键点是实现了用户空间和内核空间的数据直接交互而省去了空间不同数据不通的繁琐过程。因此mmap效率更高。</p>
+<h4 id="mmap优点总结"><a href="#mmap优点总结" class="headerlink" title="mmap优点总结"></a>mmap优点总结</h4><p>由上文讨论可知，mmap优点共有一下几点：</p>
+<p>1、对文件的读取操作跨过了页缓存，减少了数据的拷贝次数，用内存读写取代I/O读写，提高了文件读取效率。</p>
+<p>2、实现了用户空间和内核空间的高效交互方式。两空间的各自修改操作可以直接反映在映射的区域内，从而被对方空间及时捕捉。</p>
+<p>3、提供进程间共享内存及相互通信的方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域。从而通过各自对映射区域的改动，达到进程间通信和进程间共享的目的。</p>
+<p>​     同时，如果进程A和进程B都映射了区域C，当A第一次读取C时通过缺页从磁盘复制文件页到内存中；但当B再读C的相同页面时，虽然也会产生缺页异常，但是不再需要从磁盘中复制文件过来，而可直接使用已经保存在内存中的文件数据。</p>
+<p>4、可用于实现高效的大规模数据传输。内存空间不足，是制约大数据操作的一个方面，解决方案往往是借助硬盘空间协助操作，补充内存的不足。但是进一步会造成大量的文件I/O操作，极大影响效率。这个问题可以通过mmap映射很好的解决。换句话说，但凡是需要用磁盘空间代替内存的时候，mmap都可以发挥其功效。</p>
+<h4 id="mmap使用细节"><a href="#mmap使用细节" class="headerlink" title="mmap使用细节"></a>mmap使用细节</h4><p>1、使用mmap需要注意的一个关键点是，mmap映射区域大小必须是物理页大小(page_size)的整倍数（32位系统中通常是4k字节）。原因是，内存的最小粒度是页，而进程虚拟地址空间和内存的映射也是以页为单位。为了匹配内存的操作，mmap从磁盘到虚拟地址空间的映射也必须是页。</p>
+<p>2、内核可以跟踪被内存映射的底层对象（文件）的大小，进程可以合法的访问在当前文件大小以内又在内存映射区以内的那些字节。也就是说，如果文件的大小一直在扩张，只要在映射区域范围内的数据，进程都可以合法得到，这和映射建立时文件的大小无关。具体情形参见“情形三”。</p>
+<p>3、映射建立之后，即使文件关闭，映射依然存在。因为映射的是磁盘的地址，不是文件本身，和文件句柄无关。同时可用于进程间通信的有效地址空间不完全受限于被映射文件的大小，因为是按页映射。</p>
+<p>在上面的知识前提下，我们下面看看如果大小不是页的整倍数的具体情况：</p>
+<p><strong>情形一：一个文件的大小是5000字节，mmap函数从一个文件的起始位置开始，映射5000字节到虚拟内存中。</strong></p>
+<p>分析：因为单位物理页面的大小是4096字节，虽然被映射的文件只有5000字节，但是对应到进程虚拟地址区域的大小需要满足整页大小，因此mmap函数执行后，实际映射到虚拟内存区域8192个 字节，5000~8191的字节部分用零填充。映射后的对应关系如下图所示：</p>
+<p>​               <img src="https://images0.cnblogs.com/blog2015/571793/201507/200521495513717.png" alt="img"></p>
+<p>此时：</p>
+<p>（1）读/写前5000个字节（0~4999），会返回操作文件内容。</p>
+<p>（2）读字节5000<del>8191时，结果全为0。写5000</del>8191时，进程不会报错，但是所写的内容不会写入原文件中 。</p>
+<p>（3）读/写8192以外的磁盘部分，会返回一个SIGSECV错误。</p>
+<p><strong>情形二：一个文件的大小是5000字节，mmap函数从一个文件的起始位置开始，映射15000字节到虚拟内存中，即映射大小超过了原始文件的大小。</strong></p>
+<p>分析：由于文件的大小是5000字节，和情形一一样，其对应的两个物理页。那么这两个物理页都是合法可以读写的，只是超出5000的部分不会体现在原文件中。由于程序要求映射15000字节，而文件只占两个物理页，因此8192字节~15000字节都不能读写，操作时会返回异常。如下图所示：</p>
+<p>​                 <img src="https://images0.cnblogs.com/blog2015/571793/201507/200522381763096.png" alt="img"></p>
+<p>此时：</p>
+<p>（1）进程可以正常读/写被映射的前5000字节(0~4999)，写操作的改动会在一定时间后反映在原文件中。</p>
+<p>（2）对于5000~8191字节，进程可以进行读写过程，不会报错。但是内容在写入前均为0，另外，写入后不会反映在文件中。</p>
+<p>（3）对于8192~14999字节，进程不能对其进行读写，会报SIGBUS错误。</p>
+<p>（4）对于15000以外的字节，进程不能对其读写，会引发SIGSEGV错误。</p>
+<p><strong>情形三：一个文件初始大小为0，使用mmap操作映射了1000*4K的大小，即1000个物理页大约4M字节空间，mmap返回指针ptr。</strong></p>
+<p>分析：如果在映射建立之初，就对文件进行读写操作，由于文件大小为0，并没有合法的物理页对应，如同情形二一样，会返回SIGBUS错误。</p>
+<p>但是如果，每次操作ptr读写前，先增加文件的大小，那么ptr在文件大小内部的操作就是合法的。例如，文件扩充4096字节，ptr就能操作ptr ~ [ (char)ptr + 4095]的空间。只要文件扩充的范围在1000个物理页（映射范围）内，ptr都可以对应操作相同的大小。</p>
+<p>这样，方便随时扩充文件空间，随时写入文件，不造成空间浪费</p>
+<h4 id="mmap性能总结"><a href="#mmap性能总结" class="headerlink" title="mmap性能总结"></a>mmap性能总结</h4><ul>
+<li>大家关于“<strong>mmap</strong>()”更快的认识来自于 <strong>read</strong>() 是需要内存拷贝的；</li>
+<li>当今硬件技术的发展，使得内存拷贝消耗的时间已经极大降低了；</li>
+<li>但“<strong>mmap</strong>()”的开销在于一次  pagefault，这个开销相比而言已经更高了，而且 pagefault 的处理任务现在比以前还更多了；</li>
+<li>而且，<strong>mmap</strong>之后，再有读操作不会经过系统调用，在 LRU 比较最近使用的页的时候不占优势；</li>
+<li>于是，普通读情况下（排除反复读之类的文艺与2B读操作），<strong>read</strong>() 通常会比 <strong>mmap</strong>() 来得更快。</li>
+</ul>
+<h2 id="MMKV的Android集成使用"><a href="#MMKV的Android集成使用" class="headerlink" title="MMKV的Android集成使用"></a>MMKV的Android集成使用</h2><h3 id="安装引入"><a href="#安装引入" class="headerlink" title="安装引入"></a>安装引入</h3><p>推荐使用 Maven：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation &#39;com.tencent:mmkv-static:1.0.24&#39;</span><br><span class="line">    &#x2F;&#x2F; replace &quot;1.0.24&quot; with any available version</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><p>MMKV 的使用非常简单，所有变更立马生效，无需调用 <code>sync</code>、<code>apply</code>。 在 App 启动时初始化 MMKV，设定 MMKV 的根目录（files/mmkv/），例如在 MainActivity 里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">    super.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">    String rootDir &#x3D; MMKV.initialize(this);</span><br><span class="line">    System.out.println(&quot;mmkv root: &quot; + rootDir);</span><br><span class="line">    &#x2F;&#x2F;……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MMKV 提供一个全局的实例，可以直接使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.tencent.mmkv.MMKV;</span><br><span class="line"><span class="comment">//……</span></span><br><span class="line"></span><br><span class="line">MMKV kv = MMKV.defaultMMKV();</span><br><span class="line"></span><br><span class="line">kv.encode(<span class="string">"bool"</span>, <span class="keyword">true</span>);</span><br><span class="line"><span class="keyword">boolean</span> bValue = kv.decodeBool(<span class="string">"bool"</span>);</span><br><span class="line"></span><br><span class="line">kv.encode(<span class="string">"int"</span>, Integer.MIN_VALUE);</span><br><span class="line"><span class="keyword">int</span> iValue = kv.decodeInt(<span class="string">"int"</span>);</span><br><span class="line"></span><br><span class="line">kv.encode(<span class="string">"string"</span>, <span class="string">"Hello from mmkv"</span>);</span><br><span class="line">String str = kv.decodeString(<span class="string">"string"</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="MMKV-实现原理"><a href="#MMKV-实现原理" class="headerlink" title="MMKV 实现原理"></a>MMKV 实现原理</h2><ul>
+<li><p><strong>内存准备</strong><br>通过 mmap 内存映射文件，提供一段可供随时写入的内存块，App 只管往里面写数据，由操作系统负责将内存回写到文件，不必担心 crash 导致数据丢失。</p>
+</li>
+<li><p><strong>数据组织</strong><br>数据序列化方面我们选用 protobuf 协议，pb 在性能和空间占用上都有不错的表现。</p>
+</li>
+<li><p><strong>写入优化</strong><br>考虑到主要使用场景是频繁地进行写入更新，我们需要有增量更新的能力。我们考虑将增量 kv 对象序列化后，append 到内存末尾。</p>
+</li>
+<li><p><strong>空间增长</strong><br>使用 append 实现增量更新带来了一个新的问题，就是不断 append 的话，文件大小会增长得不可控。我们需要在性能和空间上做个折中。</p>
+</li>
+</ul>
+<h2 id="MMKV中需要考虑的问题"><a href="#MMKV中需要考虑的问题" class="headerlink" title="MMKV中需要考虑的问题"></a>MMKV中需要考虑的问题</h2><h3 id="Android-多进程设计与实现"><a href="#Android-多进程设计与实现" class="headerlink" title="Android 多进程设计与实现"></a>Android 多进程设计与实现</h3><h4 id="CS-架构-vs-去中心化架构"><a href="#CS-架构-vs-去中心化架构" class="headerlink" title="CS 架构 vs 去中心化架构"></a>CS 架构 vs 去中心化架构</h4><p>Android 平台第一个想到的就是 ContentProvider：一个单独进程管理数据，数据同步不易出错，简单好用易上手。然而它的问题也很明显，就是一个字<strong>慢</strong>：启动慢，访问也慢。这个可以说是 Android 下基于 Binder 的 CS 架构组件的通用痛点。至于其他的 CS 架构，例如经典的 socket、PIPE、message queue，因为要至少 2 次的内存拷贝，就更加慢了。</p>
+<p>MMKV 追求的是极致的访问速度，我们要尽可能地避免进程间通信，CS 架构是不可取的。再考虑到 MMKV 底层使用 mmap 实现，采用去中心化的架构是很自然的选择。我们只需要将文件 mmap 到每个访问进程的内存空间，加上合适的进程锁，再处理好数据的同步，就能够实现多进程并发访问。</p>
+<h4 id="挑选进程锁"><a href="#挑选进程锁" class="headerlink" title="挑选进程锁"></a>挑选进程锁</h4><p>然而去中心化的架构实现起来并不简单，Android 是个阉割版的 Linux，IPC 组件的支持比较残缺。例如，说到进程锁第一个想到的就是 pthread 库的 pthread_mutex，创建于共享内存的 pthread_mutex 是可以用作进程锁的，然而 Android 版的 pthread_mutex 并不保证<strong>robust</strong>，亦即对 pthread_mutex 加了锁的进程被 kill，系统不会进行清理工作，这个锁会一直存在下去，那么其他等锁的进程就会永远饿死。其他的 IPC 组件，例如信号量、条件变量，也有同样问题，Android 为了能够尽快关闭进程，真是无所不用其极。</p>
+<p>找了一圈，能够保证 robust 的，只有已打开的<strong>文件描述符</strong>，以及基于文件描述符的<strong>文件锁</strong>和 Binder 组件的死亡通知（是的，Binder 也是依赖这个<a href="http://gityuan.com/2016/10/03/binder_linktodeath/#%E5%9B%9B-%E8%A7%A6%E5%8F%91%E6%AD%BB%E4%BA%A1%E9%80%9A%E7%9F%A5" target="_blank" rel="noopener">清理机制运作</a>，打开的文件是 /dev/binder）。</p>
+<p>我们有两个选择：</p>
+<ul>
+<li><strong>文件锁</strong>，优点是天然 robust，缺点是不支持递归加锁，也不支持读写锁升级/降级，需要自行实现。</li>
+<li><strong>pthread_mutex</strong>，优点是 pthread 库支持递归加锁，也支持读写锁升级/降级，缺点是不 robust，需要自行清理。</li>
+</ul>
+<p>关于 mutex 清理，有个可能的方案是基于 Binder 死亡通知进行清理：A、B进程相互注册对方的死亡通知，在对方死亡的时候进行清理。但有个比较棘手的场景：只有 A 进程存在，那么他的死亡通知就没人处理，留下一个永远加锁的 mutex。Binder 规定死亡通知不能本进程自行处理，必须由其他进程处理，所以这个问题不好解决。</p>
+<p>综合各种考虑，我们先将文件锁作为一个简单的互斥锁，进行 MMKV 的多进程开发，稍后再回头解决递归锁和读写锁升级/降级的问题。</p>
+<h3 id="多进程实现细节"><a href="#多进程实现细节" class="headerlink" title="多进程实现细节"></a>多进程实现细节</h3><p>首先我们简单回顾一下 MMKV 原来的逻辑。MMKV 本质上是将文件 mmap 到内存块中，将新增的 key-value 统统 append 到内存中；到达边界后，进行重整回写以腾出空间，空间还是不够的话，就 double 内存空间；对于内存文件中可能存在的重复键值，MMKV 只选用最后写入的作为有效键值。那么其他进程为了保持数据一致，就需要处理这三种情况：<strong>写指针增长、内存重整、内存增长</strong>。但首先还得解决一个问题：怎么让其他进程感知这三种情况？</p>
+<h4 id="状态同步"><a href="#状态同步" class="headerlink" title="状态同步"></a>状态同步</h4><ul>
+<li>写指针的同步<br>我们可以在每个进程内部缓存自己的写指针，然后在写入键值的同时，还要把最新的写指针位置也写到 mmap 内存中；这样每个进程只需要对比一下缓存的指针与 mmap 内存的写指针，如果不一样，就说明其他进程进行了写操作。事实上 MMKV 原本就在文件头部保存了<strong>有效内存的大小</strong>，这个数值刚好就是写指针的内存偏移量，我们可以重用这个数值来校对写指针。</li>
+<li>内存重整的感知<br>考虑使用一个<strong>单调递增的序列号</strong>，每次发生内存重整，就将序列号递增。将这个序列号也放到 mmap 内存中，每个进程内部也缓存一份，只需要对比序列号是否一致，就能够知道其他进程是否触发了内存重整。</li>
+<li>内存增长的感知<br>事实上 MMKV 在内存增长之前，会先尝试通过内存重整来腾出空间，重整后还不够空间才申请新的内存。所以内存增长可以跟内存重整一样处理。至于新的内存大小，可以通过查询<strong>文件大小</strong>来获得，无需在 mmap 内存另外存放。</li>
+</ul>
+<p>状态同步逻辑用伪码表达大概是这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void checkLoadData() &#123;</span><br><span class="line">    if (m_sequence !&#x3D; mmapSequence()) &#123;</span><br><span class="line">        m_sequence &#x3D; mmapSequence();</span><br><span class="line">        if (m_size !&#x3D; fileSize()) &#123;</span><br><span class="line">            m_size &#x3D; fileSize();</span><br><span class="line">            &#x2F;&#x2F; 处理内存增长</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            &#x2F;&#x2F; 处理内存重整</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else if (m_actualSize !&#x3D; mmapActualSize()) &#123;</span><br><span class="line">        auto lastPosition &#x3D; m_actualSize;</span><br><span class="line">        m_actualSize &#x3D; mmapActualSize();</span><br><span class="line">        &#x2F;&#x2F; 处理写指针增长</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        &#x2F;&#x2F; 什么也没发生</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="写指针增长"><a href="#写指针增长" class="headerlink" title="写指针增长"></a>写指针增长</h4><p>当一个进程发现 mmap 写指针增长，就意味着其他进程写入了新键值。这些新的键值都 append 在原有写指针后面，可能跟前面的 key 重复，也可能是全新的 key，而原写指针前面的键值都是有效的。那么我们就要把这些新键值都读出来，插入或替换原有键值，并将写指针同步到最新位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">auto lastPosition &#x3D; m_actualSize;</span><br><span class="line">m_actualSize &#x3D; mmapActualSize();</span><br><span class="line">&#x2F;&#x2F; 处理写指针增长</span><br><span class="line">auto bufferSize &#x3D; m_actualSize - lastPosition;</span><br><span class="line">auto buffer &#x3D; Buffer(lastPosition, bufferSize);</span><br><span class="line">map&lt;string, Buffer&gt; dictionary &#x3D; decodeMap(buffer);</span><br><span class="line">for (auto&amp; itr : dictionary) &#123;</span><br><span class="line">    &#x2F;&#x2F; m_cache 还是有效的</span><br><span class="line">    m_cache[itr.first] &#x3D; itr.second;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="内存重整"><a href="#内存重整" class="headerlink" title="内存重整"></a>内存重整</h4><p>当一个进程发现内存被重整了，就意味着原写指针前面的键值全部失效，那么最简单的做法是全部抛弃掉，从头开始重新加载一遍。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 处理内存重整</span><br><span class="line">m_actualSize &#x3D; mmapActualSize();</span><br><span class="line">auto buffer &#x3D; Buffer(0, m_actualSize);</span><br><span class="line">m_cache &#x3D; decodeMap(buffer);</span><br></pre></td></tr></table></figure>
+
+<h4 id="内存增长"><a href="#内存增长" class="headerlink" title="内存增长"></a>内存增长</h4><p>正如前文所述，发生内存增长的时候，必然已经先发生了内存重整，那么原写指针前面的键值也是统统失效，处理逻辑跟内存重整一样。</p>
+<h4 id="文件锁"><a href="#文件锁" class="headerlink" title="文件锁"></a>文件锁</h4><p>到这里我们已经完成了数据的多进程同步工作，是时候回头处理锁事了，亦即前面提到的递归锁和锁升级/降级。</p>
+<ul>
+<li><strong>递归锁</strong><br>意思是如果一个进程/线程已经拥有了锁，那么后续的加锁操作不会导致卡死，并且解锁也不会导致外层的锁被解掉。对于文件锁来说，前者是满足的，后者则不然。因为<strong>文件锁是状态锁</strong>，没有计数器，无论加了多少次锁，一个解锁操作就全解掉。只要用到子函数，就非常需要递归锁。</li>
+<li><strong>锁升级/降级</strong><br>锁升级是指将已经持有的共享锁，升级为互斥锁，亦即将读锁升级为写锁；锁降级则是反过来。文件锁支持锁升级，但是容易死锁：假如 A、B 进程都持有了读锁，现在都想升级到写锁，就会陷入相互等待的困境，<strong>发生死锁</strong>。另外，由于文件锁不支持递归锁，也导致了锁降级无法进行，一降就降到没有锁。</li>
+</ul>
+<p>为了解决这两个难题，需要对文件锁进行封装，增加读锁、写锁计数器。处理逻辑如下表：</p>
+<table>
+<thead>
+<tr>
+<th>读锁计数器</th>
+<th>写锁计数器</th>
+<th>加读锁</th>
+<th>加写锁</th>
+<th>解读锁</th>
+<th>解写锁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>加读锁</td>
+<td>加写锁</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>+1</td>
+<td>+1</td>
+<td>-</td>
+<td>解写锁</td>
+</tr>
+<tr>
+<td>0</td>
+<td>N</td>
+<td>+1</td>
+<td>+1</td>
+<td>-</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>+1</td>
+<td>解读锁再加写锁</td>
+<td>解读锁</td>
+<td>-</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>+1</td>
+<td>+1</td>
+<td>-1</td>
+<td>加读锁</td>
+</tr>
+<tr>
+<td>1</td>
+<td>N</td>
+<td>+1</td>
+<td>+1</td>
+<td>-1</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>N</td>
+<td>0</td>
+<td>+1</td>
+<td>解读锁再加写锁</td>
+<td>-1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>N</td>
+<td>1</td>
+<td>+1</td>
+<td>+1</td>
+<td>-1</td>
+<td>加读锁</td>
+</tr>
+<tr>
+<td>N</td>
+<td>N</td>
+<td>+1</td>
+<td>+1</td>
+<td>-1</td>
+<td>-1</td>
+</tr>
+</tbody></table>
+<p>需要注意的地方有两点：</p>
+<ul>
+<li>加写锁时，如果当前已经持有读锁，那么先尝试加写锁，try_lock 失败说明其他进程持有了读锁，我们需要先将自己的读锁释放掉，再进行加写锁操作，以避免死锁的发生。</li>
+<li>解写锁时，假如之前曾经持有读锁，那么我们不能直接释放掉写锁，这样会导致读锁也解了。我们应该加一个读锁，将锁降级。</li>
+</ul>
+<h3 id="补充适用建议"><a href="#补充适用建议" class="headerlink" title="补充适用建议"></a>补充适用建议</h3><p>如果使用请务必做code19版本的适配，这个在github官网有说明</p>
+<p>依赖下面这个库，然后对19区分处理<br> implementation ‘com.getkeepsafe.relinker:relinker:1.3.1’</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (android.os.Build.VERSION.SDK_INT == <span class="number">19</span>) &#123;</span><br><span class="line">    MMKV.initialize(relativePath, <span class="keyword">new</span> MMKV.LibLoader() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">loadLibrary</span><span class="params">(String libName)</span> </span>&#123;</span><br><span class="line">            ReLinker.loadLibrary(context, libName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    MMKV.initialize(context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>参考：<br><a href="https://github.com/Tencent/MMKV/blob/master/readme_cn.md" target="_blank" rel="noopener">https://github.com/Tencent/MMKV/blob/master/readme_cn.md</a><br><a href="https://blog.csdn.net/qq_33611327/article/details/81738195" target="_blank" rel="noopener">深度分析mmap：是什么 为什么 怎么用 性能总结</a><br><a href="https://github.com/Tencent/MMKV/wiki/android_ipc" target="_blank" rel="noopener">MMKV for Android 多进程设计与实现</a></p>
+<p><a href="https://www.jianshu.com/p/65334d245bc4" target="_blank" rel="noopener">微信MMKV使用和原理</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ck91fgnlw004ixa268zfa3aw7" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          读书笔记『Java并发编程实战』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OkHttp『源码学习-杂项』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

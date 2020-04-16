@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Flutter基础学习 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="学习文档：https:&#x2F;&#x2F;www.youtube.com&#x2F;playlist?list&#x3D;PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP https:&#x2F;&#x2F;book.flutterchina.club  Dart的入口是main()、Flutter的入口在main.dart。  Text Widget的样式会受父控件影响，可以自定义Text的样式： 1234567891011121">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter基础学习">
+<meta property="og:url" content="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="学习文档：https:&#x2F;&#x2F;www.youtube.com&#x2F;playlist?list&#x3D;PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP https:&#x2F;&#x2F;book.flutterchina.club  Dart的入口是main()、Flutter的入口在main.dart。  Text Widget的样式会受父控件影响，可以自定义Text的样式： 1234567891011121">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-19T07:54:48.975Z">
+<meta property="article:modified_time" content="2020-04-08T08:31:10.470Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Flutter">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Flutter基础学习" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time datetime="2020-03-19T07:54:48.975Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Flutter基础学习
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>学习文档：<a href="https://www.youtube.com/playlist?list=PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP" target="_blank" rel="noopener">https://www.youtube.com/playlist?list=PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP</a></p>
+<p><a href="https://book.flutterchina.club/" target="_blank" rel="noopener">https://book.flutterchina.club</a></p>
+<ol>
+<li><p>Dart的入口是main()、Flutter的入口在main.dart。</p>
+</li>
+<li><p>Text Widget的样式会受父控件影响，可以自定义Text的样式：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> Scaffold(</span><br><span class="line">  body: Row(</span><br><span class="line">    children: &lt;Widget&gt;[</span><br><span class="line">      Text(</span><br><span class="line">        <span class="string">'TextWidget'</span>,</span><br><span class="line">        style: TextStyle(</span><br><span class="line">          fontSize: <span class="number">20.0</span>,</span><br><span class="line">          fontWeight: FontWeight.w600,</span><br><span class="line">          color: Colors.red,</span><br><span class="line">          fontStyle: FontStyle.italic),</span><br><span class="line">      ),</span><br><span class="line">    ],</span><br><span class="line">  ));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Container组件，包含child时，其大小就是child的，而在不包含子组件的时候，Container会去尝试fit父控件。</p>
+</li>
+<li><p>设定padding和margin</p>
+</li>
+<li><p>使用了(<code>=&gt;</code>)符号，这是Dart中单行函数或方法的简写。</p>
+</li>
+<li><p>在Flutter中，大多数东西都是widget（后同“组件”或“部件”），包括对齐(alignment)、填充(padding)和布局(layout)等，它们都是以widget的形式提供。</p>
+</li>
+<li><p>Flutter在构建页面时，会调用组件的<code>build</code>方法，widget的主要工作是提供一个build()方法来描述如何构建UI界面（通常是通过组合、拼装其它基础widget）。</p>
+</li>
+<li><p><code>Scaffold</code> 是Material库中提供的页面脚手架，它包含导航栏和Body以及<code>FloatingActionButton</code>（如果需要的话）。 本书后面示例中，路由默认都是通过<code>Scaffold</code>创建。</p>
+<a id="more"></a>
+</li>
+<li><p><code>home</code> 为Flutter应用的首页，它也是一个widget。</p>
+</li>
+<li><p>StatefulWidget中不包含build()方法，包含createElement()和createState()；StatelessWidget中包含build()和createElement()方法，不包含createState()。<strong>Stateful widget可以拥有状态，这些状态在widget生命周期中是可以变的，而Stateless widget是不可变的。</strong></p>
+</li>
+<li><p><code>setState</code>方法的作用是通知Flutter框架，有状态发生了改变，Flutter框架收到通知后，会执行<code>build</code>方法来根据新的状态重新构建界面，** Flutter 对此方法做了优化，使重新执行变的很快，所以你可以重新构建任何需要更新的东西，而无需分别去修改各个widget。**</p>
+</li>
+<li><h4 id="为什么要将build方法放在State中，而不是放在StatefulWidget中？"><a href="#为什么要将build方法放在State中，而不是放在StatefulWidget中？" class="headerlink" title="为什么要将build方法放在State中，而不是放在StatefulWidget中？"></a>为什么要将build方法放在State中，而不是放在StatefulWidget中？</h4><ul>
+<li>状态访问不便</li>
+<li>继承<code>StatefulWidget</code>不便</li>
+</ul>
+</li>
+<li><p>添加按钮:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Column(</span><br><span class="line">      children: <span class="xml"><span class="tag">&lt;<span class="name">Widget</span>&gt;</span>[</span></span><br><span class="line"><span class="xml">      ... //省略无关代码</span></span><br><span class="line"><span class="xml">      FlatButton(</span></span><br><span class="line"><span class="xml">         child: Text("open new route"),</span></span><br><span class="line"><span class="xml">         textColor: Colors.blue,</span></span><br><span class="line"><span class="xml">         onPressed: () &#123;</span></span><br><span class="line"><span class="xml">          //导航到新路由   </span></span><br><span class="line"><span class="xml">          Navigator.push( context,</span></span><br><span class="line"><span class="xml">           MaterialPageRoute(builder: (context) &#123;</span></span><br><span class="line"><span class="xml">              return NewRoute();</span></span><br><span class="line"><span class="xml">           &#125;));</span></span><br><span class="line"><span class="xml">          &#125;,</span></span><br><span class="line"><span class="xml">         ),</span></span><br><span class="line"><span class="xml">       ],</span></span><br><span class="line"><span class="xml"> )</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>MaterialPageRoute</code>继承自<code>PageRoute</code>类，<code>PageRoute</code>类是一个抽象类，表示占有整个屏幕空间的一个模态路由页面，它还定义了路由构建及切换时过渡动画的相关接口及属性。<code>MaterialPageRoute</code> 是Material组件库提供的组件，它可以针对不同平台，实现与平台页面切换动画风格一致的路由切换动画。下面我们介绍一下<code>MaterialPageRoute</code> 构造函数的各个参数的意义：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MaterialPageRoute(&#123;</span><br><span class="line">  WidgetBuilder builder,</span><br><span class="line">  RouteSettings settings,</span><br><span class="line">  <span class="built_in">bool</span> maintainState = <span class="keyword">true</span>,</span><br><span class="line">  <span class="built_in">bool</span> fullscreenDialog = <span class="keyword">false</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>builder</code> 是一个WidgetBuilder类型的回调函数，它的作用是构建路由页面的具体内容，返回值是一个widget。我们通常要实现此回调，返回新路由的实例。</li>
+<li><code>settings</code> 包含路由的配置信息，如路由名称、是否初始路由（首页）。</li>
+<li><code>maintainState</code>：默认情况下，当入栈一个新路由时，原来的路由仍然会被保存在内存中，如果想在路由没用的时候释放其所占用的所有资源，可以设置<code>maintainState</code>为false。</li>
+<li><code>fullscreenDialog</code>表示新的路由页面是否是一个全屏的模态对话框，在iOS中，如果<code>fullscreenDialog</code>为<code>true</code>，新页面将会从屏幕底部滑入（而不是水平方向）</li>
+</ul>
+</li>
+<li><p>Navigator<code>是一个路由管理的组件，它提供了打开和退出路由页方法。</code>Navigator`通过一个栈来管理活动路由集合。通常当前屏幕显示的页面就是栈顶的路由。</p>
+<h3 id="Future-push-BuildContext-context-Route-route"><a href="#Future-push-BuildContext-context-Route-route" class="headerlink" title="Future push(BuildContext context, Route route)"></a>Future push(BuildContext context, Route route)</h3><p>将给定的路由入栈（即打开新的页面），返回值是一个<code>Future</code>对象，用以接收新路由出栈（即关闭）时的返回数据。</p>
+<h3 id="bool-pop-BuildContext-context-result"><a href="#bool-pop-BuildContext-context-result" class="headerlink" title="bool pop(BuildContext context, [ result ])"></a>bool pop(BuildContext context, [ result ])</h3><p>将栈顶路由出栈，<code>result</code>为页面关闭时返回给上一个页面的数据。</p>
+<p>Navigator类中第一个参数为context的<strong>静态方法</strong>都对应一个Navigator的<strong>实例方法</strong>， 比如<code>Navigator.push(BuildContext context, Route route)</code>等价于<code>Navigator.of(context).push(Route route)</code> ，下面命名路由相关的方法也是一样的。</p>
+<p>所谓“命名路由”（Named Route）即有名字的路由，我们可以先给路由起一个名字，然后就可以通过路由名字直接打开新的路由了，这为路由管理带来了一种直观、简单的方式。其实注册路由表就是给路由起名字，路由表的定义如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Map</span>&lt;<span class="built_in">String</span>, WidgetBuilder&gt; routes;</span><br></pre></td></tr></table></figure>
+
+<p>它是一个<code>Map</code>，key为路由的名字，是个字符串；value是个<code>builder</code>回调函数，用于生成相应的路由widget。我们在通过路由名字打开新路由时，应用会根据路由名字在路由表中查找到对应的<code>WidgetBuilder</code>回调函数，然后调用该回调函数生成路由widget并返回。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">MaterialApp(</span><br><span class="line">  title: <span class="string">'Flutter Demo'</span>,</span><br><span class="line">  initialRoute:<span class="string">"/"</span>, <span class="comment">//名为"/"的路由作为应用的home(首页)</span></span><br><span class="line">  theme: ThemeData(</span><br><span class="line">    primarySwatch: Colors.blue,</span><br><span class="line">  ),</span><br><span class="line">  <span class="comment">//注册路由表</span></span><br><span class="line">  routes:&#123;</span><br><span class="line">   <span class="string">"new_page"</span>:(context)=&gt;NewRoute(),</span><br><span class="line">   <span class="string">"/"</span>:(context)=&gt; MyHomePage(title: <span class="string">'Flutter Demo Home Page'</span>), <span class="comment">//注册首页路由</span></span><br><span class="line">  &#125; </span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在Flutter最初的版本中，命名路由是不能传递参数的，后来才支持了参数；</p>
+<p>我们先注册一个路由：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">routes:&#123;</span><br><span class="line">  <span class="string">"new_page"</span>:(context)=&gt;EchoRoute(),</span><br><span class="line"> &#125; ,</span><br></pre></td></tr></table></figure>
+
+<p>在路由页通过<code>RouteSetting</code>对象获取路由参数：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EchoRoute</span> <span class="keyword">extends</span> <span class="title">StatelessWidget</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  Widget build(BuildContext context) &#123;</span><br><span class="line">    <span class="comment">//获取路由参数  </span></span><br><span class="line">    <span class="keyword">var</span> args=ModalRoute.of(context).settings.arguments</span><br><span class="line">    <span class="comment">//...省略无关代码</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在打开路由时传递参数</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Navigator.of(context).pushNamed(<span class="string">"new_page"</span>, arguments: <span class="string">"hi"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>包管理</p>
+<ol>
+<li>注意<code>dependencies</code>和<code>dev_dependencies</code>的区别，前者的依赖包将作为APP的源码的一部分参与编译，生成最终的安装包。而后者的依赖包只是作为开发阶段的一些工具包，主要是用于帮助我们提高开发、测试效率，比如flutter的自动化测试包等。</li>
+</ol>
+</li>
+<li><p>资源管理</p>
+<ol>
+<li><p>Flutter APP安装包中会包含代码和 assets（资源）两部分。<strong>Assets是会打包到程序安装包中的，可在运行时访问</strong>。常见类型的assets包括静态数据（例如JSON文件）、配置文件、图标和图片（JPEG，WebP，GIF，动画WebP / GIF，PNG，BMP和WBMP）等。<font color="#dd0000"><strong>在构建期间，Flutter将asset放置到称为 <em>asset bundle</em> 的特殊存档中，应用程序可以在运行时读取它们（但不能修改）。</strong></font></p>
+</li>
+<li><p>构建过程支持“asset变体”的概念：不同版本的asset可能会显示在不同的上下文中。 在<code>pubspec.yaml</code>的assets部分中指定assets路径时，<strong>构建过程中，会在相邻子目录中查找具有相同名称的任何文件。这些文件随后会与指定的asset一起被包含在asset bundle中。</strong></p>
+<p>例如，如果应用程序目录中有以下文件:</p>
+<ul>
+<li>…/pubspec.yaml</li>
+<li>…/graphics/my_icon.png</li>
+<li>…/graphics/background.png</li>
+<li>…/graphics/dark/background.png</li>
+<li>…etc.</li>
+</ul>
+<p>然后<code>pubspec.yaml</code>文件中只需包含:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flutter:</span><br><span class="line">  assets:</span><br><span class="line">    - graphics&#x2F;background.png</span><br></pre></td></tr></table></figure>
+
+<p>那么这两个<code>graphics/background.png</code>和<code>graphics/dark/background.png</code> 都将包含在您的asset bundle中。前者被认为是<em>main asset</em> （主资源），后者被认为是一种变体（variant</p>
+</li>
+<li><p>您的应用可以通过<a href="https://docs.flutter.io/flutter/services/AssetBundle-class.html" target="_blank" rel="noopener"><code>AssetBundle</code></a>对象访问其asset 。有两种主要方法允许从Asset bundle中加载字符串或图片（二进制）文件</p>
+<ul>
+<li>通过<a href="https://docs.flutter.io/flutter/services/rootBundle.html" target="_blank" rel="noopener"><code>rootBundle</code></a> 对象加载：每个Flutter应用程序都有一个<a href="https://docs.flutter.io/flutter/services/rootBundle.html" target="_blank" rel="noopener"><code>rootBundle</code></a>对象， 通过它可以轻松访问主资源包，直接使用<code>package:flutter/services.dart</code>中全局静态的<code>rootBundle</code>对象来加载asset即可。</li>
+<li>通过 <a href="https://docs.flutter.io/flutter/widgets/DefaultAssetBundle-class.html" target="_blank" rel="noopener"><code>DefaultAssetBundle</code></a> 加载：建议使用 <a href="https://docs.flutter.io/flutter/widgets/DefaultAssetBundle-class.html" target="_blank" rel="noopener"><code>DefaultAssetBundle</code></a> 来获取当前BuildContext的AssetBundle。 <strong>这种方法不是使用应用程序构建的默认asset bundle，而是使父级widget在运行时动态替换的不同的AssetBundle，这对于本地化或测试场景很有用。</strong></li>
+</ul>
+<p>通常，可以使用<code>DefaultAssetBundle.of()</code>在应用运行时来间接加载asset（例如JSON文件），而在widget上下文之外，或其它<code>AssetBundle</code>句柄不可用时，可以使用<code>rootBundle</code>直接加载这些asset，例如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">'dart:async'</span> <span class="keyword">show</span> Future;</span><br><span class="line"><span class="keyword">import</span> <span class="string">'package:flutter/services.dart'</span> <span class="keyword">show</span> rootBundle;</span><br><span class="line"></span><br><span class="line">Future&lt;<span class="built_in">String</span>&gt; loadAsset() <span class="keyword">async</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> rootBundle.loadString(<span class="string">'assets/config.json'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>类似于原生开发，Flutter也可以为当前设备加载适合其分辨率的图像。</p>
+<h4 id="声明分辨率相关的图片-assets"><a href="#声明分辨率相关的图片-assets" class="headerlink" title="声明分辨率相关的图片 assets"></a>声明分辨率相关的图片 assets</h4><p><a href="https://docs.flutter.io/flutter/painting/AssetImage-class.html" target="_blank" rel="noopener"><code>AssetImage</code></a> 可以将asset的请求逻辑映射到最接近当前设备像素比例（dpi）的asset。为了使这种映射起作用，必须根据特定的目录结构来保存asset：</p>
+<ul>
+<li>…/image.png</li>
+<li>…/<strong>M</strong>x/image.png</li>
+<li>…/<strong>N</strong>x/image.png</li>
+<li>…etc.</li>
+</ul>
+<p>其中M和N是数字标识符，对应于其中包含的图像的分辨率，也就是说，它们指定不同设备像素比例的图片。</p>
+<p>主资源默认对应于1.0倍的分辨率图片。看一个例子：</p>
+<ul>
+<li>…/my_icon.png</li>
+<li>…/2.0x/my_icon.png</li>
+<li>…/3.0x/my_icon.png</li>
+</ul>
+<p>在设备像素比率为1.8的设备上，<code>.../2.0x/my_icon.png</code> 将被选择。对于2.7的设备像素比率，<code>.../3.0x/my_icon.png</code>将被选择。</p>
+<p>如果未在<code>Image</code> widget上指定渲染图像的宽度和高度，那么<code>Image</code> widget将占用与主资源相同的屏幕空间大小。 也就是说，如果<code>.../my_icon.png</code>是72px乘72px，那么<code>.../3.0x/my_icon.png</code>应该是216px乘216px; 但如果未指定宽度和高度，它们都将渲染为72像素×72像素（以逻辑像素为单位）。</p>
+<p><code>pubspec.yaml</code>中asset部分中的每一项都应与实际文件相对应，<strong>但主资源项除外。当主资源缺少某个资源时，会按分辨率从低到高的顺序去选择 ，也就是说1x中没有的话会在2x中找，2x中还没有的话就在3x中找。</strong></p>
+<p>包也可以选择在其<code>lib/</code>文件夹中包含未在其<code>pubspec.yaml</code>文件中声明的资源。在这种情况下，对于要打包的图片，应用程序必须在<code>pubspec.yaml</code>中指定包含哪些图像。</p>
+</li>
+</ol>
+</li>
+<li><p>指定iOS启动图标，在Flutter项目的根目录中，导航到<code>.../ios/Runner</code>。该目录中<code>Assets.xcassets/AppIcon.appiconset</code>已经包含占位符图片（见图2-9）， 只需将它们替换为适当大小的图片，保留原始文件名称。</p>
+<p>更新iOS启动页，要将图片添加到启动屏幕（splash screen）的中心，请导航至<code>.../ios/Runner</code>。在<code>Assets.xcassets/LaunchImage.imageset</code>， 拖入图片，并命名为<code>LaunchImage.png</code>、<code>LaunchImage@2x.png</code>、<code>LaunchImage@3x.png</code>。</p>
+</li>
+<li><p>调试Flutter</p>
+<ol>
+<li><p>使用flutter analyze分析代码，这个工具是一个静态代码检查工具，它是<code>dartanalyzer</code>工具的一个包装，主要用于分析代码并帮助开发者发现可能的错误，比如，Dart分析器大量使用了代码中的类型注释来帮助追踪问题，避免<code>var</code>、无类型的参数、无类型的列表文字等。</p>
+</li>
+<li><p>当使用Dart Observatory（或另一个Dart调试器，例如IntelliJ IDE中的调试器）时，可以使用该<code>debugger()</code>语句插入编程式断点。要使用这个，你必须添加<code>import &#39;dart:developer&#39;;</code>到相关文件顶部。</p>
+<p><code>debugger()</code>语句采用一个可选<code>when</code>参数，您可以指定该参数仅在特定条件为真时中断，如下所示：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> someFunction(<span class="built_in">double</span> offset) &#123;</span><br><span class="line">  debugger(when: offset &gt; <span class="number">30.0</span>);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你一次输出太多，那么Android有时会丢弃一些日志行。为了避免这种情况，您可以使用Flutter的<code>foundation</code>库中的<a href="https://docs.flutter.io/flutter/foundation/debugPrint.html" target="_blank" rel="noopener"><code>debugPrint()</code></a>。 这是一个封装print，它将输出限制在一个级别，避免被Android内核丢弃。</p>
+</li>
+<li><p>要关闭调试模式并使用发布模式，请使用<code>flutter run --release</code>运行您的应用程序。 这也关闭了Observatory调试器。一个中间模式可以关闭除Observatory之外所有调试辅助工具的，称为“profile mode”，用<code>--profile</code>替代<code>--release</code>即可。</p>
+</li>
+<li><p>要转储Widgets树的状态，请调用<a href="https://docs.flutter.io/flutter/widgets/debugDumpApp.html" target="_blank" rel="noopener"><code>debugDumpApp()</code></a>。 只要应用程序已经构建了至少一次（即在调用<code>build()</code>之后的任何时间），您可以在应用程序未处于构建阶段（即，不在<code>build()</code>方法内调用 ）的任何时间调用此方法（在调用<code>runApp()</code>之后）。</p>
+</li>
+<li><p>如果您尝试调试布局问题，那么Widget树可能不够详细。在这种情况下，您可以通过调用<code>debugDumpRenderTree()</code>转储渲染树。</p>
+</li>
+</ol>
+</li>
+<li><p>Dart线程模型及异常捕获</p>
+<p>Java和OC都是多线程模型的编程语言，任意一个线程触发异常且该异常未被捕获时，就会导致整个进程退出。但Dart和JavaScript不会，它们都是单线程模型，运行机制很相似(但有区别)。</p>
+<p><a href="https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action/docs/imgs/2-12.png" target="_blank" rel="noopener">img</a></p>
+<p>Dart 在单线程中是以消息循环机制来运行的，其中包含两个任务队列，一个是“微任务队列” <strong>microtask queue</strong>，另一个叫做“事件队列” <strong>event queue</strong>。从图中可以发现，微任务队列的执行优先级高于事件队列。</p>
+<p>在Dart中，所有的外部事件任务都在事件队列中，如IO、计时器、点击、以及绘制事件等，而微任务通常来源于Dart内部，并且微任务非常少，之所以如此，是因为微任务队列优先级高，如果微任务太多，执行时间总和就越久，事件队列任务的延迟也就越久，对于GUI应用来说最直观的表现就是比较卡，所以必须得保证微任务队列不会太长。值得注意的是，我们可以通过<code>Future.microtask(…)</code>方法向微任务队列插入一个任务。</p>
+<p><strong>在事件循环中，当某个任务发生异常并没有被捕获时，程序并不会退出，而直接导致的结果是当前任务的后续代码就不会被执行了，也就是说一个任务中的异常是不会影响其它任务执行的。</strong></p>
+<p>Flutter 框架为我们在很多关键的方法进行了异常捕获。这里举一个例子，当我们布局发生越界或不合规范时，Flutter就会自动弹出一个错误界面，这是因为Flutter已经在执行build方法时添加了异常捕获，最终的源码如下：</p>
+<p>这样我们就可以处理那些Flutter为我们捕获的异常了，接下来我们看看如何捕获其它异常。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@override</span></span><br><span class="line"><span class="keyword">void</span> performRebuild() &#123;</span><br><span class="line"> ...</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">//执行build方法  </span></span><br><span class="line">    built = build();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e, stack) &#123;</span><br><span class="line">    <span class="comment">// 有异常时则弹出错误提示  </span></span><br><span class="line">    built = ErrorWidget.builder(_debugReportException(<span class="string">'building <span class="subst">$this</span>'</span>, e, stack));</span><br><span class="line">  &#125; </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现<code>onError</code>是<code>FlutterError</code>的一个静态属性，它有一个默认的处理方法 <code>dumpErrorToConsole</code>，到这里就清晰了，如果我们想自己上报异常，只需要提供一个自定义的错误处理回调即可，如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> main() &#123;</span><br><span class="line">  FlutterError.onError = (FlutterErrorDetails details) &#123;</span><br><span class="line">    reportError(details);</span><br><span class="line">  &#125;;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们最终的异常捕获和上报代码大致如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> collectLog(<span class="built_in">String</span> line)&#123;</span><br><span class="line">    ... <span class="comment">//收集日志</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> reportErrorAndLog(FlutterErrorDetails details)&#123;</span><br><span class="line">    ... <span class="comment">//上报错误和日志逻辑</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FlutterErrorDetails makeDetails(<span class="built_in">Object</span> obj, StackTrace stack)&#123;</span><br><span class="line">    ...<span class="comment">// 构建错误信息</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> main() &#123;</span><br><span class="line">  FlutterError.onError = (FlutterErrorDetails details) &#123;</span><br><span class="line">    reportErrorAndLog(details);</span><br><span class="line">  &#125;;</span><br><span class="line">  runZoned(</span><br><span class="line">    () =&gt; runApp(MyApp()),</span><br><span class="line">    zoneSpecification: ZoneSpecification(</span><br><span class="line">      <span class="built_in">print</span>: (Zone self, ZoneDelegate parent, Zone zone, <span class="built_in">String</span> line) &#123;</span><br><span class="line">        collectLog(line); <span class="comment">// 收集日志</span></span><br><span class="line">      &#125;,</span><br><span class="line">    ),</span><br><span class="line">    onError: (<span class="built_in">Object</span> obj, StackTrace stack) &#123;</span><br><span class="line">      <span class="keyword">var</span> details = makeDetails(obj, stack);</span><br><span class="line">      reportErrorAndLog(details);</span><br><span class="line">    &#125;,</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="组件基础"><a href="#组件基础" class="headerlink" title="组件基础"></a>组件基础</h3><ol>
+<li><p>Widget简介</p>
+<p>在Flutter中，Widget的功能是“描述一个UI元素的配置数据”，它就是说，Widget其实并不是表示最终绘制在设备屏幕上的显示元素，而它只是描述显示元素的一个配置数据。</p>
+<p>实际上，<font color="#dd0000"><strong>Flutter中真正代表屏幕上显示元素的类是<code>Element</code>，也就是说Widget只是描述<code>Element</code>的配置数据！</strong></font><strong>Widget只是UI元素的一个配置数据，并且一个Widget可以对应多个Element</strong>。</p>
+</li>
+<li><p>我们先来看一下Widget类的声明：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@immutable</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Widget</span> <span class="keyword">extends</span> <span class="title">DiagnosticableTree</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> Widget(&#123; <span class="keyword">this</span>.key &#125;);</span><br><span class="line">  <span class="keyword">final</span> Key key;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@protected</span></span><br><span class="line">  <span class="built_in">Element</span> createElement();</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="built_in">String</span> toStringShort() &#123;</span><br><span class="line">    <span class="keyword">return</span> key == <span class="keyword">null</span> ? <span class="string">'<span class="subst">$runtimeType</span>'</span> : <span class="string">'<span class="subst">$runtimeType</span>-<span class="subst">$key</span>'</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="keyword">void</span> debugFillProperties(DiagnosticPropertiesBuilder properties) &#123;</span><br><span class="line">    <span class="keyword">super</span>.debugFillProperties(properties);</span><br><span class="line">    properties.defaultDiagnosticsTreeStyle = DiagnosticsTreeStyle.dense;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">bool</span> canUpdate(Widget oldWidget, Widget newWidget) &#123;</span><br><span class="line">    <span class="keyword">return</span> oldWidget.runtimeType == newWidget.runtimeType</span><br><span class="line">        &amp;&amp; oldWidget.key == newWidget.key;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Widget</code>类继承自<code>DiagnosticableTree</code>，<code>DiagnosticableTree</code>即“诊断树”，主要作用是提供调试信息。</li>
+<li><code>Key</code>: 这个<code>key</code>属性类似于React/Vue中的<code>key</code>，主要的作用是决定是否在下一次<code>build</code>时复用旧的widget，决定的条件在<code>canUpdate()</code>方法中。</li>
+<li><code>createElement()</code>：正如前文所述“一个Widget可以对应多个<code>Element</code>”；Flutter Framework在构建UI树时，会先调用此方法生成对应节点的<code>Element</code>对象。此方法是Flutter Framework隐式调用的，在我们开发过程中基本不会调用到。</li>
+<li><code>debugFillProperties(...)</code> 复写父类的方法，主要是设置诊断树的一些特性。</li>
+<li><code>canUpdate(...)</code>是一个静态方法，它主要用于在Widget树重新<code>build</code>时复用旧的widget，其实具体来说，应该是：是否用新的Widget对象去更新旧UI树上所对应的<code>Element</code>对象的配置；通过其源码我们可以看到，只要<code>newWidget</code>与<code>oldWidget</code>的<code>runtimeType</code>和<code>key</code>同时相等时就会用<code>newWidget</code>去更新<code>Element</code>对象的配置，否则就会创建新的<code>Element</code>。</li>
+</ul>
+<ol start="3">
+<li><p>context</p>
+<p><code>build</code>方法有一个<code>context</code>参数，它是<code>BuildContext</code>类的一个实例，表示当前widget在widget树中的上下文，每一个widget都会对应一个context对象（因为每一个widget都是widget树上的一个节点）。<font color="#dd0000"><strong>实际上，<code>context</code>是当前widget在widget树中位置中执行”相关操作“的一个句柄，比如它提供了从当前widget开始向上遍历widget树以及按照widget类型查找父级widget的方法。</strong></font></p>
+</li>
+<li><p>StatefulWidget</p>
+<p>和<code>StatelessWidget</code>一样，<code>StatefulWidget</code>也是继承自<code>Widget</code>类，并重写了<code>createElement()</code>方法，不同的是返回的<code>Element</code> 对象并不相同；另外<code>StatefulWidget</code>类中添加了一个新的接口<code>createState()</code>。</p>
+</li>
+<li><p>State</p>
+<p>一个StatefulWidget类会对应一个State类，State表示与其对应的StatefulWidget要维护的状态，State中的保存的状态信息可以：</p>
+<ol>
+<li>在widget 构建时可以被同步读取。</li>
+<li>在widget生命周期中可以被改变，<strong>当State被改变时，可以手动调用其<code>setState()</code>方法通知Flutter framework状态发生改变</strong>，Flutter framework在收到消息后，会重新调用其<code>build</code>方法重新构建widget树，从而达到更新UI的目的。</li>
+<li>State中有两个常用属性：<ol>
+<li><code>widget</code>，它表示与该State实例关联的widget实例，由Flutter framework动态设置。注意，这种关联并非永久的，因为在应用声明周期中，UI树上的某一个节点的widget实例在重新构建时可能会变化，但State实例只会在第一次插入到树中时被创建，当在重新构建时，如果widget被修改了，Flutter framework会动态设置State.widget为新的widget实例。</li>
+<li><code>context</code>。StatefulWidget对应的BuildContext，作用同StatelessWidget的BuildContext。</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>State生命周期</p>
+</li>
+<li><p>在widget树中获取State对象的三种方法</p>
+<ol>
+<li><p>通过Context获取</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ScaffoldState _state = context.ancestorStateOfType(</span><br><span class="line">              TypeMatcher&lt;ScaffoldState&gt;());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过静态方法of获取</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ScaffoldState _state=Scaffold.of(context);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过GlobalKey获取</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> GlobalKey&lt;ScaffoldState&gt; _globalKey= GlobalKey();</span><br><span class="line">...</span><br><span class="line">Scaffold(</span><br><span class="line">    key: _globalKey , <span class="comment">//设置key</span></span><br><span class="line">    ...  </span><br><span class="line">)</span><br><span class="line">_globalKey.currentState.openDrawer()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p>状态管理</p>
+<p>如何决定使用哪种管理方法？下面是官方给出的一些原则可以帮助你做决定：</p>
+<ul>
+<li>如果状态是用户数据，如复选框的选中状态、滑块的位置，则该状态最好由父Widget管理。</li>
+<li>如果状态是有关界面外观效果的，例如颜色、动画，那么状态最好由Widget本身来管理。</li>
+<li>如果某一个状态是不同Widget共享的则最好由它们共同的父Widget管理。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="基础组件"><a href="#基础组件" class="headerlink" title="基础组件"></a>基础组件</h3><ol>
+<li><p>文本、字体样式</p>
+<p><code>textAlign</code>：文本的对齐方式；可以选择左对齐、右对齐还是居中。</p>
+<p><code>maxLines</code>、<code>overflow</code>：指定文本显示的最大行数，默认情况下，文本是自动折行的，如果指定此参数，则文本最多不会超过指定的行。如果有多余的文本，可以通过<code>overflow</code>来指定截断方式，默认是直接截断，本例中指定的截断方式<code>TextOverflow.ellipsis</code>，它会将多余文本截断后以省略符“…”表示；TextOverflow的其它截断方式请参考SDK文档。</p>
+<p><code>textScaleFactor</code>：代表文本相对于当前字体大小的缩放因子，相对于去设置文本的样式<code>style</code>属性的<code>fontSize</code>，它是调整字体大小的一个快捷方式。</p>
+<p>如果我们需要对一个Text内容的不同部分按照不同的样式显示，这时就可以使用<code>TextSpan</code>，它代表文本的一个“片段”。</p>
+</li>
+<li><p>DefaultTextStyle</p>
+<p>在Widget树中，文本的样式默认是可以被继承的（子类文本类组件未指定具体样式时可以使用Widget树中父级设置的默认样式），因此，如果在Widget树的某一个节点处设置一个默认的文本样式，那么该节点的子树中所有文本都会默认使用这个样式，而<code>DefaultTextStyle</code>正是用于设置默认文本样式的。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">DefaultTextStyle(</span><br><span class="line">  <span class="comment">//1.设置文本默认样式  </span></span><br><span class="line">  style: TextStyle(</span><br><span class="line">    color:Colors.red,</span><br><span class="line">    fontSize: <span class="number">20.0</span>,</span><br><span class="line">  ),</span><br><span class="line">  textAlign: TextAlign.start,</span><br><span class="line">  child: Column(</span><br><span class="line">    crossAxisAlignment: CrossAxisAlignment.start,</span><br><span class="line">    children: &lt;Widget&gt;[</span><br><span class="line">      Text(<span class="string">"hello world"</span>),</span><br><span class="line">      Text(<span class="string">"I am Jack"</span>),</span><br><span class="line">      Text(<span class="string">"I am Jack"</span>,</span><br><span class="line">        style: TextStyle(</span><br><span class="line">          inherit: <span class="keyword">false</span>, <span class="comment">//2.不继承默认样式</span></span><br><span class="line">          color: Colors.grey</span><br><span class="line">        ),</span><br><span class="line">      ),</span><br><span class="line">    ],</span><br><span class="line">  ),</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>图片</p>
+<p>Flutter中，我们可以通过<code>Image</code>组件来加载并显示图片，<code>Image</code>的数据源可以是asset、文件、内存以及网络。</p>
+<h3 id="ImageProvider"><a href="#ImageProvider" class="headerlink" title="ImageProvider"></a>ImageProvider</h3><p><code>ImageProvider</code> 是一个抽象类，主要定义了图片数据获取的接口<code>load()</code>，从不同的数据源获取图片需要实现不同的<code>ImageProvider</code> ，如<code>AssetImage</code>是实现了从Asset中加载图片的ImageProvider，而<code>NetworkImage</code>实现了从网络加载图片的ImageProvider。</p>
+<h3 id="Image"><a href="#Image" class="headerlink" title="Image"></a>Image</h3><p><code>Image</code> widget有一个必选的<code>image</code>参数，它对应一个ImageProvider。下面我们分别演示一下如何从asset和网络加载图片。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//从Assets中加载图片</span></span><br><span class="line">Image.asset(<span class="string">"images/avatar.png"</span>,</span><br><span class="line">  width: <span class="number">100.0</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment">//从网络加载图片</span></span><br><span class="line">Image.network(</span><br><span class="line">  <span class="string">"https://avatars2.githubusercontent.com/u/20411648?s=460&amp;v=4"</span>,</span><br><span class="line">  width: <span class="number">100.0</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Image缓存"><a href="#Image缓存" class="headerlink" title="Image缓存"></a>Image缓存</h3><p>Flutter框架对加载过的图片是有缓存的（内存），默认最大缓存数量是1000，最大缓存空间为100M。关于Image的详细内容及原理我们将会在后面进阶部分深入介绍。</p>
+<p>Flutter中，可以像Web开发一样使用iconfont，iconfont即“字体图标”，它是将图标做成字体文件，然后通过指定不同的字符而显示不同的图片。</p>
+</li>
+<li><p>ICON</p>
+<p>Flutter中，可以像Web开发一样使用iconfont，iconfont即“字体图标”，它是将图标做成字体文件，然后通过指定不同的字符而显示不同的图片。</p>
+<blockquote>
+<p>在字体文件中，每一个字符都对应一个位码，而每一个位码对应一个显示字形，不同的字体就是指字形不同，即字符对应的字形是不同的。而在iconfont中，只是将位码对应的字形做成了图标，所以不同的字符最终就会渲染成不同的图标。</p>
+</blockquote>
+<p>在Flutter开发中，iconfont和图片相比有如下优势：</p>
+<ol>
+<li>体积小：可以减小安装包大小。</li>
+<li>矢量的：iconfont都是矢量图标，放大不会影响其清晰度。</li>
+<li>可以应用文本样式：可以像文本一样改变字体图标的颜色、大小对齐等。</li>
+<li><strong>可以通过TextSpan和文本混用。</strong></li>
+</ol>
+<p>Flutter封装了<code>IconData</code>和<code>Icon</code>来专门显示字体图标，上面的例子也可以用如下方式实现：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Row(</span><br><span class="line">  mainAxisAlignment: MainAxisAlignment.center,</span><br><span class="line">  children: &lt;Widget&gt;[</span><br><span class="line">    Icon(Icons.accessible,color: Colors.green,),</span><br><span class="line">    Icon(Icons.error,color: Colors.green,),</span><br><span class="line">    Icon(Icons.fingerprint,color: Colors.green,),</span><br><span class="line">  ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>Icons</code>类中包含了所有Material Design图标的<code>IconData</code>静态变量定义。,</p>
+</li>
+<li><p>单选开关和复选框</p>
+<p>Material 组件库中提供了Material风格的单选开关<code>Switch</code>和复选框<code>Checkbox</code>，<font color="#dd0000"><strong>虽然它们都是继承自<code>StatefulWidget</code>，但它们本身不会保存当前选中状态，选中状态都是由父组件来管理的。</strong></font>当<code>Switch</code>或<code>Checkbox</code>被点击时，会触发它们的<code>onChanged</code>回调，我们可以在此回调中处理选中状态改变逻辑。</p>
+<p>值得一提的是<code>Checkbox</code>有一个属性<code>tristate</code> ，表示是否为三态，其默认值为<code>false</code> ，这时Checkbox有两种状态即“选中”和“不选中”，对应的value值为<code>true</code>和<code>false</code> 。如果<code>tristate</code>值为<code>true</code>时，value的值会增加一个状态<code>null</code>，读者可以自行了解。</p>
+</li>
+<li><p>输入框及表单</p>
+<p><code>TextField</code>用于文本输入，它提供了很多属性，我们先简单介绍一下主要属性的作用，然后通过几个示例来演示一下关键属性的用法。</p>
+</li>
+<li><p>进度指示器</p>
+<p>Material 组件库中提供了两种进度指示器：<code>LinearProgressIndicator</code>和<code>CircularProgressIndicator</code>，它们都可以同时用于精确的进度指示和模糊的进度指示。</p>
+<h3 id="LinearProgressIndicator"><a href="#LinearProgressIndicator" class="headerlink" title="LinearProgressIndicator"></a>LinearProgressIndicator</h3><p><code>LinearProgressIndicator</code>是一个线性、条状的进度条，定义如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LinearProgressIndicator(&#123;</span><br><span class="line">  <span class="built_in">double</span> value,</span><br><span class="line">  Color backgroundColor,</span><br><span class="line">  Animation&lt;Color&gt; valueColor,</span><br><span class="line">  ...</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>value</code>：<code>value</code>表示当前的进度，取值范围为[0,1]；<strong>如果<code>value</code>为<code>null</code>时则指示器会执行一个循环动画（模糊进度）；当<code>value</code>不为<code>null</code>时，指示器为一个具体进度的进度条。</strong></li>
+<li><code>backgroundColor</code>：指示器的背景色。</li>
+<li><code>valueColor</code>: 指示器的进度条颜色；值得注意的是，该值类型是<code>Animation&lt;Color&gt;</code>，这允许我们对进度条的颜色也可以指定动画。如果我们不需要对进度条颜色执行动画，换言之，我们想对进度条应用一种固定的颜色，此时我们可以通过<code>AlwaysStoppedAnimation</code>来指定。</li>
+</ul>
+</li>
+</ol>
+<h3 id="布局类组件"><a href="#布局类组件" class="headerlink" title="布局类组件"></a>布局类组件</h3><p>布局类组件都会包含一个或多个子组件，不同的布局类组件对子组件排版(layout)方式不同。我们在前面说过<strong><code>Element</code>树才是最终的绘制树，<code>Element</code>树是通过Widget树来创建的（通过<code>Widget.createElement()</code>），Widget其实就是Element的配置数据。</strong>在Flutter中，根据Widget<strong>是否需要包含子节点</strong>将Widget分为了三类，分别对应三种Element，如下表：</p>
+<table>
+<thead>
+<tr>
+<th>Widget</th>
+<th>对应的Element</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LeafRenderObjectWidget</td>
+<td>LeafRenderObjectElement</td>
+<td><strong>Widget树的叶子节点，用于没有子节点的widget，通常基础组件都属于这一类，如Image。</strong></td>
+</tr>
+<tr>
+<td>SingleChildRenderObjectWidget</td>
+<td>SingleChildRenderObjectElement</td>
+<td><strong>包含一个子Widget，如：ConstrainedBox、DecoratedBox等</strong></td>
+</tr>
+<tr>
+<td>MultiChildRenderObjectWidget</td>
+<td>MultiChildRenderObjectElement</td>
+<td><strong>包含多个子Widget，一般都有一个children参数，接受一个Widget数组。如Row、Column、Stack等</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意，Flutter中的很多Widget是直接继承自StatelessWidget或StatefulWidget，然后在<code>build()</code>方法中构建真正的RenderObjectWidget，如Text，它其实是继承自StatelessWidget，然后在<code>build()</code>方法中通过RichText来构建其子树，而RichText才是继承自MultiChildRenderObjectWidget。所以为了方便叙述，我们也可以直接说Text属于MultiChildRenderObjectWidget（其它widget也可以这么描述），这才是本质。读到这里我们也会发现，其实<strong>StatelessWidget和StatefulWidget就是两个用于组合Widget的基类，它们本身并不关联最终的渲染对象（RenderObjectWidget）</strong>。</p>
+</blockquote>
+<p><font color="#dd0000"><strong>布局类组件就是指直接或间接继承(包含)<code>MultiChildRenderObjectWidget</code>的Widget，它们一般都会有一个<code>children</code>属性用于接收子Widget</strong></font>。我们看一下继承关系 Widget &gt; RenderObjectWidget &gt; (Leaf/SingleChild/MultiChild)RenderObjectWidget 。</p>
+<p><code>RenderObjectWidget</code>类中定义了创建、更新<code>RenderObject</code>的方法，子类必须实现他们，关于<code>RenderObject</code>我们现在只需要知道它是最终布局、渲染UI界面的对象即可，也就是说，对于布局类组件来说，其布局算法都是通过对应的<code>RenderObject</code>对象来实现的，所以读者如果对接下来介绍的某个布局类组件的原理感兴趣，可以查看其对应的<code>RenderObject</code>的实现，比如<code>Stack</code>（层叠布局）对应的<code>RenderObject</code>对象就是<code>RenderStack</code>，而层叠布局的实现就在<code>RenderStack</code>中。</p>
+<ol>
+<li><p>线性布局(Row和Column)</p>
+<p>所谓线性布局，即指沿水平或垂直方向排布子组件。Flutter中通过<code>Row</code>和<code>Column</code>来实现线性布局，类似于Android中的<code>LinearLayout</code>控件。<strong><code>Row</code>和<code>Column</code>都继承自<code>Flex</code></strong>。</p>
+<p>对于线性布局，有主轴和纵轴之分，如果布局是沿水平方向，那么主轴就是指水平方向，而纵轴即垂直方向；如果布局沿垂直方向，那么主轴就是指垂直方向，而纵轴就是水平方向。在线性布局中，有两个定义对齐方式的枚举类<code>MainAxisAlignment</code>和<code>CrossAxisAlignment</code>，分别代表主轴对齐和纵轴对齐。</p>
+</li>
+<li><p>Row</p>
+<p>主要属性：</p>
+<ul>
+<li><code>textDirection</code>：表示水平方向子组件的布局顺序(是从左往右还是从右往左)，默认为系统当前Locale环境的文本方向(如中文、英语都是从左往右，而阿拉伯语是从右往左)。</li>
+<li><code>mainAxisSize</code>：表示<code>Row</code>在主轴(水平)方向占用的空间，默认是<code>MainAxisSize.max</code>，表示尽可能多的占用水平方向的空间，此时无论子widgets实际占用多少水平空间，<code>Row</code>的宽度始终等于水平方向的最大宽度；而<code>MainAxisSize.min</code>表示尽可能少的占用水平空间，当子组件没有占满水平剩余空间，则<code>Row</code>的实际宽度等于所有子组件占用的的水平空间；</li>
+<li><code>mainAxisAlignment</code>：表示子组件在<code>Row</code>所占用的水平空间内对齐方式，如果<code>mainAxisSize</code>值为<code>MainAxisSize.min</code>，则此属性无意义，因为子组件的宽度等于<code>Row</code>的宽度。只有当<code>mainAxisSize</code>的值为<code>MainAxisSize.max</code>时，此属性才有意义，<code>MainAxisAlignment.start</code>表示沿<code>textDirection</code>的初始方向对齐，如<code>textDirection</code>取值为<code>TextDirection.ltr</code>时，则<code>MainAxisAlignment.start</code>表示左对齐，<code>textDirection</code>取值为<code>TextDirection.rtl</code>时表示从右对齐。而<code>MainAxisAlignment.end</code>和<code>MainAxisAlignment.start</code>正好相反；<code>MainAxisAlignment.center</code>表示居中对齐。读者可以这么理解：<code>textDirection</code>是<code>mainAxisAlignment</code>的参考系。</li>
+<li><code>verticalDirection</code>：<strong>表示<code>Row</code>纵轴（垂直）的对齐方向，默认是<code>VerticalDirection.down</code>，表示从上到下。</strong></li>
+<li><code>crossAxisAlignment</code>：表示子组件在纵轴方向的对齐方式，<code>Row</code>的高度等于子组件中最高的子元素高度，它的取值和<code>MainAxisAlignment</code>一样(包含<code>start</code>、<code>end</code>、 <code>center</code>三个值)，<font color="#dd0000"><strong>不同的是<code>crossAxisAlignment</code>的参考系是<code>verticalDirection</code>，即<code>verticalDirection</code>值为<code>VerticalDirection.down</code>时<code>crossAxisAlignment.start</code>指顶部对齐，<code>verticalDirection</code>值为<code>VerticalDirection.up</code>时，<code>crossAxisAlignment.start</code>指底部对齐；而<code>crossAxisAlignment.end</code>和<code>crossAxisAlignment.start</code>正好相反；</strong></font></li>
+</ul>
+</li>
+<li><p>弹性布局</p>
+<ol>
+<li><p>弹性布局允许子组件按照一定比例来分配父容器空间。弹性布局的概念在其它UI系统中也都存在，如H5中的弹性盒子布局，Android中的<code>FlexboxLayout</code>等。Flutter中的弹性布局主要通过<code>Flex</code>和<code>Expanded</code>来配合实现。</p>
+<p><code>Flex</code>组件可以沿着水平或垂直方向排列子组件，如果你知道主轴方向，使用<code>Row</code>或<code>Column</code>会方便一些，因为<font color="#dd0000"><strong><code>Row</code>和<code>Column</code>都继承自<code>Flex</code></strong></font>，参数基本相同，所以能使用Flex的地方基本上都可以使用<code>Row</code>或<code>Column</code>。<strong><code>Flex</code>本身功能是很强大的，它也可以和<code>Expanded</code>组件配合实现弹性布局。</strong></p>
+</li>
+<li><p><code>Spacer</code>的功能是占用指定比例的空间，实际上它只是<code>Expanded</code>的一个包装类</p>
+</li>
+</ol>
+</li>
+<li><p>流式布局</p>
+<p><code>Wrap</code>和<code>Flex</code>（包括<code>Row</code>和<code>Column</code>）除了超出显示范围后<code>Wrap</code>会折行外，其它行为基本相同。</p>
+<ul>
+<li><p><code>spacing</code>：主轴方向子widget的间距</p>
+</li>
+<li><p><code>runSpacing</code>：纵轴方向的间距</p>
+</li>
+<li><p><code>runAlignment</code>：纵轴方向的对齐方式</p>
+</li>
+</ul>
+<p>我们一般很少会使用<code>Flow</code>，因为其过于复杂，需要自己实现子widget的位置转换，在很多场景下首先要考虑的是<code>Wrap</code>是否满足需求。<code>Flow</code>主要用于一些需要自定义布局策略或性能要求较高(如动画中)的场景。</p>
+<p><code>Flow</code>有如下优点：</p>
+<ul>
+<li>性能好；<code>Flow</code>是一个对子组件尺寸以及位置调整非常高效的控件，<code>Flow</code>用转换矩阵在对子组件进行位置调整的时候进行了优化：在<code>Flow</code>定位过后，如果子组件的尺寸或者位置发生了变化，在<code>FlowDelegate</code>中的<code>paintChildren()</code>方法中调用<code>context.paintChild</code> 进行重绘，而<code>context.paintChild</code>在重绘时使用了转换矩阵，并没有实际调整组件位置。</li>
+<li>灵活；由于我们需要自己实现<code>FlowDelegate</code>的<code>paintChildren()</code>方法，所以我们需要自己计算每一个组件的位置，因此，可以自定义布局策略。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li><p>使用复杂。</p>
+</li>
+<li><p><font color="#dd0000"><strong>不能自适应子组件大小，必须通过指定父容器大小或实现<code>TestFlowDelegate</code>的<code>getSize</code>返回固定大小。</strong></font></p>
+</li>
+</ul>
+</li>
+<li><p>层叠布局</p>
+<p>层叠布局和Web中的绝对定位、Android中的Frame布局是相似的，子组件可以根据距父容器四个角的位置来确定自身的位置。绝对定位允许子组件堆叠起来（按照代码中声明的顺序）。Flutter中使用<code>Stack</code>和<code>Positioned</code>这两个组件来配合实现绝对定位。<code>Stack</code>允许子组件堆叠，而<code>Positioned</code>用于根据<code>Stack</code>的四个角来确定子组件的位置。</p>
+<ol>
+<li><p>Stack</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Stack(&#123;</span><br><span class="line">  <span class="keyword">this</span>.alignment = AlignmentDirectional.topStart,</span><br><span class="line">  <span class="keyword">this</span>.textDirection,</span><br><span class="line">  <span class="keyword">this</span>.fit = StackFit.loose,</span><br><span class="line">  <span class="keyword">this</span>.overflow = Overflow.clip,</span><br><span class="line">  <span class="built_in">List</span>&lt;Widget&gt; children = <span class="keyword">const</span> &lt;Widget&gt;[],</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>alignment</code>：此参数决定如何去对齐没有定位（没有使用<code>Positioned</code>）或部分定位的子组件。所谓部分定位，在这里<strong>特指没有在某一个轴上定位：</strong><code>left</code>、<code>right</code>为横轴，<code>top</code>、<code>bottom</code>为纵轴，只要包含某个轴上的一个定位属性就算在该轴上有定位。</li>
+<li><code>textDirection</code>：和<code>Row</code>、<code>Wrap</code>的<code>textDirection</code>功能一样，都用于确定<code>alignment</code>对齐的参考系，即：<code>textDirection</code>的值为<code>TextDirection.ltr</code>，则<code>alignment</code>的<code>start</code>代表左，<code>end</code>代表右，即<code>从左往右</code>的顺序；<code>textDirection</code>的值为<code>TextDirection.rtl</code>，则alignment的<code>start</code>代表右，<code>end</code>代表左，即<code>从右往左</code>的顺序。</li>
+<li><code>fit</code>：此参数用于确定<strong>没有定位</strong>的子组件如何去适应<code>Stack</code>的大小。<code>StackFit.loose</code>表示使用子组件的大小，<code>StackFit.expand</code>表示扩伸到<code>Stack</code>的大小。</li>
+<li><code>overflow</code>：此属性决定如何显示超出<code>Stack</code>显示空间的子组件；值为<code>Overflow.clip</code>时，超出部分会被剪裁（隐藏），值为<code>Overflow.visible</code> 时则不会。</li>
+</ul>
+</li>
+<li><p>Positioned</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Positioned(&#123;</span><br><span class="line">  Key key,</span><br><span class="line">  <span class="keyword">this</span>.left, </span><br><span class="line">  <span class="keyword">this</span>.top,</span><br><span class="line">  <span class="keyword">this</span>.right,</span><br><span class="line">  <span class="keyword">this</span>.bottom,</span><br><span class="line">  <span class="keyword">this</span>.width,</span><br><span class="line">  <span class="keyword">this</span>.height,</span><br><span class="line">  <span class="meta">@required</span> Widget child,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><code>left</code>、<code>top</code> 、<code>right</code>、 <code>bottom</code>分别代表离<code>Stack</code>左、上、右、底四边的距离。<code>width</code>和<code>height</code>用于指定需要定位元素的宽度和高度。注意，<code>Positioned</code>的<code>width</code>、<code>height</code> 和其它地方的意义稍微有点区别，此处用于配合<code>left</code>、<code>top</code> 、<code>right</code>、 <code>bottom</code>来定位组件，<strong>举个例子，在水平方向时，你只能指定<code>left</code>、<code>right</code>、<code>width</code>三个属性中的两个，如指定<code>left</code>和<code>width</code>后，<code>right</code>会自动算出(<code>left</code>+<code>width</code>)，</strong><font color="#dd0000"><strong>如果同时指定三个属性则会报错，垂直方向同理</strong></font>。</p>
+<p><strong>未定位的Widget会占满Stack整个空间</strong>：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Stack(</span><br><span class="line">  alignment:Alignment.center ,</span><br><span class="line">  fit: StackFit.expand, <span class="comment">//未定位widget占满Stack整个空间</span></span><br><span class="line">  children: &lt;Widget&gt;[</span><br><span class="line">    Positioned(</span><br><span class="line">      left: <span class="number">18.0</span>,</span><br><span class="line">      child: Text(<span class="string">"I am Jack"</span>),</span><br><span class="line">    ),</span><br><span class="line">    Container(child: Text(<span class="string">"Hello world"</span>,style: TextStyle(color: Colors.white)),</span><br><span class="line">      color: Colors.red,</span><br><span class="line">    ),</span><br><span class="line">    Positioned(</span><br><span class="line">      top: <span class="number">18.0</span>,</span><br><span class="line">      child: Text(<span class="string">"Your friend"</span>),</span><br><span class="line">    )</span><br><span class="line">  ],</span><br><span class="line">),</span><br></pre></td></tr></table></figure>
+
+<p>因为第二个组件没有指定位置，所以它会占满整个stack，且它位于第三个组件上层，所以会遮罩第三个组件。</p>
+</li>
+</ol>
+</li>
+<li><p>对齐与相对定位</p>
+</li>
+</ol>
+<h3 id="容器类组件"><a href="#容器类组件" class="headerlink" title="容器类组件"></a>容器类组件</h3><p>容器类Widget和布局类Widget都作用于其子Widget，不同的是：</p>
+<ul>
+<li>布局类Widget一般都需要接收一个widget数组（children），他们直接或间接继承自（或包含）MultiChildRenderObjectWidget ；而容器类Widget一般只需要接收一个子Widget（child），他们直接或间接继承自（或包含）SingleChildRenderObjectWidget。</li>
+<li>布局类Widget是按照一定的排列方式来对其子Widget进行排列；而容器类Widget一般只是包装其子Widget，对其添加一些修饰（补白或背景色等）、变换(旋转或剪裁等)、或限制(大小等)。</li>
+</ul>
+<h4 id="填充-Padding"><a href="#填充-Padding" class="headerlink" title="填充(Padding)"></a>填充(Padding)</h4><p><code>Padding</code>可以给其子节点添加填充（留白），和边距效果类似。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Padding(&#123;</span><br><span class="line">  ...</span><br><span class="line">  EdgeInsetsGeometry padding,</span><br><span class="line">  Widget child,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><code>EdgeInsetsGeometry</code>是一个抽象类，开发中，我们一般都使用<code>EdgeInsets</code>类，它是<code>EdgeInsetsGeometry</code>的一个子类，定义了一些设置填充的便捷方法。</p>
+<h5 id="EdgeInsets"><a href="#EdgeInsets" class="headerlink" title="EdgeInsets"></a>EdgeInsets</h5><p>我们看看<code>EdgeInsets</code>提供的便捷方法：</p>
+<ul>
+<li><code>fromLTRB(double left, double top, double right, double bottom)</code>：分别指定四个方向的填充。</li>
+<li><code>all(double value)</code> : 所有方向均使用相同数值的填充。</li>
+<li><code>only({left, top, right ,bottom })</code>：可以设置具体某个方向的填充(可以同时指定多个方向)。</li>
+<li><code>symmetric({ vertical, horizontal })</code>：<strong>用于设置对称方向的填充</strong>，<code>vertical</code>指<code>top</code>和<code>bottom</code>，<code>horizontal</code>指<code>left</code>和<code>right</code>。</li>
+</ul>
+<h4 id="尺寸限制类容器"><a href="#尺寸限制类容器" class="headerlink" title="尺寸限制类容器"></a>尺寸限制类容器</h4><p>尺寸限制类容器用于限制容器大小，Flutter中提供了多种这样的容器，如<code>ConstrainedBox</code>、<code>SizedBox</code> 、<code>UnconstrainedBox</code>、<code>AspectRatio</code>等。</p>
+<h5 id="ConstrainedBox"><a href="#ConstrainedBox" class="headerlink" title="ConstrainedBox"></a>ConstrainedBox</h5><p><code>ConstrainedBox</code>用于对子组件添加<font color="#dd0000"><strong>额外</strong></font>的约束。例如，如果你想让子组件的最小高度是80像素，你可以使用<code>const BoxConstraints(minHeight: 80.0)</code>作为子组件的约束。</p>
+<h5 id="BoxConstraints"><a href="#BoxConstraints" class="headerlink" title="BoxConstraints"></a>BoxConstraints</h5><p>BoxConstraints用于设置限制条件，它的定义如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> BoxConstraints(&#123;</span><br><span class="line">  <span class="keyword">this</span>.minWidth = <span class="number">0.0</span>, <span class="comment">//最小宽度</span></span><br><span class="line">  <span class="keyword">this</span>.maxWidth = <span class="built_in">double</span>.infinity, <span class="comment">//最大宽度</span></span><br><span class="line">  <span class="keyword">this</span>.minHeight = <span class="number">0.0</span>, <span class="comment">//最小高度</span></span><br><span class="line">  <span class="keyword">this</span>.maxHeight = <span class="built_in">double</span>.infinity <span class="comment">//最大高度</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h5 id="SizedBox"><a href="#SizedBox" class="headerlink" title="SizedBox"></a>SizedBox</h5><p><code>SizedBox</code>用于给子元素指定<font color="#dd0000"><strong>固定的宽高</strong></font>，<strong>实际上<code>SizedBox</code>只是<code>ConstrainedBox</code></strong>的一个定制如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SizedBox(</span><br><span class="line">  width: <span class="number">80.0</span>,</span><br><span class="line">  height: <span class="number">80.0</span>,</span><br><span class="line">  child: redBox</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h5 id="多重限制"><a href="#多重限制" class="headerlink" title="多重限制"></a>多重限制</h5><p>如果某一个组件有多个父级<code>ConstrainedBox</code>限制，那么最终会是哪个生效？</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ConstrainedBox(</span><br><span class="line">    constraints: BoxConstraints(minWidth: <span class="number">60.0</span>, minHeight: <span class="number">60.0</span>), <span class="comment">//父</span></span><br><span class="line">    child: ConstrainedBox(</span><br><span class="line">      constraints: BoxConstraints(minWidth: <span class="number">90.0</span>, minHeight: <span class="number">20.0</span>),<span class="comment">//子</span></span><br><span class="line">      child: redBox,</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><font color="#dd0000"><strong>对于<code>minWidth</code>和<code>minHeight</code>来说，是取父子中相应数值较大的。</strong></font></p>
+<h5 id="UnconstrainedBox"><a href="#UnconstrainedBox" class="headerlink" title="UnconstrainedBox"></a>UnconstrainedBox</h5><p><code>UnconstrainedBox</code>不会对子组件产生任何限制，它允许其子组件按照其本身大小绘制。一般情况下，我们会很少直接使用此组件，但在”去除”多重限制的时候也许会有帮助</p>
+<h4 id="装饰容器DecoratedBox"><a href="#装饰容器DecoratedBox" class="headerlink" title="装饰容器DecoratedBox"></a>装饰容器DecoratedBox</h4><p><code>DecoratedBox</code>可以在其子组件绘制前(或后)绘制一些装饰（Decoration），如背景、边框、渐变等。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">DecoratedBox(</span><br><span class="line">    decoration: BoxDecoration(</span><br><span class="line">      gradient: LinearGradient(colors:[Colors.red,Colors.orange[<span class="number">700</span>]]), <span class="comment">//背景渐变</span></span><br><span class="line">      borderRadius: BorderRadius.circular(<span class="number">3.0</span>), <span class="comment">//3像素圆角</span></span><br><span class="line">      boxShadow: [ <span class="comment">//阴影</span></span><br><span class="line">        BoxShadow(</span><br><span class="line">            color:Colors.black54,</span><br><span class="line">            offset: Offset(<span class="number">2.0</span>,<span class="number">2.0</span>),</span><br><span class="line">            blurRadius: <span class="number">4.0</span></span><br><span class="line">        )</span><br><span class="line">      ]</span><br><span class="line">    ),</span><br><span class="line">  child: Padding(padding: EdgeInsets.symmetric(horizontal: <span class="number">80.0</span>, vertical: <span class="number">18.0</span>),</span><br><span class="line">    child: Text(<span class="string">"Login"</span>, style: TextStyle(color: Colors.white),),</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h4 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h4><p><code>Transform</code>可以在其子组件绘制时对其应用一些矩阵变换来实现一些特效。<code>Matrix4</code>是一个4D矩阵，通过它我们可以实现各种矩阵操作，下面是一个例子</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Container(</span><br><span class="line">  color: Colors.black,</span><br><span class="line">  child: <span class="keyword">new</span> Transform(</span><br><span class="line">    alignment: Alignment.topRight, <span class="comment">//相对于坐标系原点的对齐方式</span></span><br><span class="line">    transform: <span class="keyword">new</span> Matrix4.skewY(<span class="number">0.3</span>), <span class="comment">//沿Y轴倾斜0.3弧度</span></span><br><span class="line">    child: <span class="keyword">new</span> Container(</span><br><span class="line">      padding: <span class="keyword">const</span> EdgeInsets.all(<span class="number">8.0</span>),</span><br><span class="line">      color: Colors.deepOrange,</span><br><span class="line">      child: <span class="keyword">const</span> Text(<span class="string">'Apartment for rent!'</span>),</span><br><span class="line">    ),</span><br><span class="line">  ),</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h5 id="平移"><a href="#平移" class="headerlink" title="平移"></a>平移</h5><p><code>Transform.translate</code>接收一个<code>offset</code>参数，可以在绘制时沿<code>x</code>、<code>y</code>轴对子组件平移指定的距离。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DecoratedBox(</span><br><span class="line">  decoration:BoxDecoration(color: Colors.red),</span><br><span class="line">  <span class="comment">//默认原点为左上角，左移20像素，向上平移5像素  </span></span><br><span class="line">  child: Transform.translate(</span><br><span class="line">    offset: Offset(<span class="number">-20.0</span>, <span class="number">-5.0</span>),</span><br><span class="line">    child: Text(<span class="string">"Hello world"</span>),</span><br><span class="line">  ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h5 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h5><p>可以对子组件进行旋转变换，如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DecoratedBox(</span><br><span class="line">  decoration:BoxDecoration(color: Colors.red),</span><br><span class="line">  child: Transform.rotate(</span><br><span class="line">    <span class="comment">//旋转90度</span></span><br><span class="line">    angle:math.pi/<span class="number">2</span> ,</span><br><span class="line">    child: Text(<span class="string">"Hello world"</span>),</span><br><span class="line">  ),</span><br><span class="line">)；</span><br></pre></td></tr></table></figure>
+
+<h5 id="缩放"><a href="#缩放" class="headerlink" title="缩放"></a>缩放</h5><p><code>Transform.scale</code>可以对子组件进行缩小或放大，如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DecoratedBox(</span><br><span class="line">  decoration:BoxDecoration(color: Colors.red),</span><br><span class="line">  child: Transform.scale(</span><br><span class="line">      scale: <span class="number">1.5</span>, <span class="comment">//放大到1.5倍</span></span><br><span class="line">      child: Text(<span class="string">"Hello world"</span>)</span><br><span class="line">  )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：<code>Transform</code>的变换是应用在绘制阶段，而并不是应用在布局(layout)阶段，所以无论对子组件应用何种变化，其占用空间的大小和在屏幕上的位置都是固定不变的，因为这些是在布局阶段就确定的。</p>
+<p>由于矩阵变化只会作用在绘制阶段，所以在某些场景下，在UI需要变化时，可以直接通过矩阵变化来达到视觉上的UI改变，而不需要去重新触发build流程，这样会节省layout的开销，所以性能会比较好。如之前介绍的<code>Flow</code>组件，它内部就是用矩阵变换来更新UI，除此之外，Flutter的动画组件中也大量使用了<code>Transform</code>以提高性能。</p>
+<h5 id="RotatedBox"><a href="#RotatedBox" class="headerlink" title="RotatedBox"></a>RotatedBox</h5><p><code>RotatedBox</code>和<code>Transform.rotate</code>功能相似，它们都可以对子组件进行旋转变换，但是有一点不同：<font color="#dd0000"><strong><code>RotatedBox</code>的变换是在layout阶段，会影响在子组件的位置和大小。</strong></font></p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Row(</span><br><span class="line">  mainAxisAlignment: MainAxisAlignment.center,</span><br><span class="line">  children: &lt;Widget&gt;[</span><br><span class="line">    DecoratedBox(</span><br><span class="line">      decoration: BoxDecoration(color: Colors.red),</span><br><span class="line">      <span class="comment">//将Transform.rotate换成RotatedBox  </span></span><br><span class="line">      child: RotatedBox(</span><br><span class="line">        quarterTurns: <span class="number">1</span>, <span class="comment">//旋转90度(1/4圈)</span></span><br><span class="line">        child: Text(<span class="string">"Hello world"</span>),</span><br><span class="line">      ),</span><br><span class="line">    ),</span><br><span class="line">    Text(<span class="string">"你好"</span>, style: TextStyle(color: Colors.green, fontSize: <span class="number">18.0</span>),)</span><br><span class="line">  ],</span><br><span class="line">),</span><br></pre></td></tr></table></figure>
+
+<h4 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h4><p><code>Container</code>是一个组合类容器，它本身不对应具体的<code>RenderObject</code>，它是<code>DecoratedBox</code>、<code>ConstrainedBox、Transform</code>、<code>Padding</code>、<code>Align</code>等组件组合的一个多功能容器，<strong>所以我们只需通过一个<code>Container</code>组件可以实现同时需要装饰、变换、限制的场景</strong>。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Container(&#123;</span><br><span class="line">  <span class="keyword">this</span>.alignment,</span><br><span class="line">  <span class="keyword">this</span>.padding, <span class="comment">//容器内补白，属于decoration的装饰范围</span></span><br><span class="line">  Color color, <span class="comment">// 背景色</span></span><br><span class="line">  Decoration decoration, <span class="comment">// 背景装饰</span></span><br><span class="line">  Decoration foregroundDecoration, <span class="comment">//前景装饰</span></span><br><span class="line">  <span class="built_in">double</span> width,<span class="comment">//容器的宽度</span></span><br><span class="line">  <span class="built_in">double</span> height, <span class="comment">//容器的高度</span></span><br><span class="line">  BoxConstraints constraints, <span class="comment">//容器大小的限制条件</span></span><br><span class="line">  <span class="keyword">this</span>.margin,<span class="comment">//容器外补白，不属于decoration的装饰范围</span></span><br><span class="line">  <span class="keyword">this</span>.transform, <span class="comment">//变换</span></span><br><span class="line">  <span class="keyword">this</span>.child,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><code>Container</code>的大多数属性在介绍其它容器时都已经介绍过了，不再赘述，但有两点需要说明：</p>
+<ul>
+<li>容器的大小可以通过<code>width</code>、<code>height</code>属性来指定，也可以通过<code>constraints</code>来指定；如果它们同时存在时，<code>width</code>、<code>height</code>优先。实际上Container内部会根据<code>width</code>、<code>height</code>来生成一个<code>constraints</code>。</li>
+<li><code>color</code>和<code>decoration</code>是互斥的，如果同时设置它们则会报错！实际上，当指定<code>color</code>时，<code>Container</code>内会自动创建一个<code>decoration</code>。</li>
+</ul>
+<h4 id="Scaffold、TabBar、底部导航"><a href="#Scaffold、TabBar、底部导航" class="headerlink" title="Scaffold、TabBar、底部导航"></a>Scaffold、TabBar、底部导航</h4><h5 id="Scaffold"><a href="#Scaffold" class="headerlink" title="Scaffold"></a>Scaffold</h5><p><code>Scaffold</code>是一个路由页的骨架，我们使用它可以很容易地拼装出一个完整的页面。一个完整的数路由页可能会包含导航栏、抽屉菜单(Drawer)以及底部Tab导航菜单等。</p>
+<h5 id="AppBar"><a href="#AppBar" class="headerlink" title="AppBar"></a>AppBar</h5><p><code>AppBar</code>是一个Material风格的导航栏，通过它可以设置导航栏标题、导航栏菜单、导航栏底部的Tab标题等。</p>
+<h5 id="TabBar"><a href="#TabBar" class="headerlink" title="TabBar"></a>TabBar</h5><p>Material组件库中提供了一个<code>TabBar</code>组件，它可以快速生成<code>Tab</code>菜单。</p>
+<h5 id="TabBarView"><a href="#TabBarView" class="headerlink" title="TabBarView"></a>TabBarView</h5><p>通过<code>TabBar</code>我们只能生成一个静态的菜单，真正的Tab页还没有实现。由于<code>Tab</code>菜单和Tab页的切换需要同步，我们需要通过<code>TabController</code>去监听Tab菜单的切换去切换Tab页。</p>
+<h5 id="抽屉菜单Drawer"><a href="#抽屉菜单Drawer" class="headerlink" title="抽屉菜单Drawer"></a>抽屉菜单Drawer</h5><p><code>Scaffold</code>的<code>drawer</code>和<code>endDrawer</code>属性可以分别接受一个Widget来作为页面的左、右抽屉菜单。</p>
+<h5 id="底部Tab导航栏"><a href="#底部Tab导航栏" class="headerlink" title="底部Tab导航栏"></a>底部Tab导航栏</h5><p>我们可以通过<code>Scaffold</code>的<code>bottomNavigationBar</code>属性来设置底部导航</p>
+<h4 id="剪裁（Clip）"><a href="#剪裁（Clip）" class="headerlink" title="剪裁（Clip）"></a>剪裁（Clip）</h4><p>Flutter中提供了一些剪裁函数，用于对组件进行剪裁。</p>
+<table>
+<thead>
+<tr>
+<th>剪裁Widget</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ClipOval</td>
+<td>子组件为正方形时剪裁为内贴圆形，为矩形时，剪裁为内贴椭圆</td>
+</tr>
+<tr>
+<td>ClipRRect</td>
+<td>将子组件剪裁为圆角矩形</td>
+</tr>
+<tr>
+<td>ClipRect</td>
+<td>剪裁子组件到实际占用的矩形大小（溢出部分剪裁）</td>
+</tr>
+</tbody></table>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Row(</span><br><span class="line">            mainAxisAlignment: MainAxisAlignment.center,</span><br><span class="line">            children: &lt;Widget&gt;[</span><br><span class="line">              ClipRect(<span class="comment">//将溢出部分剪裁</span></span><br><span class="line">                child: Align(</span><br><span class="line">                  alignment: Alignment.topLeft,</span><br><span class="line">                  widthFactor: <span class="number">.5</span>,<span class="comment">//宽度设为原来宽度一半</span></span><br><span class="line">                  child: avatar,</span><br><span class="line">                ),</span><br><span class="line">              ),</span><br><span class="line">              Text(<span class="string">"你好世界"</span>,style: TextStyle(color: Colors.green))</span><br><span class="line">            ],</span><br><span class="line">          )</span><br></pre></td></tr></table></figure>
+
+<h5 id="CustomClipper"><a href="#CustomClipper" class="headerlink" title="CustomClipper"></a>CustomClipper</h5><p>我们可以使用<code>CustomClipper</code>来自定义剪裁区域</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClipper</span> <span class="keyword">extends</span> <span class="title">CustomClipper</span>&lt;<span class="title">Rect</span>&gt; </span>&#123;</span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  Rect getClip(Size size) =&gt; Rect.fromLTWH(<span class="number">10.0</span>, <span class="number">15.0</span>, <span class="number">40.0</span>, <span class="number">30.0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="built_in">bool</span> shouldReclip(CustomClipper&lt;Rect&gt; oldClipper) =&gt; <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>getClip()</code>是用于获取剪裁区域的接口，由于图片大小是60×60，我们返回剪裁区域为<code>Rect.fromLTWH(10.0, 15.0, 40.0, 30.0)</code>，及图片中部40×30像素的范围。</li>
+<li><code>shouldReclip()</code> 接口决定是否重新剪裁。如果在应用中，剪裁区域始终不会发生变化时应该返回<code>false</code>，这样就不会触发重新剪裁，避免不必要的性能开销。如果剪裁区域会发生变化（比如在对剪裁区域执行一个动画），那么变化后应该返回<code>true</code>来重新执行剪裁。</li>
+</ul>
+<h3 id="可滚动组件"><a href="#可滚动组件" class="headerlink" title="可滚动组件"></a>可滚动组件</h3><p><strong>当组件内容超过当前显示视口(ViewPort)时，如果没有特殊处理，Flutter则会提示Overflow错误。为此，Flutter提供了多种可滚动组件（Scrollable Widget）用于显示列表和长布局。</strong></p>
+<p>可滚动组件都直接或间接包含一个<code>Scrollable</code>组件，因此它们包括一些共同的属性，为了避免重复介绍，我们在此统一介绍一下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Scrollable(&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">this</span>.axisDirection = AxisDirection.down,</span><br><span class="line">  <span class="keyword">this</span>.controller,</span><br><span class="line">  <span class="keyword">this</span>.physics,</span><br><span class="line">  <span class="meta">@required</span> <span class="keyword">this</span>.viewportBuilder, <span class="comment">//后面介绍</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>axisDirection</code>滚动方向。</p>
+</li>
+<li><pre><code>physics
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">：此属性接受一个</span><br></pre></td></tr></table></figure>
+ScrollPhysics
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">类型的对象，它决定可滚动组件如何响应用户操作，比如用户滑动完抬起手指后，继续执行动画；或者滑动到边界时，如何显示。默认情况下，Flutter会根据具体平台分别使用不同的</span><br></pre></td></tr></table></figure>
+ScrollPhysics
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">对象，应用不同的显示效果，如当滑动到边界时，继续拖动的话，在iOS上会出现弹性效果，而在Android上会出现微光效果。如果你想在所有平台下使用同一种效果，可以显式指定一个固定的</span><br></pre></td></tr></table></figure>
+ScrollPhysics
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">，Flutter SDK中包含了两个</span><br></pre></td></tr></table></figure>
+ScrollPhysics
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  的子类，他们可以直接使用：</span><br><span class="line"></span><br><span class="line">  - &#96;ClampingScrollPhysics&#96;：Android下微光效果。</span><br><span class="line">  - &#96;BouncingScrollPhysics&#96;：iOS下弹性效果。</span><br><span class="line"></span><br><span class="line">- &#96;controller&#96;：此属性接受一个&#96;ScrollController&#96;对象。&#96;ScrollController&#96;的主要作用是控制滚动位置和监听滚动事件。默认情况下，Widget树中会有一个默认的&#96;PrimaryScrollController&#96;，如果子树中的可滚动组件没有显式的指定&#96;controller&#96;，并且&#96;primary&#96;属性值为&#96;true&#96;时（默认就为&#96;true&#96;），可滚动组件会使用这个默认的&#96;PrimaryScrollController&#96;。这种机制带来的好处是父组件可以控制子树中可滚动组件的滚动行为，例如，&#96;Scaffold&#96;正是使用这种机制在iOS中实现了点击导航栏回到顶部的功能。我们将在本章后面“滚动控制”一节详细介绍&#96;ScrollController&#96;。</span><br><span class="line"></span><br><span class="line">#### ViewPort视口</span><br><span class="line"></span><br><span class="line">在很多布局系统中都有ViewPort的概念，在Flutter中，术语ViewPort（视口），如无特别说明，则是指一个Widget的实际显示区域。例如，一个&#96;ListView&#96;的显示区域高度是800像素，虽然其列表项总高度可能远远超过800像素，但是其ViewPort仍然是800像素。</span><br><span class="line"></span><br><span class="line">#### 基于Sliver的延迟构建</span><br><span class="line"></span><br><span class="line">通常可滚动组件的子组件可能会非常多、占用的总高度也会非常大；如果要一次性将子组件全部构建出将会非常昂贵！为此，Flutter中提出一个Sliver（中文为“薄片”的意思）概念，如果一个可滚动组件支持Sliver模型，那么该滚动可以将子组件分成好多个“薄片”（Sliver），只有当Sliver出现在视口中时才会去构建它，这种模型也称为“基于Sliver的延迟构建模型”。可滚动组件中有很多都支持基于Sliver的延迟构建模型，如&#96;ListView&#96;、&#96;GridView&#96;，但是也有不支持该模型的，如&#96;SingleChildScrollView&#96;。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 使用记录</span><br><span class="line"></span><br><span class="line">1. 分割线</span><br><span class="line"></span><br><span class="line">   &#96;&#96;&#96;dar</span><br><span class="line">   Divider(height:10.0,color:Colors.red)</span><br></pre></td></tr></table></figure></code></pre></li>
+</ul>
+<ol start="2">
+<li><p>Chip</p>
+<p>碎片，一般做标签用</p>
+</li>
+<li><p>CircleAvatar</p>
+<p>表示用户资料的圆形组件</p>
+</li>
+<li><p>最大宽度、最大高度</p>
+<p>this.maxWidth = double.infinity</p>
+<p>this.maxHeight = double.infinity</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>MainAxisAlignment和CrossAxisAlignment</p>
+<p>MainAxisAlignment表示主轴方向，CrossAxisAlignment表示与主轴垂直的方向。</p>
+<p>//将子控件放在主轴的开始位置<br>  start,<br>   //将子控件放在主轴的结束位置<br>  end,<br>  //将子控件放在主轴的中间位置<br>  center,<br>  //<strong>将主轴空白位置进行均分，排列子元素</strong>，<font color="#dd0000"><strong>首尾没有空隙</strong></font>。<br>  spaceBetween,<br>  //<strong>将主轴空白区域均分，使中间各个子控件间距相等</strong>，<font color="#dd0000"><strong>首尾子控件间距为中间子控件间距的一半</strong></font><br>  spaceAround,<br>  //将主轴空白区域均分，使各个子控件间距相等<br>  spaceEvenly</p>
+</li>
+<li></li>
+</ol>
+<h3 id="异常记录"><a href="#异常记录" class="headerlink" title="异常记录"></a>异常记录</h3><ol>
+<li><p>Invalid constant value </p>
+<p>You are declaring your <code>Text</code> widget as a <code>const</code>, which requires all of its children to be <code>const</code> as well.</p>
+</li>
+<li><p>xxx.dart were declared as an inputs, but did not exist. Check the definition of target:kernel_snapshot for errors</p>
+<p>解决：这是文件重命名后造成的。在命令行中输入：Flutter clean，清理缓存即可。</p>
+</li>
+<li><p>Waiting for another flutter command to release the startup lock… 异常解决</p>
+<p>进入到你的flutter sdk目录中，然后找到<code>bin/cache/lockfile</code>文件，删除它即可。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="ck91fgnlf003yxa26c4b4gksb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Kotlin协程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android基础三部曲『Touch事件传递』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AnnotationProcessor/" rel="tag">AnnotationProcessor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/AnnotationProcessor/" style="font-size: 10px;">AnnotationProcessor</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 13.33px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 13.33px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 13.33px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 13.33px;">源码学习</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13.33px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 16.67px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/">开源项目『腾讯MMKV存储框架』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">OkHttp『源码学习-杂项』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/">Java进阶『Javassist学习笔记』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
