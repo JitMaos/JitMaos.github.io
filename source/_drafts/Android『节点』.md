@@ -19,30 +19,23 @@ Dalvik虚拟机主要具有以下特征：
 
 ## Android的启动过程
 
-一、开机加电
-BootLoader进行底层初始化，并加载内核代码，最终调转到内核的boot程序。
-二、Linux内核引导
-1）kernel核心初始化（内存初始化，打开中断，初始化进程表等等）
-2）驱动初始化
-3）启动内核后台线程
-4）安装根文件系统
-5）启动第一个用户级进程init
-三、init进程启动
-init进程的程序在system/core/init/init.c里，它是Android系统特有的初始化程序，最终它会以后台进程（daemon）的形式一直存在。该进程主要有以下功能：
-1）创建/安装设备文件/进程文件/系统文件节点。
-2）解析启动/init.rc和/init.<machine_name>.rc。
-3）显示Logo画面。
-4）打开Device Socket，Property Socket，child进程通信Socket。
-5）执行脚本中指定的命令或动作，启动指定服务，监听特定事件。
-6）进入死循环：检查是否有action需要执行，是否需要restart某服务
-四、Native服务启动
-1）Service Manager：Binder服务管理器，管理所有Android系统服务。
-2）Zygote：启动Android Dalvik Runtime并负责孵化进程。
-五、Android Runtime启动
-zygote创建并启动Android Runtime（Dalvik属于Runtime的一部分），然后启动System Server进程进行系统初始化。
-六、Android系统初始化
-System Server作为Zygote的第一个子进程，是Android Framework的核心，它主要负责Android系统初始化并启动其它服务。其它的Android服务都由System Server启动并允许在该进程空间。
-七、Home启动
+摘自：https://www.jianshu.com/p/d1e8002df580
+
+![img](http://47.110.40.63:8080/img/blog/Android启动流程图.png)
+
+用户按下电源键，引导芯片代码从预定义的地方开始执行，加载引导程序BootLoader到RAM，然后开始执行。
+
+启动引导程序BootLoader，用来引导Android系统的启动工作。然后，Linux内核启动。
+
+Linux内核启动后，设置缓存、被保护存储器、计划列表、加载驱动等操作。当内核完成系统设置后，会查找“init”文件，然后启动Root进程。
+
+Linux内核创建用户级进程，init进程（上帝般存在）。
+
+Init进程会创建Zygote孵化器进程。Zygote进程存在一个Socket服务端，以及一些Framework层共享的类和资源。
+
+Zygote进程会先孵化出一个SystemServer进程。SystemServer进程用来加载一些系统服务，比如AMS、WMS、PMS等，保存有系统服务需要的类和资源，存在一个Socket客户端。
+
+AMS服务用来管理Activity的创建，当需要启动Activity时，会通过SystemServer进程中的Socket客户端向Zygote进程发送消息，请求创建Activity。
 
 ## App启动过程
 
@@ -149,8 +142,106 @@ andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文�
 由于ReentrantLock是java.util.concurrent包下提供的一套互斥锁，相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项：
 
 1. 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程`可以选择放弃等待`，这相当于Synchronized来说可以避免出现死锁的情况。通过lock.lockInterruptibly()来实现这个机制。
+
 2. 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁是非公平锁，**ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好**。
+
 3. 锁绑定多个条件，一个ReentrantLock对象可以同时绑定多个对象。ReenTrantLock提供了一个Condition（条件）类，用来实现分组唤醒需要唤醒的线程们，而不是像synchronized要么随机唤醒一个线程要么唤醒全部线程。
 
+   Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，`Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中`，从而**可以有选择的进行线程通知，在调度线程上更加灵活**。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。
+
 `ReenTrantLock的实现是一种自旋锁，通过循环调用CAS+volatile操作来实现加锁。`
+
+`ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。`
+
+##Hexo 博客实现文件同步与静态文件部署
+
+核心方法是hexo -g d会自动提交静态文件到远程master分支，不管当前在哪个分支上。所以：
+
+1. 在master分支上提交静态文件
+2. 本地切换到hexo分支，并把本地文件提交到远程hexo分支，之后使用hexo clean；hexo -g d提交静态文件，静态文件会自动生成在master分支上。
+
+## 跳跃表
+
+摘自：https://www.jianshu.com/p/dc252b5efca6
+
+![img](http://47.110.40.63:8080/img/blog/跳跃表.jpeg)
+
+(1). 跳跃表的每一层都是一条有序的链表.
+(2). 跳跃表的查找次数近似于层数，时间复杂度为O(logn)，插入、删除也为 O(logn)。
+(3). 跳跃表空间复杂度为O(n)，实际上是O(2n)
+(4). 跳跃表是一种随机化的数据结构(通过抛硬币来决定层数)。
+(5). 插入元素时，对该元素进行投硬币，决定是否提取为关键节点。
+(6). 删除元素时，需逐层同步删除。
+
+
+跳跃表的优点是维持结构平衡的成本比较低，完全依赖随机。而二叉查找树在多次插入删除后，需要Rebalance来重新调整结构平衡
+
+## 自定义权限
+
+摘自：https://www.cnblogs.com/liuzhipenglove/p/7102889.html
+
+A应用打开B应用可以通过显示Intent，或隐式Intent。但是如果有安全方面的考虑，可以自定义一个权限：
+
+```java
+<activity
+    android:name="com.example.testandroid.BActivity"
+    android:exported="true"
+    android:label="B"
+    android:permission="corn.permission.CORN_OWN" >
+</activity>
+```
+
+那么A应用想打开BActivity，就需要在清单文件中添加权限
+
+```java
+<uses-permission android:name="corn.permission.CORN_OWN" ></uses-permission>
+```
+
+protectionLevel：normal, dangerous, signature, signatureOrSystem
+
+## Binder一次拷贝实现进程间通信原理
+
+摘自：
+
+
+
+![img](http://47.110.40.63:8080/img/blog/mmap实现一次拷贝完成进程通信.png)
+
+
+
+## SurfaceFlinger
+
+摘自:https://blog.csdn.net/freekiteyu/article/details/79483406
+
+![img](http://47.110.40.63:8080/img/blog/SurfaceFlinger启动流程.png)
+
+  a 、首先每个surface 在屏幕上有它的位置，以及大小，然后每个surface 里面还有要显示的内容，内容，大小，位置 这些元素 在我们改变应用程序的时候都可能会改变，改变时应该如何处理 ？
+
+b 、然后就各个surface 之间可能有重叠，比如说在上面的简略图中，绿色覆盖了蓝色，而红色又覆盖了绿色和蓝色以及下面的home ，而且还具有一定透明度。这种层之间的关系应该如何描述？  
+
+我们首先来看第二个问题，我们可以想象在屏幕平面的垂直方向还有一个Z 轴，所有的surface 根据在Z 轴上的坐标来确定前后，这样就可以描述各个surface 之间的上下覆盖关系了，而这个在Z 轴上的顺序，图形上有个专业术语叫Z-order 。 
+
+  对于第一个问题，我们需要一个结构来记录应用程序界面的位置，大小，以及一个buffer 来记录需要显示的内容，所以这就是我们surface 的概念，surface 实际我们可以把它理解成一个容器，这个容器记录着应用程序界面的控制信息，比如说大小啊，位置啊，而它还有buffer 来专门存储需要显示的内容。
+
+  在这里还存在一个问题，那就是当存在图形重合的时候应该如何处理呢，而且可能有些surface 还带有透明信息，这里就是我们SurfaceFlinger 需要解决问题，它要把各个surface 组合(compose/merge) 成一个main Surface ，最后将Main Surface 的内容发送给FB/V4l2 Output ，这样屏幕上就能看到我们想要的效果。
+
+  在实际中对这些Surface 进行merge 可以采用两种方式，一种就是采用软件的形式来merge ，还一种就是采用硬件的方式，软件的方式就是我们的SurfaceFlinger ，而硬件的方式就是Overlay 。
+
+## 线程状态
+
+
+
+## wait/sleep/notify
+
+**wait和sleep的区别**
+
+<font color="#dd0000">**wait 会释放锁，而 sleep 一直持有锁**</font>。wait 通常被用于线程间交互，sleep 通常被用于暂停执行。如果能够帮助你记忆的话，**可以简单认为和锁相关的方法都定义在Object类中**，因此调用Thread.sleep是不会影响锁的相关行为。<font color="#dd0000">**调用wait后，需要别的线程执行notify/notifyAll才能够重新获得CPU执行时间。**</font>
+
+## Minor/Major/Full GC
+
+**Minor GC**指新生代GC，即发生在新生代（包括Eden区和Survivor区）的垃圾回收操作，当新生代无法为新生对象分配内存空间的时候，会触发Minor GC。因为新生代中大多数对象的生命周期都很短，所以发生Minor GC的频率很高，<font color="#dd0000">**虽然它会触发stop-the-world，但是它的回收速度很快**</font>。
+
+**Major GC**清理Tenured区，用于回收老年代，出现Major GC通常会出现至少一次Minor GC。
+
+**Full GC**是针对整个新生代、老生代、元空间（metaspace，java8以上版本取代perm gen）的全局范围的GC。<font color="#dd0000">**Full GC不等于Major GC，也不等于Minor GC+Major GC**</font>，发生Full GC需要看使用了什么垃圾收集器组合，才能解释是什么样的垃圾回收。
 
