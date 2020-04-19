@@ -245,3 +245,116 @@ b 、然后就各个surface 之间可能有重叠，比如说在上面的简略�
 
 **Full GC**是针对整个新生代、老生代、元空间（metaspace，java8以上版本取代perm gen）的全局范围的GC。<font color="#dd0000">**Full GC不等于Major GC，也不等于Minor GC+Major GC**</font>，发生Full GC需要看使用了什么垃圾收集器组合，才能解释是什么样的垃圾回收。
 
+## BlockCanary原理
+
+摘自：https://www.jianshu.com/p/768e21ce76b5
+
+Android中Looper的loop()方法中有：
+
+```java
+if (logging != null) {
+  logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);
+}
+```
+
+其中的logging可以通过外部设置进来：
+
+```java
+public void setMessageLogging(@Nullable Printer printer) {
+  mLogging = printer;
+}
+```
+
+BlockCanary中实现了自定义的Printer类，重写println方法，并在其中开始收集堆栈信息和CPU信息。
+
+```java
+//Looper中的loop()
+public static void loop() {
+        final Looper me = myLooper();
+        if (me == null) {
+            throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");
+        }
+        final MessageQueue queue = me.mQueue;
+
+        // Make sure the identity of this thread is that of the local process,
+        // and keep track of what that identity token actually is.
+        Binder.clearCallingIdentity();
+        final long ident = Binder.clearCallingIdentity();
+
+        for (;;) {
+            Message msg = queue.next(); // might block
+            if (msg == null) {
+                // No message indicates that the message queue is quitting.
+                return;
+            }
+
+            // This must be in a local variable, in case a UI event sets the logger
+            final Printer logging = me.mLogging;
+            if (logging != null) {
+                logging.println(">>>>> Dispatching to " + msg.target + " " +
+                        msg.callback + ": " + msg.what);
+            }
+
+            final long traceTag = me.mTraceTag;
+            if (traceTag != 0 && Trace.isTagEnabled(traceTag)) {
+                Trace.traceBegin(traceTag, msg.target.getTraceName(msg));
+            }
+            try {
+                msg.target.dispatchMessage(msg);
+            } finally {
+                if (traceTag != 0) {
+                    Trace.traceEnd(traceTag);
+                }
+            }
+
+            if (logging != null) {
+                logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);
+            }
+
+            // Make sure that during the course of dispatching the
+            // identity of the thread wasn't corrupted.
+            final long newIdent = Binder.clearCallingIdentity();
+            if (ident != newIdent) {
+                Log.wtf(TAG, "Thread identity changed from 0x"
+                        + Long.toHexString(ident) + " to 0x"
+                        + Long.toHexString(newIdent) + " while dispatching to "
+                        + msg.target.getClass().getName() + " "
+                        + msg.callback + " what=" + msg.what);
+            }
+
+            msg.recycleUnchecked();
+        }
+    }
+```
+
+
+
+
+
+![img](http://47.110.40.63:8080/img/blog/BlockCanary流程图.png)
+
+## ReferenceQueue & Reference
+
+摘自：https://www.jianshu.com/p/f86d3a43eec5
+
+**Reference**
+
+java.lang.ref.Reference 为 软（soft）引用、弱（weak）引用、虚（phantom）引用的父类。
+
+**因为Reference对象和垃圾回收密切配合实现，该类可能不能被直接子类化。**
+可以理解为Reference的直接子类都是由jvm定制化处理的,因此在代码中直接继承于Reference类型没有任何作用。
+
+Reference提供了2个构造函数，一个带queue，一个不带queue。<font color="#dd0000">**其中queue的意义在于，我们可以在外部对这个queue进行监控。即如果有对象即将被回收，那么相应的reference对象就会被放到这个queue里。**</font>我们拿到reference，就可以再作一些事务。
+
+而如果不带的话，就只有不断地轮询reference对象，通过判断里面的get是否返回null( phantomReference对象不能这样作，其get始终返回null，因此它只有带queue的构造函数 )。这两种方法均有相应的使用场景，取决于实际的应用。**如weakHashMap中就选择去查询queue的数据，来判定是否有对象将被回收。而ThreadLocalMap，则采用判断get()是否为null来作处理。**
+
+**ReferenceQueue**
+
+<font color="#dd0000">**引用队列，在检测到适当的可到达性更改后，垃圾回收器将已注册的引用对象添加到该队列中.**</font>
+
+实现了一个队列的入队(enqueue)和出队(poll还有remove)操作，内部元素就是泛型的Reference，并且Queue的实现，是由Reference自身的链表结构( 单向循环链表 )所实现的。**ReferenceQueue名义上是一个队列，但实际内部并非有实际的存储结构，它的存储是依赖于内部节点之间的关系来表达**。
+
+## LeakCanary
+
+
+
