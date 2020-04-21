@@ -356,5 +356,141 @@ Reference提供了2个构造函数，一个带queue，一个不带queue。<font 
 
 ## LeakCanary
 
+摘自：https://blog.csdn.net/braintt/article/details/99685243
 
+LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观察的Activity或者Fragment销毁时，我们会使用一个弱引用去包装当前销毁的Activity或者Fragment,并且将它与本地的一个ReferenceQueue队列关联。我们知道如果GC触发了，系统会将当前的引用对象存入队列中。**
+如果没有被回收，队列中则没有当前的引用对象。所以LeakCanary会去判断，**ReferenceQueue是否有当前观察的Activity或者Fragment的引用对象，第一次判断如果不存在，就去手动触发一次GC，然后做第二次判断，如果还是不存在，则表明出现了内存泄漏。**
+
+## 常见的内存泄漏
+
+摘自：https://www.cnblogs.com/sjxbg/p/11643715.html
+
+1. 对象被静态成员引用
+
+   ```java
+   private Random random = new Random();
+   public static final ArrayList<Double> list = new ArrayList<Double>(1000000);
+   for (int i = 0; i < 1000000; i++) { list.add(random.nextDouble()); }
+   ```
+
+   ArrayList是在堆上动态分配的对象，正常情况下使用完毕后，会被gc回收，但是在此示例中，由于被静态成员list引用，而静态成员是不会被回收的，所以会导致这个很大的ArrayList一直停留在堆内存中。
+
+2. String的intern方法
+
+   在大字符串上调用String.intern() 方法，intern()会将String放在jvm的内存池中（PermGen ），而jvm的内存池是不会被gc的。因此如果大字符串调用intern()方法后，会产生大量的无法gc的内存，导致内存泄漏。
+
+   如果必须要使用大字符串的intern方法，应该通过-XX:MaxPermSize参数调整PermGen内存的大小。
+
+3. 读取流后没有关闭
+
+   开发中经常忘记关闭流，这样会导致内存泄漏。因为每个流在操作系统层面都对应了打开的文件句柄，流没有关闭，**会导致操作系统的文件句柄一直处于打开状态，jvm会消耗内存来跟踪操作系统打开的文件句柄**。
+
+4. 将没有实现hashcode和equals方法的对象加入到HashSet中
+
+   当一个对象被存储在Hashset中后，如果修改参与计算hashcode有关的字段，那么修改后的hashcode的值就与一开始存储进来的hashcode的值不同了，**这样contains无法通过hashcode找到该元素，所以无法删除**。
+
+## Java 注解
+
+**元注解**
+
+元注解指的是**用来修饰注解的注解**，包括：
+
++ @Retention：定义注解的保留策略
+  + SOURCE，注解会被编译器移除
+  + CLASS，注解可以编译器的保留在class文件中，**但是不能在虚拟机运行时保留**。这也是默认的注解保留行为。
+  + RUNTIME，注解可以在编译器及虚拟机的运行都保留下来，所以这时注解可以用反射读取。
++ @Target：定义注解的作用目标
+  + TYPE 类，接口(含注解)
+  + FIELD 成员变量(含枚举常量)
+  + METHOD 方法声明
+  + PARAMETER 参数声明
+  + CONSTRUCTOR 构造方法声明
+  + LOCAL_VARIABLE 局部变量声明
+  + ANNOTATION_TYPE 注解声明
++ @Inherited：说明该注解将被包含在javadoc中
++ @Documented：说明子类可以继承父类中的该注解
+
+## Android APT
+
+摘自：https://www.jianshu.com/p/7af58e8e3e18
+
+**APT**(Annotation Processing Tool)即**注解处理器**，是一种处理注解的工具，确切的说它是javac的一个工具，它用来在**编译时**扫描和处理注解。注解处理器以**Java代码**(或者编译过的字节码)作为输入，生成**.java文件**作为输出。
+<font color="#dd0000">**简单来说就是在编译期，通过处理注解，根据自定义规则生成java文件。**</font>
+
+需要继承**AbstractProcessor**，并实现其中的process方法，在process方法中，使用JavaPoet生成Java文件。
+
+## KMP字符串匹配算法
+
+KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用匹配失败后的信息，尽量减少模式串与主串的匹配次数以达到快速匹配的目的**。具体实现就是通过一个next()函数实现，函数本身包含了模式串的局部匹配信息。KMP算法的时间复杂度O(m+n)。
+
+## ButterKnife源码解析
+
+摘自：https://juejin.im/post/5acec2b46fb9a028c6761628
+
+1. 使用注解（，标注bindview和onclick。
+
+2. APT(Annotation Processing Tool)，准确的说是ButterKnifeProcessor会在编译器解析到这些注解，然后根据自定义规则，生成以"_ViewBinding"结尾的java文件。如：
+
+   ```java
+   public class MainActivity_ViewBinding implements Unbinder {
+     private MainActivity target;
+   
+     private View view2131165217;
+   
+     @UiThread
+     public MainActivity_ViewBinding(MainActivity target) {
+       //使用target.getWindow().getDecorView()获取rootView
+       this(target, target.getWindow().getDecorView());
+     }
+   
+     @UiThread
+     public MainActivity_ViewBinding(final MainActivity target, View source) {
+       this.target = target;
+   
+       View view;
+       //完成绑定1
+       target.title = Utils.findRequiredViewAsType(source, R.id.tv_title, "field 'title'", TextView.class);
+       view = Utils.findRequiredView(source, R.id.bt_submit, "method 'submit'");
+       view2131165217 = view;
+       //完成绑定2
+       view.setOnClickListener(new DebouncingOnClickListener() {
+         @Override
+         public void doClick(View p0) {
+           target.submit();
+         }
+       });
+     }
+   
+     @Override
+     @CallSuper
+     public void unbind() {
+       MainActivity target = this.target;
+       if (target == null) throw new IllegalStateException("Bindings already cleared.");
+       this.target = null;
+   
+       target.title = null;
+   
+       view2131165217.setOnClickListener(null);
+       view2131165217 = null;
+     }
+   }
+   ```
+
+三、在Activity、Fragment中调用bind方法，改方法会传入Activity、Fragment为参数。<font color="#dd0000">**bind方法最终只是为了将当前的Activity、Fragment作为参数，来构造一个Xxx_ViewBinding对象，在该对象的构造方法中，完成了需要注入对象的左右绑定**</font>，值得一提的是，rootView是直接通过target.getWindow().getDecorView()获取的。
+
+## try-with-resources
+
+try-with-resources 声明、try 块、catch 块。它要求在 try-with-resources 声明中<font color="#dd0000">**定义的变量实现了 AutoCloseable 接口，这样在系统可以自动调用它们的close方法，从而替代了finally中关闭资源的功能**</font>。
+
+## Kotlin协程的底层实现原理
+
+摘自：https://www.jianshu.com/p/d23c688feae7
+
+线程是操作系统的内核资源，是 CPU 调度的最小单位，所有应用程序的代码都运行于线程之上。
+
+无论是回调，还是 RxJava，又或者是 Future 与 Promise，**线程都是我们曾经实现并发与异步的最根本的支撑**。在 Java 的 API 中，Thread 类是实现线程最基本的类，每创建一个 Thread 对象，就代表着在操作系统内核启动了一个线程，如果我们阅读 Thread 类的源码，可以发现，**它的内部实现是大量的 JNI 调用，因为线程的实现必须由操作系统直接提供支持**，如果是在 Android 平台上，我们会发现 Thread 的创建过程中，都会调用 Linux API 中的 pthread_create 函数，这直接说明了 Java 层中的 Thread 和 Linux 系统级别的中的线程是一一对应的。
+
+首先，<font color="#dd0000">**协程本质上可以认为是运行在线程上的代码块，协程提供的 *挂起* 操作会使协程暂停执行，而不会导致线程阻塞**</font>。其次，协程是一种轻量级资源，即使创建了上千个协程，对于系统来说也不是一种很大的负担，就**如同在 Java 创建上千个 Runable 对象也不会造成过大负担一样**。通过这样设计，开发者可以极大的提高线程的使用率，用尽量少的线程执行尽量多的任务，其次调用者无需在编程时思考过多的资源浪费问题，可以在每当有异步或并发需求的时候就不假思索的开启协程。
+
+协程的挂起和 Java 的 NIO 机制是类似的，我们在一个线程中执行了一个原本会阻塞线程的任务，但是这个调用者线程没有发生阻塞，这是<font color="#dd0000">**因为它们有一个专门的线程来负责这些任务的流转**</font>，也就是说，当我们发起多个阻塞操作的时候，可能只会阻塞这一个专门的线程，它一直在等待，谁的阻塞结束了，它就把回调再分派过去，这样就完成了阻塞任务与阻塞线程的多对一，而不是以前的一对一，所以挂起也好，NIO 也好，本质上都没有彻底消灭阻塞，但是它们都使阻塞的线程大大减少，从而避免了大量的线程上下文状态切换以及避免了大量线程的产生，从而在 IO 密集型任务中大大提高了性能。
 
