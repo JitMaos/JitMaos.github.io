@@ -494,3 +494,53 @@ try-with-resources 声明、try 块、catch 块。它要求在 try-with-resource
 
 协程的挂起和 Java 的 NIO 机制是类似的，我们在一个线程中执行了一个原本会阻塞线程的任务，但是这个调用者线程没有发生阻塞，这是<font color="#dd0000">**因为它们有一个专门的线程来负责这些任务的流转**</font>，也就是说，当我们发起多个阻塞操作的时候，可能只会阻塞这一个专门的线程，它一直在等待，谁的阻塞结束了，它就把回调再分派过去，这样就完成了阻塞任务与阻塞线程的多对一，而不是以前的一对一，所以挂起也好，NIO 也好，本质上都没有彻底消灭阻塞，但是它们都使阻塞的线程大大减少，从而避免了大量的线程上下文状态切换以及避免了大量线程的产生，从而在 IO 密集型任务中大大提高了性能。
 
+## Java的异常体系
+
+Thorwable类所有异常和错误的超类，有两个子类Error和Exception，分别表示错误和异常。
+
+Error是程序无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。
+
+Exception是程序本身可以处理的异常，这种异常分两大类运行时异常和非运行时异常。程序中应当尽可能去处理这些异常。
+
+## 线程池种类，关键参数
+
+当我们通过execute(Runnable)方法向线程池中添加一个待执行的任务时，会判断当前核心池(**corePoolSize**)是否已经满了，如果核心池满就将任务添加到工作队列(**workQueue**)(根据选择不同的BlockingQueue有不同的排队规则)，如果工作队列也满了，那么就再创建新的线程，直至线程数达到最大线程数(**maximumPoolSize**)；如果此时还有任务要添加进来，而此时已经处理不了任务了，就只能拒绝任务，此时可以根据指定的handler来指定拒绝策略。
+
+<font color="#dd0000">**newSingleThreadExecutor**</font>：单线程化线程池的优点，串行执行所有任务。**如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。**底层使用**LinkedBlockingQueue**作为工作队列，和fixedThreadPool不同的是<font color="#dd0000">**它外面包了一层FinalizableDelegatedExecutorService**</font>，这导致newSingleThreadExecutor<font color="#dd0000">**无法向下转型成ThreadPoolExecutor**</font>，从而确保了对象不被修改。
+
+<font color="#dd0000">**newFixedThreadPool**</font>：创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。**线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。**底层使用**LinkedBlockingQueue**作为工作队列，LinkedBlockingQueue是一个无界的阻塞队列，<font color="#dd0000">**所以当任务的生成速度持续大于任务的处理速度。使用这种线程池，将造成大量阻塞，从而引发内存溢出等问题。**</font>
+
+<font color="#dd0000">**newCachedThreadPool**</font>：创建一个可缓存的线程池，<font color="#dd0000">**核心线程数等于0**</font>。**如果线程池的大小超过了处理任务所需要的线程，那么就会回收部分空闲（60秒不执行任务）的线程**，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。底层使用**SynchronousQueue**作为工作队列，**SynchronousQueue没有存储功能，因此put和take会一直阻塞，直到有另外一个线程已经准备好参与到交付过程中。**
+
+<font color="#dd0000">**newScheduledThreadPool**</font>：创建一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。底层使用**DelayedWorkQueue**作为工作队列。
+
+## readResolve()方法与序列化
+
+摘自：https://blog.csdn.net/huangbiao86/article/details/6896565
+
+ 一般来说，一个类实现了Serializable接口, 我们就可以把它往内存地写再从内存里读出而"组装"成一个跟原来一模一样的对象。**不过当序列化遇到单例时，这里边就有了个问题: 从内存读出而组装的对象破坏了单例的规则。单例是要求一个JVM中只有一个类对象的，而现在通过反序列化，一个新的对象克隆了出来**。
+
+```java
+public final class MySingleton implements Serializable {
+     private MySingleton() { }
+     private static final MySingleton INSTANCE = new MySingleton();
+     public static MySingleton getInstance() { return INSTANCE; }
+}
+```
+
+改了readResolve()以后：
+
+```java
+public final class MySingleton implements Serializable{
+    private MySingleton() { }
+    private static final MySingleton INSTANCE = new MySingleton();
+    public static MySingleton getInstance() { return INSTANCE; }
+    private Object readResolve() throws ObjectStreamException {
+       // instead of the object we're on,
+       // return the class variable INSTANCE
+      return INSTANCE;
+   }
+}
+```
+
+<font color="#dd0000">**这样当JVM从内存中反序列化地"组装"一个新对象时，就会自动调用这个 readResolve方法来返回我们指定好的对象了， 单例规则也就得到了保证**</font>。

@@ -176,6 +176,14 @@ public static void main(String[] args) {
 翻译结果:My name is DaQiang.
 ```
 
+动态代理实现原理（https://www.cnblogs.com/zuidongfeng/p/8735241.html)：
+
+1、为接口创建代理类的字节码文件
+
+2、使用ClassLoader将字节码文件加载到JVM
+
+3、创建代理类实例对象，执行对象的目标方法
+
 ##### Cglib代理
 
 静态代理和动态代理都需要目标对象实现一个接口。然而有时候目标对象没法实现接口，就是一个类。此时<font color="#dd0000">**可以使用继承的方式扩展其子类的功能**</font>，在Java中，可以使用Cglib这个库，在内存中构建一个目标对象的子类对象。
@@ -411,6 +419,62 @@ public class Rocket {
 ```java
 Rocket rocket = new Rocket.Builder().name("BlueStar").spead(1000).weight(2200).dest("moon").build();
 ```
+
+#### 单例模式
+
+##### 饿汉模式
+
+所谓饿汉模式就是立即加载，一般情况下再调用getInstancef方法之前就已经产生了实例，也就是在类加载的时候已经产生了。
+
+```java
+class SingletonHungary {
+	private static SingletonHungary singletonHungary = new SingletonHungary();
+	//将构造器设置为private禁止通过new进行实例化
+	private SingletonHungary() {
+		
+	}
+	public static SingletonHungary getInstance() {
+		return singletonHungary;
+	}
+}
+```
+
+**懒汉模式**
+
+懒汉模式就是延迟加载，也叫懒加载。
+
+```java
+//单例模式的懒汉实现5--线程安全
+//通过设置同步代码块，使用DCL双检查锁机制
+//使用双检查锁机制成功的解决了单例模式的懒汉实现的线程不安全问题和效率问题
+//DCL 也是大多数多线程结合单例模式使用的解决方案
+class SingletonLazy5 {
+	private static volatile SingletonLazy5 singletonLazy;
+	private SingletonLazy5() {
+	}
+
+	public static SingletonLazy5 getInstance() {
+		try {
+			if (null == singletonLazy) {
+				// 模拟在创建对象之前做一些准备工作
+				Thread.sleep(1000);
+				synchronized (SingletonLazy5.class) {
+					if(null == singletonLazy) {
+						singletonLazy = new SingletonLazy5();
+					}
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO: handle exception
+		}
+		return singletonLazy;
+	}
+}
+```
+
+
+
+
 
 #### 未完待续。。。
 
