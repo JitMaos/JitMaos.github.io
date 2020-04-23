@@ -427,7 +427,7 @@ KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用
 
 摘自：https://juejin.im/post/5acec2b46fb9a028c6761628
 
-1. 使用注解（，标注bindview和onclick。
+1. 使用注解标注bindview和onclick。
 
 2. APT(Annotation Processing Tool)，准确的说是ButterKnifeProcessor会在编译器解析到这些注解，然后根据自定义规则，生成以"_ViewBinding"结尾的java文件。如：
 
@@ -544,3 +544,12 @@ public final class MySingleton implements Serializable{
 ```
 
 <font color="#dd0000">**这样当JVM从内存中反序列化地"组装"一个新对象时，就会自动调用这个 readResolve方法来返回我们指定好的对象了， 单例规则也就得到了保证**</font>。
+
+## AIDL通信
+
+
+
+
+
+## setContentView流程
+
