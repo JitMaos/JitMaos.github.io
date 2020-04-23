@@ -64,382 +64,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Kotlin协程" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" class="article-date">
-  <time datetime="2020-03-19T07:54:48.980Z" itemprop="datePublished">2020-03-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/">Kotlin协程</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ol>
-<li>协程的开发人员 Roman Elizarov 是这样描述协程的：<strong>协程就像非常轻量级的线程</strong>。线程是由系统调度的，线程切换或线程阻塞的开销都比较大。而协程依赖于线程，但是协程挂起时不需要阻塞线程，几乎是无代价的，协程是由开发者控制的。所以<strong>协程也像用户态的线程</strong>，非常轻量级，一个线程中可以创建任意个协程。</li>
-<li><strong>一个线程中可能包含多个协程，协程与协程之间是可以嵌套的。</strong><font color="#dd0000"><strong>协程是可以直接运行在进程中的，不是一定要依赖于线程</strong></font>，只不过现在支持协程的 <code>Kotlin</code> <code>Python</code> <code>Go</code> 等语言都会以主线程的方式开启程序的运行。</li>
-<li>调用了 <code>runBlocking</code> 的<strong>主线程</strong>会一直 <em>阻塞</em> 直到 <code>runBlocking</code> 内部的协程执行完毕。</li>
-</ol>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">x</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    GlobalScope.launch &#123;</span><br><span class="line">        println(<span class="string">"x1:"</span> + Thread.currentThread())</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        println(<span class="string">"world"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"hello,"</span>)</span><br><span class="line">    delay(<span class="number">2000</span>)</span><br><span class="line">    println(<span class="string">"x2:"</span> + Thread.currentThread())</span><br><span class="line">&#125;</span><br><span class="line">&gt;&gt;&gt;输出：</span><br><span class="line">hello,</span><br><span class="line">x1:Thread[DefaultDispatcher-worker-<span class="number">2</span>,<span class="number">5</span>,main] <span class="comment">//Scope中子线程，不管是否在主线程下</span></span><br><span class="line">world</span><br><span class="line">x2:Thread[main,<span class="number">5</span>,main] <span class="comment">//runBlocking中直接操作为主线程</span></span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li><p>使用await()可以阻塞主线程。</p>
-</li>
-<li><p>fun launch(): Job，返回的Job对象有三个方法，start、join、cancel分别对应协程的启动、切换、取消。<br>fun async(): Deferred，返回的Deferred有方法await，该方法可以用来得到一个结果值。</p>
-</li>
-<li><p><strong>async方法返回一个Deferred对象，Deferred有一个await()方法，该方法可以返回一个结果,这样将可以用顺序的方式编写异步处理流程.</strong></p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">testAsync</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> deffered1 = GlobalScope.async &#123;</span><br><span class="line">        <span class="string">"Hello1"</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> deffered2 = GlobalScope.async &#123;</span><br><span class="line">        println(<span class="string">"Hello2"</span>)</span><br><span class="line">        println(deffered1.await())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-global-scope/index.html" target="_blank" rel="noopener">GlobalScope</a> 中启动的活动协程并不会使进程保活。它们就像守护线程。</p>
-</li>
-</ol>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    GlobalScope.launch &#123;</span><br><span class="line">        repeat(<span class="number">1000</span>) &#123; i -&gt;</span><br><span class="line">                println(<span class="string">"I'm sleeping <span class="variable">$i</span> ..."</span>)</span><br><span class="line">            delay(<span class="number">500L</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">1300L</span>) <span class="comment">// 在延迟后退出</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//你可以运行这个程序并看到它输出了以下三行后终止：</span></span><br><span class="line">I<span class="string">'m sleeping 0 ...</span></span><br><span class="line"><span class="string">I'</span>m sleeping <span class="number">1</span> ...</span><br><span class="line">I<span class="string">'m sleeping 2 ...</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 协程的固定上下文，是一个带索引的Set。一个带索引的Set是Set和Map的合成。该Set中的每个元素都有一个唯一的Key。</span></span><br><span class="line"><span class="comment"> Persistent context for the coroutine. It is an indexed set of [Element] instances.</span></span><br><span class="line"><span class="comment"> * An indexed set is a mix between a set and a map.</span></span><br><span class="line"><span class="comment"> * Every element in this set has a unique [Key]. Keys are compared _by reference_.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SinceKotlin</span>(<span class="string">"1.3"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CoroutineContext</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the element with the given [key] from this context or `null`.</span></span><br><span class="line"><span class="comment">     * Keys are compared _by reference_, that is to get an element from the context the reference to its actual key</span></span><br><span class="line"><span class="comment">     * object must be presented to this function.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> operator fun &lt;E : Element&gt; get(key: Key&lt;E&gt;): E?</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Accumulates entries of this context starting with [initial] value and applying [operation]</span></span><br><span class="line"><span class="comment">     * from left to right to current accumulator value and each element of this context.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> fun &lt;R&gt; fold(initial: R, operation: (R, Element) -&gt; R): R</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a context containing elements from this context and elements from  other [context].</span></span><br><span class="line"><span class="comment">     * The elements from this context with the same key as in the other one are dropped.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> operator fun <span class="title">plus</span><span class="params">(context: CoroutineContext)</span>: CoroutineContext </span>=</span><br><span class="line">        <span class="keyword">if</span> (context === EmptyCoroutineContext) <span class="keyword">this</span> <span class="keyword">else</span> <span class="comment">// fast path -- avoid lambda creation</span></span><br><span class="line">            context.fold(<span class="keyword">this</span>) &#123; acc, element -&gt;</span><br><span class="line">                val removed = acc.minusKey(element.key)</span><br><span class="line">                <span class="keyword">if</span> (removed === EmptyCoroutineContext) element <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// make sure interceptor is always last in the context (and thus is fast to get when present)</span></span><br><span class="line">                    val interceptor = removed[ContinuationInterceptor]</span><br><span class="line">                    <span class="keyword">if</span> (interceptor == <span class="keyword">null</span>) CombinedContext(removed, element) <span class="keyword">else</span> &#123;</span><br><span class="line">                        val left = removed.minusKey(ContinuationInterceptor)</span><br><span class="line">                        <span class="keyword">if</span> (left === EmptyCoroutineContext) CombinedContext(element, interceptor) <span class="keyword">else</span></span><br><span class="line">                            CombinedContext(CombinedContext(left, element), interceptor)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a context containing elements from this context, but without an element with</span></span><br><span class="line"><span class="comment">     * the specified [key]. Keys are compared _by reference_, that is to remove an element from the context</span></span><br><span class="line"><span class="comment">     * the reference to its actual key object must be presented to this function.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> fun <span class="title">minusKey</span><span class="params">(key: Key&lt;*&gt;)</span>: CoroutineContext</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">     * Key for the elements of [CoroutineContext]. [E] is a type of element with this key.</span></span></span><br><span class="line"><span class="function"><span class="comment">     * Keys in the context are compared _by reference_.</span></span></span><br><span class="line"><span class="function"><span class="comment">     */</span></span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> interface Key&lt;E : Element&gt;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">     * An element of the [CoroutineContext]. An element of the coroutine context is a singleton context by itself.</span></span></span><br><span class="line"><span class="function"><span class="comment">     */</span></span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> interface Element : CoroutineContext </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * A key of this coroutine context element.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">public</span> val key: Key&lt;*&gt;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> override operator fun &lt;E : Element&gt; get(key: Key&lt;E&gt;): E? =</span><br><span class="line">            <span class="meta">@Suppress</span>(<span class="string">"UNCHECKED_CAST"</span>)</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.key == key) <span class="keyword">this</span> as E <span class="keyword">else</span> <span class="keyword">null</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> override fun &lt;R&gt; fold(initial: R, operation: (R, Element) -&gt; R): R =</span><br><span class="line">            operation(initial, <span class="keyword">this</span>)</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> override fun <span class="title">minusKey</span><span class="params">(key: Key&lt;*&gt;)</span>: CoroutineContext </span>=</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.key == key) EmptyCoroutineContext <span class="keyword">else</span> <span class="keyword">this</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" data-id="ck9b6i3dq003q5b2603g1b8ke" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Flutter基础学习" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" class="article-date">
-  <time datetime="2020-03-19T07:54:48.975Z" itemprop="datePublished">2020-03-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/">Flutter基础学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>学习文档：<a href="https://www.youtube.com/playlist?list=PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP" target="_blank" rel="noopener">https://www.youtube.com/playlist?list=PLt85kdOx9ozWwcy6FVOquYNMah12FTWbP</a></p>
-<p><a href="https://book.flutterchina.club/" target="_blank" rel="noopener">https://book.flutterchina.club</a></p>
-<ol>
-<li><p>Dart的入口是main()、Flutter的入口在main.dart。</p>
-</li>
-<li><p>Text Widget的样式会受父控件影响，可以自定义Text的样式：</p>
-<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> Scaffold(</span><br><span class="line">  body: Row(</span><br><span class="line">    children: &lt;Widget&gt;[</span><br><span class="line">      Text(</span><br><span class="line">        <span class="string">'TextWidget'</span>,</span><br><span class="line">        style: TextStyle(</span><br><span class="line">          fontSize: <span class="number">20.0</span>,</span><br><span class="line">          fontWeight: FontWeight.w600,</span><br><span class="line">          color: Colors.red,</span><br><span class="line">          fontStyle: FontStyle.italic),</span><br><span class="line">      ),</span><br><span class="line">    ],</span><br><span class="line">  ));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Container组件，包含child时，其大小就是child的，而在不包含子组件的时候，Container会去尝试fit父控件。</p>
-</li>
-<li><p>设定padding和margin</p>
-</li>
-<li><p>使用了(<code>=&gt;</code>)符号，这是Dart中单行函数或方法的简写。</p>
-</li>
-<li><p>在Flutter中，大多数东西都是widget（后同“组件”或“部件”），包括对齐(alignment)、填充(padding)和布局(layout)等，它们都是以widget的形式提供。</p>
-</li>
-<li><p>Flutter在构建页面时，会调用组件的<code>build</code>方法，widget的主要工作是提供一个build()方法来描述如何构建UI界面（通常是通过组合、拼装其它基础widget）。</p>
-</li>
-<li><p><code>Scaffold</code> 是Material库中提供的页面脚手架，它包含导航栏和Body以及<code>FloatingActionButton</code>（如果需要的话）。 本书后面示例中，路由默认都是通过<code>Scaffold</code>创建。</p>
-        
-          <p class="article-more-link">
-            <a href="/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="ck9b6i3dm003k5b26e6j21kfh" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Android基础三部曲『touch事件传递』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" class="article-date">
-  <time datetime="2020-02-18T10:56:06.000Z" itemprop="datePublished">2020-02-18</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/">Android基础三部曲『Touch事件传递』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>touch事件传递，这里有三个关键的方法，分别是<code>dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent</code>，其中<strong>View和Activity没有onInterceptTouchEvent，只有ViewGroup三个方法都有</strong>。调用过程是：dispatch(分发)-&gt;intercept(是否拦截)-&gt;ontouch(处理)。事件由Activity经ViewGroup传递到View，如果一路事件都没有被消费掉，那么事件又会由View经ViewGroup传递到Activity直到被处理掉。<strong>View的dispatchTouchEvent是将事件分发给了自己。</strong></p>
-<p>二、重写onInterceptTouchEvent返回true(默认false)，则后续事件不会往下dispatch，子控件的diaptchTouchEvent无法接受touch事件；如果此时没有重写onTouchEvent，使之返回true，那么ACTION_DOWN将有父控件中onTouchEvent返回true的父控件处理，或者一直传递到Activity，由Activity处理；需要特别注意的是：假设A处理了ACTION_DOWN事件，则后续的ACTION_MOVE、ACTION_UP事件也由A处理！！</p>
-<p>三、dispatchTouchEvent的调用逻辑，如果是ViewGroup，则先调用自己的onInterceptTouchEvent,如果是true,则直接返回；如果是false，则调用子View/ViewGroup的dispatchTouchEvent事件，如果子组件没有消费掉事件，则返回到本组件的onTouchEvent，则返回onTouchEvent的返回值！！</p>
-<p>四、只重写onTouchEvent，使之返回true，表示消费了该touch事件，需要特别注意的是：假设ViewGroup A处理了ACTION_DOWN事件，不光是后续的ACTION_MOVE、ACTION_UP事件也由A处理，甚至子View的dispatchTouchEvent都不会调用，因为此时本View的dispatchTouchEvent返回true，表示事件已经被handled</p>
-<p>五、不管是重写onTouchEvent返回true，还是重写onIterceptTouchEvent返回true，都说明事件已经不需要往子view传递了，此时子view的dispatchTouchEvent将无法收到事件。如果onIterceptTouchEvent返回true,而onTouchEvent没有重写，则事件会继续往父控件传递，直到某个父控件消费了事件，或者传递到Activity，由Activity消费掉。</p>
-<p>六、在onTouchEvent中返回true，消费了事件，则事件不会再往上级组件传递；但是依然会调用父控件、Activity的dispatchTouchEvent事件，也就是说父控件还是有机会拦截事件的。</p>
-<p>七、在dispatchTouchEvent中返回true(默认返回false)，表示该事件已经被handled，不再继续分发；这样事件不会向传递给父控件处理，不管有没重写本组件的onTouchView消费该事件。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">boolean</span> handled = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (onFilterTouchEventForSecurity(ev)) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> actionMasked = action &amp; MotionEvent.ACTION_MASK;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// Check for interception.</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line">        <span class="comment">//ViewGroup去判断这个事件该不该去拦截，首先是这个事件得是ACTION_DOWN事件或者该事件的mFirstTouchTarget（目标子View）是不为空的才会考虑要不要拦截。***这说明mFirstTouchTarget为空的情况下，ACTION_MOVE和ACTION_UP事件是不会经过这个拦截判断的，而是直接intercepted = true表示事件被直接拦截掉。</span></span><br><span class="line"><span class="comment">//      那么mFirstTouchTarget（目标子View）这个变量到底是什么呢？什么时候会为空呢？</span></span><br><span class="line">        <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN</span><br><span class="line">                || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//这个变量是控制是不是不允许父控件去拦截该事件的，取值是看"mGroupFlags"的取值，这里面涉及到一个方法：requestDisallowInterceptTouchEvent()方法。这个方法确定"mGroupFlags"的取值，控制请求父布局不拦截该事件，而是交给自己去做处理。这个方法在处理滑动冲突等场景时经常用到。</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (!disallowIntercept) &#123;</span><br><span class="line">                intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">                ev.setAction(action); <span class="comment">// restore action in case it was changed</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// There are no touch targets and this action is not an initial down</span></span><br><span class="line">            <span class="comment">// so this view group continues to intercept touches.</span></span><br><span class="line">            intercepted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">            <span class="keyword">if</span> (!canceled &amp;&amp; !intercepted) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// If the event is targeting accessibility focus we give it to the</span></span><br><span class="line">                <span class="comment">// view that has accessibility focus and if it does not handle it</span></span><br><span class="line">                <span class="comment">// we clear the flag and dispatch the event to all children as usual.</span></span><br><span class="line">                <span class="comment">// We are looking up the accessibility focused host to avoid keeping</span></span><br><span class="line">                <span class="comment">// state since these events are very rare.</span></span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Dispatch to touch targets.</span></span><br><span class="line">            <span class="keyword">if</span> (mFirstTouchTarget == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// No touch targets so treat this as an ordinary view.</span></span><br><span class="line">                handled = dispatchTransformedTouchEvent(ev, canceled, <span class="keyword">null</span>,</span><br><span class="line">                        TouchTarget.ALL_POINTER_IDS);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// Dispatch to touch targets, excluding the new touch target if we already</span></span><br><span class="line">                <span class="comment">// dispatched to it.  Cancel touch targets if necessary.</span></span><br><span class="line">                ...</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Update list of touch targets for pointer up or cancel, if needed.</span></span><br><span class="line">            <span class="keyword">if</span> (canceled</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_UP</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">                resetTouchState();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_UP) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> actionIndex = ev.getActionIndex();</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> idBitsToRemove = <span class="number">1</span> &lt;&lt; ev.getPointerId(actionIndex);</span><br><span class="line">                removePointersFromTouchTargets(idBitsToRemove);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!handled &amp;&amp; mInputEventConsistencyVerifier != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mInputEventConsistencyVerifier.onUnhandledEvent(ev, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> handled;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="默认情况"><a href="#默认情况" class="headerlink" title="默认情况"></a>默认情况</h4><p><img src="https://upload-images.jianshu.io/upload_images/7186484-19bd3ac2770676b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Touch默认流程.png"></p>
-<h4 id="dispatchTouchEvent返回值"><a href="#dispatchTouchEvent返回值" class="headerlink" title="dispatchTouchEvent返回值"></a>dispatchTouchEvent返回值</h4><p><code>dispatchTouchEvent()中调用了onInterceptTouchEvent()和dispatchTransformedTouchEvent()方法，dispatchTransformedTouchEvent()调用了super.dispatchTouchEvent()方法</code>，所以如果重写dispatchTouchEvent方法</p>
-<ul>
-<li>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-5dd5920e40b17322.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回true.png"></li>
-<li>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-7b303e08235b2003.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回false.png"></li>
-</ul>
-<h4 id="onInterceptTouchEvent返回值"><a href="#onInterceptTouchEvent返回值" class="headerlink" title="onInterceptTouchEvent返回值"></a>onInterceptTouchEvent返回值</h4><ul>
-<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-ef4951c9034fc86a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onInterceptTouchEvent返回true.png"></p>
-</li>
-<li><p>返回false<br>onInterceptTouchEvent和onTouchEvent如果返回false的话， 效果和默认的一样</p>
-</li>
-</ul>
-<h4 id="onTouchEvent返回值"><a href="#onTouchEvent返回值" class="headerlink" title="onTouchEvent返回值"></a>onTouchEvent返回值</h4><ul>
-<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-6ec1d110a654160d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回true.png"></p>
-</li>
-<li><p>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-d0c296fdd731ac2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回false.png"></p>
-</li>
-</ul>
-<p>参考：</p>
-<p><a href="https://www.jianshu.com/p/c98a41a9a5f3" target="_blank" rel="noopener">一步步探索学习Android Touch事件分发传递机制（一）</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ck9b6i3co00385b26f336haxs" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-JVM——加载引擎" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" class="article-date">
-  <time datetime="2020-02-15T03:17:25.000Z" itemprop="datePublished">2020-02-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/">JVM——加载引擎</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>看过一篇博客说的JVM分为三部分，加载引擎，执行引擎，垃圾回收引擎。想想很有道理。今天总结一下加载引擎。尝试回答类似这样的问题：</p>
-<ul>
-<li><p>介绍下Java类加载机制？</p>
-<p>java是使用<strong>双亲委派模型</strong>来进行类的加载的，我们先看一下它的工作过程：如果一个类加载器收到了类加载的请求，<code>它首先不会自己去尝试加载这个类，而是把这个请求委托给父类加载器去完成</code>，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有找到所需要加载的类）时，子加载器才会尝试自己去加载。<br>使用双亲委托机制的好处是：<code>能够有效确保一个类的全局唯一性，当程序中出现多个限定名相同的类时，类加载器在执行加载时，始终只会加载其中的某一个类</code>。</p>
-</li>
-</ul>
-<p>  <strong>1、加载</strong></p>
-<p>  　　由类加载器负责根据一个类的<strong>全限定名</strong>来读取此类的<strong>二进制字节流</strong>到JVM内部，并存储在运行时内存区的方法区，然后将其转换为一个与目标类型对应的java.lang.Class对象实例</p>
-<h4 id="2、验证"><a href="#2、验证" class="headerlink" title="2、验证"></a>2、验证</h4><p>  格式验证：验证是否符合class文件规范<br>  语义验证：检查一个被标记为final的类型是否包含子类；检查一个类中的final方法是否被子类进行重写；确保父类和子类之间没有不兼容的一些方法声明（比如方法签名相同，但方法的返回值不同）<br>  操作验证：在操作数栈中的数据必须进行正确的操作，对常量池中的各种符号引用执行验证（通常在解析阶段执行，检查是否可以通过符号引用中描述的全限定名定位到指定类型上，以及类成员信息的访问修饰符是否允许访问等）</p>
-<h4 id="3、准备"><a href="#3、准备" class="headerlink" title="3、准备"></a>3、准备</h4><p>  为类中的所有静态变量分配内存空间，并为其设置一个初始值（由于还没有产生对象，实例变量不在此操作范围内）<br>  被final修饰的static变量（常量），会直接赋值；</p>
-<h4 id="4、解析"><a href="#4、解析" class="headerlink" title="4、解析"></a>4、解析</h4><p>  将常量池中的符号引用转为直接引用（得到类或者字段、方法在内存中的指针或者偏移量，以便直接调用该方法），这个可以在初始化之后再执行。<br>  解析需要静态绑定的内容。 // 所有不会被重写的方法和域都会被静态绑定</p>
-<p>  　　<strong>以上2、3、4三个阶段又合称为链接阶段</strong>，链接阶段要做的是将加载到JVM中的二进制字节流的类数据信息合并到JVM的运行时状态中。</p>
-<h4 id="5、初始化（先父后子）"><a href="#5、初始化（先父后子）" class="headerlink" title="5、初始化（先父后子）"></a>5、初始化（先父后子）</h4><p>  4.1 为静态变量赋值</p>
-<p>  4.2 执行static代码块</p>
-<blockquote>
-<p>注意：static代码块只有jvm能够调用<br>　　　如果是多线程需要同时初始化一个类，仅仅只能允许其中一个线程对其执行初始化操作，其余线程必须等待，只有在活动线程执行完对类的初始化操作之后，才会通知正在等待的其他线程。</p>
-</blockquote>
-<p>  因为子类存在对父类的依赖，所以<strong>类的加载顺序是先加载父类后加载子类，初始化也一样。</strong>不过，父类初始化时，子类静态变量的值也有有的，是默认值。</p>
-<p>  最终，方法区会存储当前类类信息，包括类的<strong>静态变量</strong>、<strong>类初始化代码</strong>（<strong>定义静态变量时的赋值语句</strong> 和 <strong>静态初始化代码块</strong>）、<strong>实例变量定义</strong>、<strong>实例初始化代码</strong>（<strong>定义实例变量时的赋值语句实例代码块</strong>和<strong>构造方法</strong>）和<strong>实例方法</strong>，还有<strong>父类的类信息引用。</strong></p>
-<ul>
-<li><p>当new一个对象时发生了什么？</p>
-<p><strong>java在new一个对象的时候，会先查看对象所属的类有没有被加载到内存，如果没有的话，就会先通过类的全限定名来加载。加载并初始化类完成后，再进行对象的创建工作。</strong></p>
-<p>我们先假设是第一次使用该类，这样的话new一个对象就可以分为两个过程：<strong>加载并初始化类</strong>和<strong>创建对象。</strong></p>
-<h3 id="一、类加载过程（第一次使用该类）"><a href="#一、类加载过程（第一次使用该类）" class="headerlink" title="一、类加载过程（第一次使用该类）"></a>一、类加载过程（第一次使用该类）</h3><p>　　</p>
-<h3 id="二、创建对象"><a href="#二、创建对象" class="headerlink" title="二、创建对象"></a>二、创建对象</h3><p><strong>1、在堆区分配对象需要的内存</strong></p>
-<p>　　分配的内存包括本类和父类的所有实例变量，但不包括任何静态变量</p>
-<p><strong>2、对所有实例变量赋默认值</strong></p>
-<p>　　将方法区内对实例变量的定义拷贝一份到堆区，然后赋默认值</p>
-<p><strong>3、执行实例初始化代码</strong></p>
-<p>　　初始化顺序是先初始化父类再初始化子类，初始化时先执行实例代码块然后是构造方法</p>
-<p><strong>4、如果有类似于Child c = new Child()形式的c引用的话，在栈区定义Child类型引用变量c，然后将堆区对象的地址赋值给它</strong></p>
-</li>
-</ul>
-<p>  需要注意的是，<strong>每个子类对象持有父类对象的引用</strong>，可在内部通过super关键字来调用父类对象，但在外部不可访问</p>
-<h3 id="补充："><a href="#补充：" class="headerlink" title="补充："></a>补充：</h3><p>  通过实例引用调用实例方法的时候，先从方法区中对象的实际类型信息找，找不到的话再去父类类型信息中找。</p>
-<p>  如果继承的层次比较深，要调用的方法位于比较上层的父类，则调用的效率是比较低的，因为每次调用都要经过很多次查找。这时候大多系统会采用一种称为<strong>虚方法表</strong>的方法来优化调用的效率。</p>
-<p>  所谓虚方法表，就是在类加载的时候，为每个类创建一个表，这个表包括该类的对象所有动态绑定的方法及其地址，包括父类的方法，但一个方法只有一条记录，子类重写了父类方法后只会保留子类的。当通过对象动态绑定方法的时候，只需要查找这个表就可以了，而不需要挨个查找每个父类。</p>
-<h3 id="关于Class"><a href="#关于Class" class="headerlink" title="关于Class"></a>关于Class</h3><p>Java所谓的<strong>“一次编译，到处运行”</strong>，是因为有一套JVM规范，这套规范包含了编译器、解释器、Class文件格式等。不同的JVM可以自行设计实现。只要符合规范就可以了。</p>
-<h4 id="Class格式"><a href="#Class格式" class="headerlink" title="Class格式"></a>Class格式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic; <span class="comment">//魔数，是固定的，0xCAFEBABE，cafebabe，表示这是一个class文件</span></span><br><span class="line">    u2             minor_version; <span class="comment">//次版本</span></span><br><span class="line">    u2             major_version; <span class="comment">//主版本</span></span><br><span class="line">    u2             constant_pool_count; <span class="comment">//常量池，有32个常量</span></span><br><span class="line">    cp_info        constant_pool[constant_pool_count-<span class="number">1</span>];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="JVM规范"><a href="#JVM规范" class="headerlink" title="JVM规范"></a>JVM规范</h4>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ck9b6i3dk003i5b26fgxo7zey" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-JVM——运行时数据区" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" class="article-date">
-  <time datetime="2020-02-15T01:38:09.000Z" itemprop="datePublished">2020-02-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/">JVM——运行时数据区</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>JAVA的运行时数据区，老生常谈。</p>
-<p>我们常说的JAVA的运行时数据区包括：<code>程序计数器、虚拟机栈、本地方法栈、方法区、堆</code>，其中前三者是线程私有的，后二者是线程公有的。这里为什么以线程为划分私有/公有的依据，是因为<strong>线程是JVM调度的最小单位</strong>。</p>
-<h3 id="线程私有"><a href="#线程私有" class="headerlink" title="线程私有"></a>线程私有</h3><h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><p>​    在汇编语言中，程序计数器是指CPU中的寄存器，它保存的是程序当前执行的指令地址(也可以说保存下一条指令的所在存储单元的地址)。在JVM中的程序计数器也是类似的功能，<code>用于记录当前线程执行到的字节码的行号，字节码的解释器工作的时候就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。</code></p>
-<p>​    由于在JVM中，多线程是通过线程轮流切换来获得CPU执行时间的，因此，<strong>在任一具体时刻，一个CPU的内核只会执行一条线程中的指令</strong>，因此<code>为了能够使得每个线程都在线程切换后能够恢复在切换之前的程序执行位置，每个线程都需要有自己独立的程序计数器，并且不能相互干扰</code>，否则就会影响到程序的正常执行次序。因此，可以这么说，程序计数器是每个线程所私有的。</p>
-<p>​    <code>注意：此内存区域是JVM里面唯一一个不会发生内存溢出(OOM OutOfMemoryError)的区域。</code></p>
-<h4 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h4><p>​    虚拟机栈也就是我们常说的JVM的栈，<code>栈中存放着栈帧，每一个方法执行会产生一个栈帧。</code>方法开始执行时，会在虚拟机栈中压入一个栈帧，方法执行结束时，会将栈帧弹出栈。<code>栈帧中包含局部变量表、操作数栈、动态链链接、方法出口等信息构成</code>。</p>
-<p>​    <strong>局部变量表</strong>：存放编译器可知的各种基本数据类型、对象引用类型和returnAddress类型(指向一条字节码指令的地址：函数返回地址)。long、double、占用两个局部变量控件的Slot。<code>局部变量表所需要的内存空间在编译器确定，当进入一个方法时，方法在栈帧中所需要分配的局部变量控件是完全确定的，不可动态改变大小</code>。<strong>详细内容可以使用JDK自带的工具javap对class进行反编译查看。</strong></p>
-<p>​    <strong>操作数库</strong>：后进先出LIFO，最大深度由编译期决定。栈帧刚建立时，操作数栈为空，执行方法操作时，操作数栈用于存放JVM从局部变量表复制的常量或者变量，提供提取，及结果入栈，也用于存放调用方法需要的参数及接受方法返回的结果。操作数栈可以存放一个JVM中定义的任意数据类型的值。在任意时刻，操作数栈都有一个固定的栈深度，基本类型除了long、double占用两个深度，其他占用一个深度。</p>
-<p>​    <strong>动态链接</strong>：当一个方法被执行后，有两种方式退出该方法：执行引擎遇到任意一个方法<strong>返回的字节码指令</strong> 或遇到了 <strong>异常</strong> ，并且该异常没有在方法体内得到处理。无论采用何种方式退出，在方法退出之后，都需要返回到方法被调用的位置，程序才能继续执行。方法返回时可能需要在栈帧中保存一些信息，用来帮助恢复它的上层方法的执行状态。一般来说方法正常退出时，调用者的程序计数器的值就可以作为返回地址，栈帧中很可能保存了这个计数器的值，而方法异常退出时，返回地址是要通过异常处理器来确定的，栈帧中一般不保存这部分信息。</p>
-<p>​    如果线程请求的栈深入大于虚拟机所允许的深度，将抛出StackOverflowError异常。如果虚拟机栈可以动态扩展（大部分虚拟机允许动态扩展，也可以设置固定大小的虚拟机栈），但是无法申请到足够的内存，会抛出OutOfMemorError。</p>
-<h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><p>​    本地方法栈与虚拟机栈所发挥的作用很相似，他们的区别在于虚拟机栈为执行Java代码方法服务，而本地方法栈为Native方法服务。</p>
-<h3 id="线程公有"><a href="#线程公有" class="headerlink" title="线程公有"></a>线程公有</h3><h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><p>​    因为是线程公有的，几乎所有的线程都把自己产生的实例对象放在堆上。所以堆是JVM运行时数据区中所在空间最大的一块，<strong>我们说的垃圾回收也主要发生在堆上</strong>。如果按GC的不同回收算法，堆又可以划分为“老年代”，“新生代”，“新生代”再划分为Eden空间、From Survivor空间、To Survivor空间。关于垃圾回收，在<a href="">这里</a>再讨论。</p>
-<p>​    堆可以是固定大小的，也可以通过设置配置文件来设置该为可扩展的。如果堆上没有内存进行分配，并无法进行扩展时，将会抛出OutOfMemoryError异常</p>
-<h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><p>​    方法区中存储的是每个<code>类的信息(包括类的名称、方法信息、字段信息)、静态变量、常量以及编译器编译后的代码</code>等。在Class文件中除了类的字段、方法、接口等描述信息外，还有一项信息是常量池，用来存储编译期间生成的字面量和符号引用。<strong>虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分,但是它却又一个别名叫做Non-Heap(非堆),目的应该是与Java堆区分开来.</strong></p>
-<p>原则上,如何实现方法区属于虚拟机实现细节,不受虚拟机规范约束,但是使用永久代来实现方法区,现在看来并不是一个好主意,因为这样更容易遇到内存泄漏问题(永久代有-XX:MaxPermSize的上限,J9和JRockit只要没有触碰到进程可用内存的上限,例如:32位操作系统中的4GB,就不会出现问题),而且有极少的方法(例如String.intern())会因为这个原因导致不同虚拟机下有不同的表现.因此,对于HotSpot虚拟机,根据官方发布的路线图信息,现在也有放弃永久代并逐步采用Native Memory来实现方法区的规划了,在目前已经发布的JDK1.7的HotSpot中,已经把原本放在永久代的字符串常量池移出.</p>
-<p>​    运行时常量池(Runtime Constant Pool)是方法区的一部分.Class文件中除了有类的版本/字段/方法/接口等描述信息外,还有一项信息是<strong>常量池(Constant Pool Table),用于存放编译期生成的各种字面量和符号引用,这部分内容将类在加载后进入方法区的运行时常量池中存放</strong>.</p>
-<p>​    <code>运行时常量池相对于Class文件常量池的另外一个重要特征就是具备动态性，Java语言并不要求常量一定只有在编译期才能产生，也就是并非预置入Class文件中常量池的内容才能进入方法区运行时常量池,运行期间也可能将新的常量放入池中，这种特性被开发人员利用得比较多的便是String类的intern()方法。</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">intern</span><span class="params">()</span></span></span><br><span class="line"><span class="function">返回字符串对象的规范表示。</span></span><br><span class="line"><span class="function">最初为空的字符串池由String类String 。</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">当调用intern方法时，如果池已经包含与<span class="title">equals</span><span class="params">(Object)</span>方法确定的相当于此String对象的字符串，则返回来自池的字符串。 否则，此String对象将添加到池中，并返回对此String对象的引用。</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">由此可见，对于任何两个字符串s和t ， s.<span class="title">intern</span><span class="params">()</span> </span>== t.intern()是<span class="keyword">true</span>当且仅当s.equals(t)是<span class="keyword">true</span> 。</span><br><span class="line"></span><br><span class="line">所有文字字符串和字符串值常量表达式都被实体化。 字符串文字在The Java™ Language Specification的 <span class="number">3.10</span><span class="number">.5</span>节中定义。</span><br><span class="line"></span><br><span class="line">结果</span><br><span class="line">一个字符串与该字符串具有相同的内容，但保证来自一个唯一的字符串池。</span><br></pre></td></tr></table></figure>
-
-<p>​    注意：在JVM规范中，没有强制要求方法区必须实现垃圾回收，很多人习惯将方法区称为”永久代”，是因为<strong>HotSpot虚拟机以永久代来实现方法区</strong>，从而JVM的垃圾处理器可以像堆区一样管理这部分的区域，从而不需要专门为这部分设计垃圾回收机制。<code>不过JDK8之后，Hotspot虚拟机将运行时常量池从永久代移除了。然后引入了一个新的概念&quot;元空间&quot;</code>。</p>
-<p>###参考</p>
-<p><a href="https://www.jianshu.com/p/623e98069dec" target="_blank" rel="noopener">Java虚拟机基础——2JVM运行时数据区</a></p>
-<p><a href="https://blog.csdn.net/u013412772/article/details/81051465" target="_blank" rel="noopener">Java虚拟机–方法区(运行时常量池)</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ck9b6i3d6003g5b261nna8czp" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-2019年总结" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/12/29/2019%E5%B9%B4%E6%80%BB%E7%BB%93/" class="article-date">
-  <time datetime="2019-12-28T22:00:53.000Z" itemprop="datePublished">2019-12-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/29/2019%E5%B9%B4%E6%80%BB%E7%BB%93/">2019年总结</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>回顾2019，展望2020</p>
-<p>总的来说，2019年的运气还算可以。虽然不容易，但是总算熬过来了。加上房贷还了20万的债，5月份换了份工作，虽然公司项目比较单一，大家都只想维持现状，害怕担责，新技术难以推行，但是好在公司的氛围比之前的都更推崇技术，分享会很多，自己在里面也能静下心来学习积累，感觉自己还是进步了一些的。</p>
-<p>看书</p>
-<p>《Kotlin实战》、《Android组件化架构》、《Java并发编程实战》、《Android Gradle权威指南》、《Android进阶解密》、《深入探索Android热修复技术原理》、《TCP/IP入门经典》</p>
-<p>博客</p>
-<p>在简书上写了十几篇博客，但是还都比较实用简单，没什么值得一提的。</p>
-<p>看电影</p>
-<p>影院观看：复仇者联盟4、白蛇:缘起、毒液、海王、阿丽塔、流浪地球、玩具总动员4、哪吒:魔童降世、冰雪奇缘(陪小家伙第一次去影院看电影 ^.^)</p>
-<p>在家观看：复仇者联盟3、飞驰人生、遍地狼烟、绅士特工2、调音师、天上有朵雨做的云、权利的游戏第八季、帕丁顿熊2、有希望的男人、了不起的盖茨比、蜘蛛侠：平行宇宙、何以为家、神奇女侠、雷神1、小偷家族、雷神2、雷神3、蜘蛛侠-英雄远征、阿拉丁真人版、印度合伙人、玩具总动员1，玩具总动员2、</p>
-<p>出游</p>
-<p>和家人一起去了一趟无锡融创海世界，陪小孩去看鱼</p>
-<p>明年就30岁了，没有什么好大的愿望，就是希望过好现在，希望家人能健康快乐，自己能做好工作。最好能有时间多陪家人出去走走；另外明年可能自己一个人在上海打工了，有时间的话，就锻炼健身吧。</p>
-<p>以上。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/12/29/2019%E5%B9%B4%E6%80%BB%E7%BB%93/" data-id="ck9b6i3bu002x5b268biyhyfi" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-开源项目——Retrofit『源码学习』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" class="article-date">
@@ -531,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ck9b6i3dw003x5b26gb5j2ehs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ck9c53ecm0042zc26a93qdsg2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
@@ -581,7 +205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9b6i3eg004g5b26fa9jecdc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9c53ecw004kzc26he7z09vd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -635,7 +259,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9b6i3e300425b2667iqh0bt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9c53ecm0040zc26a5ob0b9h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -675,8 +299,6 @@
 <li>可以简化你的对象，因为它不需要知道链的结构。</li>
 <li>通过改变链内的成员或调动他们的顺序，允许你动态地新增或删除责任。</li>
 </ul>
-<!-- moe-->
-
 <p>责任链的缺点：</p>
 <ul>
 <li>可能不容易观察运行时的特征，有碍于除错。</li>
@@ -689,61 +311,487 @@
 <h4 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h4><p>动态代理模式提供了一种通过代理对象访问目标对象的方式，目的是为了在不改变目标对象的代码的前提下<strong>增加</strong>额外的功能。Java中有三种代理模式，分别是静态代理、动态代理、Cglib代理。</p>
 <h5 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h5><p>静态代理中代理对象(Proxy)和被代理对象(Target)需要实现相同的接口或继承相同的父类。<strong>这样在外部调用看来他们不知道自己访问的是Target还是Proxy，可以保证原有业务逻辑的连续性。</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDesignPattern</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        iTranslate translator = <span class="keyword">new</span> EngTranslatorProxy(<span class="keyword">new</span> EngTranslator());</span><br><span class="line">        System.out.println(translator.translate(<span class="string">"我叫大强My name is DaQiang."</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">iTranslate</span> </span>&#123;</span><br><span class="line">        <span class="function">String <span class="title">translate</span><span class="params">(String source)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EngTranslator</span> <span class="keyword">implements</span> <span class="title">iTranslate</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">translate</span><span class="params">(String source)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"翻译结果:"</span> + source;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EngTranslatorProxy</span> <span class="keyword">implements</span> <span class="title">iTranslate</span> </span>&#123;</span><br><span class="line">        EngTranslator engTranslator;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">EngTranslatorProxy</span><span class="params">(EngTranslator engTranslator)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.engTranslator = engTranslator;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">translate</span><span class="params">(String source)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//添加过滤中文的逻辑</span></span><br><span class="line">            Pattern pat = Pattern.compile(<span class="string">"[\u4e00-\u9fa5]"</span>);</span><br><span class="line">            Matcher mat = pat.matcher(source);</span><br><span class="line">            source = mat.replaceAll(<span class="string">""</span>);</span><br><span class="line">            <span class="keyword">return</span> engTranslator.translate(source);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&gt;&gt;&gt;输出：</span><br><span class="line">翻译结果：My name is DaQiang.</span><br></pre></td></tr></table></figure>
-
-<h5 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h5><p>静态代理每新建一个代理逻辑，就需要新建一个代理对象，这样可能导致产生很多的代理类。和静态代理不同，动态代理<font color="#dd0000"><strong>在内存中构建代理对象</strong></font>，从而不需要创建很多代理类(Proxy)。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(((iTranslate)<span class="keyword">new</span> EngTranslatorProxy(</span><br><span class="line">                <span class="keyword">new</span> EngTranslator()).getProxyInstance())</span><br><span class="line">                .translate(<span class="string">"我叫大强My name is DaQiang."</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">iTranslate</span> </span>&#123;</span><br><span class="line">        <span class="function">String <span class="title">translate</span><span class="params">(String source)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EngTranslator</span> <span class="keyword">implements</span> <span class="title">iTranslate</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">translate</span><span class="params">(String source)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"翻译结果:"</span> + source;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EngTranslatorProxy</span>  </span>&#123;</span><br><span class="line">        EngTranslator engTranslator;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">EngTranslatorProxy</span><span class="params">(EngTranslator engTranslator)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.engTranslator = engTranslator;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">getProxyInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Proxy.newProxyInstance(engTranslator.getClass().getClassLoader(),</span><br><span class="line">                engTranslator.getClass().getInterfaces(),</span><br><span class="line">                <span class="keyword">new</span> InvocationHandler() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method,</span></span></span><br><span class="line"><span class="function"><span class="params">                                         Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                        <span class="comment">//添加过滤中文的逻辑</span></span><br><span class="line">                        Pattern pat = Pattern.compile(<span class="string">"[\u4e00-\u9fa5]"</span>);</span><br><span class="line">                        Matcher mat = pat.matcher(args[<span class="number">0</span>].toString());</span><br><span class="line">                        String filterSource = mat.replaceAll(<span class="string">""</span>);</span><br><span class="line">                        Object returnValue = method.invoke(engTranslator,filterSource);</span><br><span class="line">                        <span class="keyword">return</span> returnValue;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&gt;&gt;&gt;输出：</span><br><span class="line">翻译结果:My name is DaQiang.</span><br></pre></td></tr></table></figure>
-
-<p>动态代理实现原理（<a href="https://www.cnblogs.com/zuidongfeng/p/8735241.html)：" target="_blank" rel="noopener">https://www.cnblogs.com/zuidongfeng/p/8735241.html)：</a></p>
-<p>1、为接口创建代理类的字节码文件</p>
-<p>2、使用ClassLoader将字节码文件加载到JVM</p>
-<p>3、创建代理类实例对象，执行对象的目标方法</p>
-<h5 id="Cglib代理"><a href="#Cglib代理" class="headerlink" title="Cglib代理"></a>Cglib代理</h5><p>静态代理和动态代理都需要目标对象实现一个接口。然而有时候目标对象没法实现接口，就是一个类。此时<font color="#dd0000"><strong>可以使用继承的方式扩展其子类的功能</strong></font>，在Java中，可以使用Cglib这个库，在内存中构建一个目标对象的子类对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 目标对象,没有实现任何接口</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"----已经保存数据!----"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Cglib代理工厂：ProxyFactory.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Cglib子类代理工厂</span></span><br><span class="line"><span class="comment"> * 对UserDao在内存中动态构建一个子类对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyFactory</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span></span>&#123;</span><br><span class="line">    <span class="comment">//维护目标对象</span></span><br><span class="line">    <span class="keyword">private</span> Object target;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ProxyFactory</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.target = target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//给目标对象创建一个代理对象</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getProxyInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//1.工具类</span></span><br><span class="line">        Enhancer en = <span class="keyword">new</span> Enhancer();</span><br><span class="line">        <span class="comment">//2.设置父类</span></span><br><span class="line">        en.setSuperclass(target.getClass());</span><br><span class="line">        <span class="comment">//3.设置回调函数</span></span><br><span class="line">        en.setCallback(<span class="keyword">this</span>);</span><br><span class="line">        <span class="comment">//4.创建子类(代理对象)</span></span><br><span class="line">        <span class="keyword">return</span> en.create();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy proxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"开始事务..."</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//执行目标对象的方法</span></span><br><span class="line">        Object returnValue = method.invoke(target, args);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"提交事务..."</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> returnValue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//目标对象</span></span><br><span class="line">        UserDao target = <span class="keyword">new</span> UserDao();</span><br><span class="line">        <span class="comment">//代理对象</span></span><br><span class="line">        UserDao proxy = (UserDao)<span class="keyword">new</span> ProxyFactory(target).getProxyInstance();</span><br><span class="line">        <span class="comment">//执行代理对象的方法</span></span><br><span class="line">        proxy.save();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>本段落参考：<a href="https://www.cnblogs.com/cenyu/p/6289209.html" target="_blank" rel="noopener">Java的三种代理模式</a></p>
-<h4 id="门面模式"><a href="#门面模式" class="headerlink" title="门面模式"></a>门面模式</h4><p>门面模式(外观模式)简单说就是隐藏了系统的复杂性，把一些复杂的流程封装成一个简单的接口让外部用户更简单的使用。门面模式中涉及3个角色：</p>
-<ul>
-<li>门面角色：外观模式的核心。它被客户角色调用，它熟悉子系统的功能。内部根据客户角色的需求预定了几种功能的组合。</li>
-<li>子系统角色:实现了子系统的功能。它对客户角色和Facade时未知的。它内部可以有系统内的相互交互，也可以由供外界调用的接口。</li>
-<li>客户角色:通过调用Facede来完成要实现的功能。</li>
-</ul>
-<p>看一个例子，以计算机启动为例，将一系列CPU、内存、硬盘的启动放到一个总的启动方法里，<strong>用户只需要调用该方法而不需要知道计算机内部的具体启动流程。</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Computer.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Computer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    CPU cpu;</span><br><span class="line">    Disk dis;</span><br><span class="line">    Memory memory;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Computer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cpu = <span class="keyword">new</span> CPU();</span><br><span class="line">        dis = <span class="keyword">new</span> Disk();</span><br><span class="line">        memory = <span class="keyword">new</span> Memory();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Computer start begin---------"</span>);</span><br><span class="line">        cpu.start();</span><br><span class="line">        dis.start();</span><br><span class="line">        memory.start();</span><br><span class="line">        System.out.println(<span class="string">"Computer start end---------"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Computer shutdown begin---------"</span>);</span><br><span class="line">        cpu.shutdown();</span><br><span class="line">        dis.shutdown();</span><br><span class="line">        memory.shutdown();</span><br><span class="line">        System.out.println(<span class="string">"Computer shutdown end---------"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//CPU.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CPU</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String TAG = <span class="string">"CPU"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" start"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" shutdown"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Disk.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Disk</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String TAG = <span class="string">"Disk"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" start"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" shutdown"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Memory.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Memory</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String TAG = <span class="string">"Memory"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" start"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(TAG + <span class="string">" shutdown"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试一下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Computer computer = <span class="keyword">new</span> Computer();</span><br><span class="line">        computer.start();</span><br><span class="line">        computer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&gt;&gt;&gt;输出：</span><br><span class="line">Computer start begin---------</span><br><span class="line">CPU start</span><br><span class="line">Disk start</span><br><span class="line">Memory start</span><br><span class="line">Computer start end---------</span><br><span class="line">Computer shutdown begin---------</span><br><span class="line">CPU shutdown</span><br><span class="line">Disk shutdown</span><br><span class="line">Memory shutdown</span><br><span class="line">Computer shutdown end---------</span><br></pre></td></tr></table></figure>
-
-<h4 id="建造者模式-Builder"><a href="#建造者模式-Builder" class="headerlink" title="建造者模式(Builder)"></a>建造者模式(Builder)</h4><p>建造者模式在Java中很常见，通常在某各类的构造方法有很多参数，且参数后期可能还会增加的情况下使用。<strong>核心思想就是使用一个Builder来实现动态添加一个参数/配置项，返回自身对象。</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Rocket</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> spead;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> weight;</span><br><span class="line">    <span class="keyword">private</span> String dest;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Rocket</span><span class="params">(Builder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = builder.name;</span><br><span class="line">        <span class="keyword">this</span>.spead = builder.spead;</span><br><span class="line">        <span class="keyword">this</span>.weight = builder.weight;</span><br><span class="line">        <span class="keyword">this</span>.dest = builder.dest;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSpead</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> spead;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getWeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> weight;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dest;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//建造者</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> spead;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> weight;</span><br><span class="line">        <span class="keyword">private</span> String dest;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">name</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">spead</span><span class="params">(<span class="keyword">int</span> spead)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.spead = spead;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">weight</span><span class="params">(<span class="keyword">int</span> weight)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.weight = weight;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">dest</span><span class="params">(String dest)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.dest = dest;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Rocket <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Rocket(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试一下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rocket rocket = <span class="keyword">new</span> Rocket.Builder().name(<span class="string">"BlueStar"</span>).spead(<span class="number">1000</span>).weight(<span class="number">2200</span>).dest(<span class="string">"moon"</span>).build();</span><br></pre></td></tr></table></figure>
-
-<h4 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h4><h5 id="饿汉模式"><a href="#饿汉模式" class="headerlink" title="饿汉模式"></a>饿汉模式</h5><p>所谓饿汉模式就是立即加载，一般情况下再调用getInstancef方法之前就已经产生了实例，也就是在类加载的时候已经产生了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingletonHungary</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> SingletonHungary singletonHungary = <span class="keyword">new</span> SingletonHungary();</span><br><span class="line">	<span class="comment">//将构造器设置为private禁止通过new进行实例化</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">SingletonHungary</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SingletonHungary <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> singletonHungary;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>懒汉模式</strong></p>
-<p>懒汉模式就是延迟加载，也叫懒加载。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//单例模式的懒汉实现5--线程安全</span></span><br><span class="line"><span class="comment">//通过设置同步代码块，使用DCL双检查锁机制</span></span><br><span class="line"><span class="comment">//使用双检查锁机制成功的解决了单例模式的懒汉实现的线程不安全问题和效率问题</span></span><br><span class="line"><span class="comment">//DCL 也是大多数多线程结合单例模式使用的解决方案</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingletonLazy5</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> SingletonLazy5 singletonLazy;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">SingletonLazy5</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SingletonLazy5 <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> (<span class="keyword">null</span> == singletonLazy) &#123;</span><br><span class="line">				<span class="comment">// 模拟在创建对象之前做一些准备工作</span></span><br><span class="line">				Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">				<span class="keyword">synchronized</span> (SingletonLazy5<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">					<span class="keyword">if</span>(<span class="keyword">null</span> == singletonLazy) &#123;</span><br><span class="line">						singletonLazy = <span class="keyword">new</span> SingletonLazy5();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			<span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> singletonLazy;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h4 id="未完待续。。。"><a href="#未完待续。。。" class="headerlink" title="未完待续。。。"></a>未完待续。。。</h4>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9b6i3ds003s5b26cdlhbpc7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9c53ecf003nzc2692l02klh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-开源项目——OkHttp『基础使用』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-28T02:49:52.000Z" itemprop="datePublished">2019-04-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/">OKHttp3『使用』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h4><p>OKHttp是一个高效的开源网络请求类库，具有以下特性：</p>
+<ul>
+<li>支持HTTP/2，<strong>允许所有同一个主机地址的请求共享同一个socket连接</strong></li>
+<li>使用连接池，提高请求效率</li>
+<li>透明的GZIp压缩减少响应数据的大小</li>
+<li>缓存响应数据，避免一些完全重复的请求</li>
+<li>当网络出现状态时，OKHTTP会进行尝试，如果服务有多个地址，OKHTTP会进行不同地址的请求尝试；<strong>注意，这里的重试指的是网络连接失败时的重试，而读取超时，连接超时不在范围内！</strong></li>
+</ul>
+<h4 id="二、配置环境"><a href="#二、配置环境" class="headerlink" title="二、配置环境"></a>二、配置环境</h4><h5 id="网络权限"><a href="#网络权限" class="headerlink" title="网络权限"></a>网络权限</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.INTERNET"</span>/&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span>/&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span>/&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="类库依赖"><a href="#类库依赖" class="headerlink" title="类库依赖"></a>类库依赖</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">api <span class="string">'com.squareup.okhttp3:okhttp:3.10.0'</span></span><br><span class="line">api <span class="string">'com.squareup.okio:okio:1.14.0'</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="三、基础使用"><a href="#三、基础使用" class="headerlink" title="三、基础使用"></a>三、基础使用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个OKHttpClient对象</span></span><br><span class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"><span class="comment">//创建一个Request</span></span><br><span class="line">Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">  .url(<span class="string">"https://api.github.com/users/jitmaos"</span>)</span><br><span class="line">  .addHeader(<span class="string">"key"</span>,<span class="string">"value"</span>)</span><br><span class="line">  .get()</span><br><span class="line">  .build();</span><br><span class="line"><span class="comment">//使用request，同步请求会返回一个Response，异步请求会回调成功、失败函数</span></span><br><span class="line">Response response = okHttpClient.newCall(request).execute();</span><br><span class="line">Log.d(TAG,response.body().string());</span><br></pre></td></tr></table></figure>
+
+<h4 id="三、常用请求"><a href="#三、常用请求" class="headerlink" title="三、常用请求"></a>三、常用请求</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Get请求</span></span><br><span class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"><span class="comment">//创建一个Request</span></span><br><span class="line">Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">  .url(<span class="string">"https://api.github.com/users/JakeWharton"</span>)</span><br><span class="line">  .get()</span><br><span class="line">  .build();</span><br><span class="line">okHttpClient.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">    Log.d(TAG,e.getMessage());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Log.d(TAG,response.body().string());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//Post提交表单</span></span><br><span class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"><span class="comment">//创建一个Request</span></span><br><span class="line">RequestBody requestBody = <span class="keyword">new</span> FormBody.Builder()</span><br><span class="line">  .add(<span class="string">"key"</span>,<span class="string">"value"</span>)</span><br><span class="line">  .build();</span><br><span class="line">Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">  .url(<span class="string">"https://api.github.com/users/JakeWharton"</span>)</span><br><span class="line">  .post(requestBody)</span><br><span class="line">  .build();</span><br><span class="line">okHttpClient.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">    Log.d(TAG,e.getMessage());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Log.d(TAG,response.body().string());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//Post提交文件</span></span><br><span class="line">MediaType mediaType = MediaType.parse(<span class="string">"text/x-markdown; charset=utf-8"</span>);</span><br><span class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line">File file = <span class="keyword">new</span> File(<span class="string">"test.md"</span>);</span><br><span class="line">Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">  .url(<span class="string">"https://api.github.com/markdown/raw"</span>)</span><br><span class="line">  .post(RequestBody.create(mediaType, file))</span><br><span class="line">  .build();</span><br><span class="line">okHttpClient.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">    Log.d(TAG, <span class="string">"onFailure: "</span> + e.getMessage());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Log.d(TAG, response.protocol() + <span class="string">" "</span> +response.code() + <span class="string">" "</span> + response.message());</span><br><span class="line">    Headers headers = response.headers();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; headers.size(); i++) &#123;</span><br><span class="line">      Log.d(TAG, headers.name(i) + <span class="string">":"</span> + headers.value(i));</span><br><span class="line">    &#125;</span><br><span class="line">    Log.d(TAG, <span class="string">"onResponse: "</span> + response.body().string());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="四、拦截器"><a href="#四、拦截器" class="headerlink" title="四、拦截器"></a>四、拦截器</h3><p>拦截器分为应用拦截器和网络拦截器</p>
+<h5 id="应用拦截器"><a href="#应用拦截器" class="headerlink" title="应用拦截器"></a>应用拦截器</h5><ul>
+<li>不用关心中间过程的响应，如重定向和重试</li>
+<li>总是只调用一次，即使HTTP响应式从缓存中获取的</li>
+<li>观察应用程序的初衷，不关心OKHTTP注入的头信息，如If-None-Match</li>
+<li>允许短路，而且不用调用Chain.proceed()</li>
+<li>允许重试，使得Chain.proceed()可以调用多次</li>
+</ul>
+<h5 id="网路拦截器"><a href="#网路拦截器" class="headerlink" title="网路拦截器"></a>网路拦截器</h5><ul>
+<li>能够操作中间过程的响应，如重定向和重试</li>
+<li>当网络短路不会调用缓存响应</li>
+<li>只观察网络上传输的数据</li>
+<li>访问包含请求信息的连接</li>
+</ul>
+<h5 id="自定义拦截器"><a href="#自定义拦截器" class="headerlink" title="自定义拦截器"></a>自定义拦截器</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoggingInterceptor</span> <span class="keyword">implements</span> <span class="title">Interceptor</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"LoggingInterceptor"</span>;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Request request = chain.request();</span><br><span class="line">    <span class="keyword">long</span> startTime = System.nanoTime();</span><br><span class="line">    Log.d(TAG, String.format(<span class="string">"Sending request %s on %s%n%s"</span>,</span><br><span class="line">                             request.url(), chain.connection(), request.headers()));</span><br><span class="line">    Response response =  chain.proceed(request);</span><br><span class="line">    <span class="keyword">long</span> endTime = System.nanoTime();</span><br><span class="line">    Log.d(TAG, String.format(<span class="string">"Received response for %s in %.1fms%n%s"</span>,</span><br><span class="line">       response.request().url(), (endTime - startTime) / <span class="number">1e6</span>d, response.headers()));</span><br><span class="line">    <span class="keyword">return</span> response;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9c53ecl003xzc26hvbr70gj" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-开源项目——RxJava2『使用』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-13T23:39:43.000Z" itemprop="datePublished">2019-04-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/">RxJava2『使用』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h4><p><strong>RxJava是一个在基于Java VM扩展的使用可观测的序列来组成异步的、基于事件的程序的库。</strong>它基于观察者模式支持数据和事件的流式流通处理，并增加了多种运算符以在多种场景下整合事件和数据。抽象了低级别的线程、同步、并发API。</p>
+<ul>
+<li><strong>响应式编程</strong>(Reactive Programming)是一种面向数据流和变化传播的编程范式。这意味着可以在编程语言中很方便地表达静态或动态的数据流，而相关的计算模型<strong>会自动将变化的值通过数据流进行传播</strong>。</li>
+<li><strong>函数式编程</strong>是也一种编程范式，它将函数视为一等公民，意味着函数和其他类型数据有同等的地位，可以作为函数的参数、返回值使用(高阶函数)。</li>
+<li>被观察者，Observable/Flowable</li>
+<li>观察者，Observer/Consumer/Subscriber</li>
+<li>上游：发射事件的地方，对应的是被订阅者(Observable/Flowable)</li>
+<li>下游：接收事件的地方，对应的是观察者(Observer/Subscriber)</li>
+</ul>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><h5 id="1-创建被观察者-上游对象，Observable-Flowable"><a href="#1-创建被观察者-上游对象，Observable-Flowable" class="headerlink" title="1. 创建被观察者(上游对象，Observable/Flowable)"></a>1. 创建被观察者(上游对象，Observable/Flowable)</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Observable&lt;String&gt; observable = Observable.fromArray(<span class="keyword">new</span> String[]&#123;<span class="string">"A"</span>,<span class="string">"B"</span>,<span class="string">"C"</span>&#125;);</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9c53ecn0044zc26cs93a4ih" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Android『小知识点』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:41:37.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/">Android『小知识点』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><h5 id="HanderThread"><a href="#HanderThread" class="headerlink" title="HanderThread"></a>HanderThread</h5><p>一个包含一个looper的<strong>线程</strong>，这个looper可以用来创建hanlder，需要注意start()方法还是需要调用才能使用。</p>
+<p>HandlerThread有<strong>quit()和quitSafely()</strong>方法用于退出HandlerThread对应的Looper，其实应该是直接调用了Looper.quit()和Looper.quitSafely()，<strong>后者自API 18</strong>添加。除此之外，还有其他方法：</p>
+<p><strong>getLooper()：该方法是同步的，如果线程已经启动了，那么这个方法会在looper初始化完成之前保持阻塞。</strong></p>
+<h5 id="SharePreferences"><a href="#SharePreferences" class="headerlink" title="SharePreferences"></a>SharePreferences</h5><p>提交修改可以使用apply()和commit()，两者是不同的，具体：</p>
+<ol>
+<li><p>commit是同步的，会返回一个执行成功与否的boolean结果；apply是异步的，提交以后直接改变内容中的值，然后返回，将入数据写入磁盘的动作放到异步线程里进行，不返回成功与否的boolean结果。</p>
+</li>
+<li><p>如果你不在乎数据写入的结果，而且又位于主线程中，那么apply比较合适，因为比较快。反之，如果存在则使用commit比较合适。</p>
+</li>
+</ol>
+<h5 id="IntentService"><a href="#IntentService" class="headerlink" title="IntentService"></a>IntentService</h5><p>IntentService是一个用来处理异步请求的的类，通过startService(Intent)启动，所有的Intent会在一个<strong>工作线程按顺序处理</strong>。工作队列处理器模式一般用来处理从application的主线程卸下的任务。IntentService的存在只是为了简化工作，IntentService是抽象类，集成它并实现onHandleIntent方法，IntentService接收到Intent，并启动一个线程。<strong>所有的请求Intent都会被一个工作线程处理，会处理直到所有任务都完成，注意每次只能处理一个请求。</strong></p>
+<h5 id="FragmentTranscation"><a href="#FragmentTranscation" class="headerlink" title="FragmentTranscation"></a>FragmentTranscation</h5><p>用于保证一些列Fragment操作的原子性。</p>
+<ol>
+<li>transaction.add() //往Activity中添加一个Fragment</li>
+<li>transaction.remove() //从Activity中移除一个Fragment</li>
+<li>transaction.replace() //先remove在add的组合操作</li>
+<li>transaction.hide() //隐藏当前Fragment，仅仅设为不可见，并不会销毁</li>
+<li>transaction.show() //显示之前隐藏的Fragment</li>
+</ol>
+<h5 id="AsyncQueryHandler"><a href="#AsyncQueryHandler" class="headerlink" title="AsyncQueryHandler"></a>AsyncQueryHandler</h5><p>AsyncQueryHandler是用于在ContentProvider上面执行<font color="#dd0000"><strong>异步的CRUD</strong></font>操作的工具类，CRUD操作通常会被放到一个<strong>单独的子线程</strong>中执行，当操作结束获取结果后，将通过消息的方式传递给调用AsyncQueryHandler的线程，通常就是主线程。AsyncQueryHandler是一个抽象类，继承自Handler。通过封装ContentResolver、HandlerThread、Handler等实现对ContentProvider的异步操作。</p>
+<h5 id="JobService"><a href="#JobService" class="headerlink" title="JobService"></a>JobService</h5><p>在Android 5.0中引入<strong>JobScheduler</strong>来执行一些<strong>需要满足特定条件但不紧急的后台任务</strong>，当一系列预置的条件被满足时，JobScheduler API为你的应用执行一个操作，jobScheduler API允许同时执行多个任务。这允许你的应用执行某些指定的任务时不需要考虑时机控制引起的电池消耗。<font color="#dd0000"><strong>JobScheduler是一个系统级的作业调度器，我们将某些任务扔给系统，当达到我们设定的条件以后，JobScheduler再吊起我们的JobService执行我们的业务逻辑。</strong></font></p>
+<h5 id="ComponentCallbacks和ComponentCallbacks2"><a href="#ComponentCallbacks和ComponentCallbacks2" class="headerlink" title="ComponentCallbacks和ComponentCallbacks2"></a>ComponentCallbacks和ComponentCallbacks2</h5><p>ComponentCallbacks定义了两个方法onConfigurationChanged()和onLowMemory()；<strong>ComponentCallbacks2是API14新增的类，添加了onTrimMemory()</strong>，<font color="#dd0000"><strong>当系统决定对某个进程进行内存优化时会回调到。</strong></font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ComponentCallbacks2</span> <span class="keyword">extends</span> <span class="title">ComponentCallbacks</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统正处于低内存状态，app进程是首先被杀进程之一，如果系统现在没有恢复内存，应该立即释放对app不重要的		 * 所有内容</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_COMPLETE = <span class="number">80</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统正处于低内存状态，app进程位于LRU List中部附近，如果系统进一步内存紧张，app进程可能会被杀掉</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_MODERATE = <span class="number">60</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统正处于低内存状态，app进程位于LRU List开始附近，尽管app进程被杀死的概率低，系统可能已经开始杀在			 * LRU List中的后台进程,此时应该释放一些资源，防止被杀的几率</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_BACKGROUND = <span class="number">40</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 你的用户界面不再可见，此时应该释放仅仅使用在UI上的大资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_UI_HIDDEN = <span class="number">20</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统处于极低的内存状态，app仍然不会被杀死。但如果不是放资源，系统开始杀后台进程，此时app应该清理一些		 * 资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_RUNNING_CRITICAL = <span class="number">15</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统处于更低内存状态，app正在运行且不会被杀死，可以释放不用的资源提升app性能</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_RUNNING_LOW = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 系统处于低内存状态，app正在运行且不会被杀死</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRIM_MEMORY_RUNNING_MODERATE = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当系统决定对一个进程的内存进行优化的时候调用会被调用。举个例子：在后台资源不够运行所需的进程时。你不应该将具体的数值和level做比较，因为后期可能会增加新的数值。你可以使用大于或等于某个你感兴趣的level。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 你可以通过ActivityManager.getMyMemoryState(RunningAppProcessInfo)获取到当前进程的内存优			 * 化等级。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> level 系统希望执行的内存清理等级</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onTrimMemory</span><span class="params">(<span class="keyword">int</span> level)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本段参考：<a href="https://www.jianshu.com/p/1bf70b535eb9" target="_blank" rel="noopener">https://www.jianshu.com/p/1bf70b535eb9</a></p>
+<p>SP标记multi-process用于标记SP可以在多进程中访问，但是多进程访问SP会带来新问题：</p>
+<p><a href="https://stackoverflow.com/questions/27827678/use-sharedpreferences-on-multi-process-mode" target="_blank" rel="noopener">Use SharedPreferences on multi-process mode</a></p>
+<h5 id="hasMessage-int-what"><a href="#hasMessage-int-what" class="headerlink" title="hasMessage(int what)"></a>hasMessage(int what)</h5><p>Check if there are any pending posts of messages with code ‘what’ in the message queue.</p>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h3><h5 id="获取当前进程名的方法一"><a href="#获取当前进程名的方法一" class="headerlink" title="获取当前进程名的方法一"></a>获取当前进程名的方法一</h5><p>在Linux系统中，根据进程号得到进程的命令行参数，常规的做法是读取<strong>/proc/{PID}/cmdline</strong>，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getProcessName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        BufferedReader reader = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">"/proc/"</span> + Process.myPid() + <span class="string">"/cmdline"</span>));</span><br><span class="line">            String processName = reader.readLine();</span><br><span class="line">            <span class="keyword">if</span> (!TextUtils.isEmpty(processName)) &#123;</span><br><span class="line">                processName = processName.trim();</span><br><span class="line">            &#125;</span><br><span class="line">            String var2 = processName;</span><br><span class="line">            <span class="keyword">return</span> var2;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception var12) &#123;</span><br><span class="line">            var12.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (reader != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    reader.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException var11) &#123;</span><br><span class="line">                var11.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h3><p><strong>查看Activity堆栈情况</strong>，会到的很长的输出内容，检索<strong>Running activities</strong>可以查看最近执行的Activity情况。</p>
+<h5 id="AAR相关"><a href="#AAR相关" class="headerlink" title="AAR相关"></a>AAR相关</h5><h6 id="AAR-与-Jar"><a href="#AAR-与-Jar" class="headerlink" title="AAR 与 Jar"></a>AAR 与 Jar</h6><p>jar：<strong>只包含了class文件与清单文件 ，不包含资源文件，如图片等所有res中的文件。</strong></p>
+<p>aar： <strong>Android库项目的二进制归档文件，包含所有资源，class以及res资源文件全部包含。</strong></p>
+<p><strong>aar问题：</strong></p>
+<p><font color="#dd0000"><strong>其实AAR只是把编译好的class文件和资源文件打包成一个二进制的包</strong></font>，打包后会<font color="#dd0000"><strong>丢失依赖</strong></font>，所以引用AAR时，不存在重复依赖的问题，需要同时引入AAR包中用到的类文件才能正确编译。</p>
+<ol>
+<li>资源文件不能同名,大量改动 </li>
+<li>*<em>Application需要主APP传递给AAR，AAR再做单例模式 *</em></li>
+<li>扫描模块需要AAR自己初始化 </li>
+<li>jar尽量用maven，如果是本地的libs，需要exlude so和provided jar </li>
+<li>AAR可以通过主APP的application初始化自己的数据库 </li>
+<li>轻量数据，可以用intent启动AAR的时候传递 </li>
+<li>如果有基础数据需要提供服务，可以用contentProvider </li>
+<li>butterknife需要统一用8.4.0以上的版本，不然报错 </li>
+<li>AAR模块用butterknife需要把资源R改为R2(批量替换)</li>
+</ol>
+<h5 id="AndroidManifest-xml"><a href="#AndroidManifest-xml" class="headerlink" title="AndroidManifest.xml"></a>AndroidManifest.xml</h5><ul>
+<li><p>android:exported = true</p>
+<p>在Activity中该属性用来标示：<strong>当前Activity是否可以被另一个Application的组件启动：true允许被启动；false不允许被启动。</strong>android:exported 是Android中的四大组件 Activity，Service，Provider，Receiver 四大组件中都会有的一个属性。总体来说它的主要作用是：是否支持其它应用调用当前组件</p>
+</li>
+<li><p>android:enabled=”true”</p>
+<p>这个属性用于指示该服务是否能够被实例化。如果设置为true，则能够被实例化，否则不能被实例化。默认值是true。    </p>
+</li>
+<li><p>android:permission</p>
+<p>这个属性定义了要启动或绑定服务的实体必须要有的权限。<strong>如果调用者的startService()、bindService()和stopService()方法没有被授予这个权限，那么这些方法就不会工作，并且Intent对象也不会发送给改服务。</strong>如果这个属性没被设置，<strong>那么通过&lt;appliction&gt;元素的permission属性所设定的权限就会适用于该服务。</strong>如果&lt;application&gt;元素也没有设置权限，则该服务不受权限保护。</p>
+</li>
+</ul>
+<h5 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h5><h6 id="GZIP"><a href="#GZIP" class="headerlink" title="GZIP"></a>GZIP</h6><p>GZIP是网站压缩加速的一种技术，对于开启后可以加快我们网站的打开速度，原理是经过服务器压缩，客户端浏览器快速解压的原理，可以大大减少了网站的流量。<strong>一般对纯文本内容可压缩到原大小的40％</strong>。</p>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><ol>
+<li>模拟器访问本地Tomcat地址为：<font color="#dd0000"><strong>10.0.2.2</strong></font></li>
+</ol>
+<h5 id="AndroidJUnit4单元测试"><a href="#AndroidJUnit4单元测试" class="headerlink" title="AndroidJUnit4单元测试"></a>AndroidJUnit4单元测试</h5><h6 id="获取Context"><a href="#获取Context" class="headerlink" title="获取Context"></a>获取Context</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InstrumentationRegistry.getInstrumentation().getTargetContext()</span><br></pre></td></tr></table></figure>
+
+<h5 id="ADB相关"><a href="#ADB相关" class="headerlink" title="ADB相关"></a>ADB相关</h5><h6 id="adb-install-multiple-命令"><a href="#adb-install-multiple-命令" class="headerlink" title="adb install-multiple 命令"></a>adb install-multiple 命令</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">adb install [-lrtsdg] (file)</span><br><span class="line">-l 锁定应用</span><br><span class="line">-r 替换已存在的应用</span><br><span class="line">-t 允许安装测试包</span><br><span class="line">-s 安装到sd卡中</span><br><span class="line">-d 可以安装低版本安装包</span><br><span class="line">-p 安装部分应用</span><br><span class="line">-g 授权所有运行时权限</span><br></pre></td></tr></table></figure>
+
+<h6 id="adb-uninstall-k-package"><a href="#adb-uninstall-k-package" class="headerlink" title="adb uninstall [-k] (package)"></a>adb uninstall [-k] (package)</h6><p>卸载安装包</p>
+<h6 id="adb-shell-dumpsys-activity-activities"><a href="#adb-shell-dumpsys-activity-activities" class="headerlink" title="adb shell dumpsys activity activities"></a>adb shell dumpsys activity activities</h6><h3 id="兼容性API"><a href="#兼容性API" class="headerlink" title="兼容性API"></a>兼容性API</h3><h5 id="UI"><a href="#UI" class="headerlink" title="UI"></a>UI</h5><ul>
+<li><p>动态设置按钮点击效果</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wrappedDrawable = DrawableCompat.wrap(drawable)</span><br><span class="line">DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(colors))</span><br><span class="line">setImageDrawable(wrappedDrawable)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>getColor</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ContextCompat.getColor(context, R.color.text_black)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><h5 id="Google-Protocol-Buffer"><a href="#Google-Protocol-Buffer" class="headerlink" title="Google Protocol Buffer"></a>Google Protocol Buffer</h5><p>一般项目中多使用JSON作为数据传递和解析的格式，但实际上有其他的的传输格式比JSON有更优秀的效率、体积上的表现，比如Google出品的ProtocolBuffer，比起JSON来说具有更小、更快、使用更简单等特点，具体介绍可以查看这篇博客：<a href="https://www.cnblogs.com/xinmengwuheng/p/7070393.html" target="_blank" rel="noopener">快来看看Google出品的Protocol Buffer，别只会用Json和XML了</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ck9c53ec70030zc26b4erh44j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Android基础三部曲『onDraw+onMessage+onLayout』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:33:54.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/">Android基础三部曲『onDraw+onMessage+onLayout』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="View结构图.png"></p>
+<p>Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件</p>
+<ul>
+<li><strong>Window类时一个抽象类，提供绘制窗口的API</strong></li>
+<li><strong>PhoneWindow是继承Window的一个具体的类，该类内部包含了一个DecorView对象，该DectorView对象是所有应用窗口(Activity界面)的根View</strong></li>
+<li><strong>DecorView继承FrameLayout，里面id=content的就是我们传入的布局视图</strong></li>
+</ul>
+<p>依据面向对象从抽象到具体我们可以类比上面关系就像如下：<br> Window是一块电子屏，PhoneWindow是一块手机电子屏，DecorView就是电子屏要显示的内容，Activity就是手机电子屏安装位置</p>
+<h2 id="setContentView流程"><a href="#setContentView流程" class="headerlink" title="setContentView流程"></a>setContentView流程</h2><p><strong>setContentView整个过程主要是如何把Activity的布局文件或者java的View添加至窗口里，重点概括为：</strong></p>
+<ol>
+<li>创建一个DecorView的对象mDecor，该mDecor对象将作为整个应用窗口的根视图。</li>
+<li>依据Feature等style theme创建不同的窗口修饰布局文件，并且通过findViewById获取Activity布局文件该存放的地方（窗口修饰布局文件中id为content的FrameLayout）。</li>
+<li>将Activity的布局文件添加至id为content的FrameLayout内。</li>
+<li>当setContentView设置显示OK以后会回调Activity的onContentChanged方法。Activity的各种View的findViewById()方法等都可以放到该方法中，系统会帮忙回调。</li>
+</ol>
+<h2 id="android的View绘制"><a href="#android的View绘制" class="headerlink" title="android的View绘制"></a>android的View绘制</h2><p>view绘制主要包括三个方面：</p>
+<ul>
+<li>measure 测量组件本身的大小</li>
+<li>layout  确定组件在视图中的位置</li>
+<li>draw    根据位置和大小，将组件画出来</li>
+</ul>
+<p>视图绘制的起点在ViewRootImpl类的performTraversals()方法，该方法完成的工作主要是： <strong>根据之前的状态，判定是否重新计算测试视图大小（measure）、是佛重新放置视图位置（layout）和是否重新重绘视图（draw）</strong> ，部分源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ......</span><br><span class="line">        <span class="comment">//最外层的根视图的widthMeasureSpec和heightMeasureSpec由来</span></span><br><span class="line">        <span class="comment">//lp.width和lp.height在创建ViewGroup实例时等于MATCH_PARENT</span></span><br><span class="line">        <span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</span><br><span class="line">        <span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);</span><br><span class="line">        ......</span><br><span class="line">        mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">        ......</span><br><span class="line">        mView.layout(<span class="number">0</span>, <span class="number">0</span>, mView.getMeasuredWidth(), mView.getMeasuredHeight());</span><br><span class="line">        ......</span><br><span class="line">        mView.draw(canvas);</span><br><span class="line">        ......</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="measure计算视图大小"><a href="#measure计算视图大小" class="headerlink" title="measure计算视图大小"></a>measure计算视图大小</h3><p>几乎所有的组件都是继承View类的，而关于view的测量工作，日常开发用得多的方法就是measure和onMeasure两个方法，measure不可重写，当我们自定义时主要重写onMeasure方法即可，在方法内部我们必须完成组件的mMeasuredWidth和mMeasuredHeight实际尺寸测量，而这个尺寸是需要父视图和子视图共同决定的</p>
+<p>measure流程从根视图measure遍历整个view树结构，如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8b81cc0636106469.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onMeasure流程图.png"></p>
+<p>这里写图片描述</p>
+<p>还要注意视图尺寸MeasureSpec是一个组合尺寸，它是一个32位bit值，高两位是尺寸模式specMode，低30位是尺寸大小值，我们可以利用提供的原声库方法很方便的进行尺寸组合和拆解：<br> specMode有三种： MeasureSpec.EXACTLY表示确定大小， MeasureSpec.AT_MOST表示最大大小， MeasureSpec.UNSPECIFIED不确定</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> measureSpec = MeasureSpec.makeMeasureSpec(windowSize, MeasureSpec.EXACTLY);    <span class="comment">//合成</span></span><br><span class="line"><span class="keyword">int</span> specMode = MeasureSpec.getMode(measureSpec);                                   <span class="comment">//拆解</span></span><br><span class="line"><span class="keyword">int</span> specSize = MeasureSpec.getSize(measureSpec);</span><br></pre></td></tr></table></figure>
+
+<p>而在视图测量meause中，父组件传给子组件的一般都是一个组合尺寸，我们可以拿出具体尺寸然后根据其他条件产生一个新的尺寸值，将这个值用setMeasuredDimension设置mMeasuredWidth和mMeasuredHeight具体尺寸，完成测量；</p>
+<h4 id="measure原理总结"><a href="#measure原理总结" class="headerlink" title="measure原理总结"></a>measure原理总结</h4><ul>
+<li>MeasureSpec（View的内部类）测量规格为int型，值由高2位规格模式specMode和低30位具体尺寸specSize组成。其中specMode只有三种值：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MeasureSpec.EXACTLY <span class="comment">//确定模式，父View希望子View的大小是确定的，由specSize决定；</span></span><br><span class="line">MeasureSpec.AT_MOST <span class="comment">//最多模式，父View希望子View的大小最多是specSize指定的值；</span></span><br><span class="line">MeasureSpec.UNSPECIFIED <span class="comment">//未指定模式，父View完全依据子View的设计值来决定；</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>View的measure方法是final的，不允许重载，View子类只能重载onMeasure来完成自己的测量逻辑。</li>
+<li>最顶层DecorView测量时的MeasureSpec是由ViewRootImpl中getRootMeasureSpec方法确定的（LayoutParams宽高参数均为MATCH_PARENT，specMode是EXACTLY，specSize为物理屏幕大小）。</li>
+<li>ViewGroup类提供了measureChild，measureChild和measureChildWithMargins方法，简化了父子View的尺寸计算。</li>
+<li>只要是ViewGroup的子类就必须要求LayoutParams继承子MarginLayoutParams，否则无法使用layout_margin参数。</li>
+<li>View的布局大小由父View和子View共同决定。</li>
+<li>使用View的getMeasuredWidth()和getMeasuredHeight()方法来获取View测量的宽高，必须保证这两个方法在onMeasure流程之后被调用才能返回有效值。</li>
+</ul>
+<h3 id="layout视图位置确定"><a href="#layout视图位置确定" class="headerlink" title="layout视图位置确定"></a>layout视图位置确定</h3><p>layout的流程主要也是遍历整个view树结构，调用view.layout(int l, int t, int r, int b)确定好view的具体坐标位置，流程图如下</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/7186484-136df104f5f52329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onLayout流程图.png"></p>
+<p>这里写图片描述</p>
+<p>当我们自定义一个组件时，通常时重写onLayout方法，里面实现好自己的逻辑，最后在调用layout方法完成视图位置确定，如果自定义组件时一个ViewGroup的话，还需要我们去遍历每一个child确定尺寸</p>
+<h4 id="layout原理总结"><a href="#layout原理总结" class="headerlink" title="layout原理总结"></a>layout原理总结</h4><ul>
+<li>整个layout过程比较容易理解，从上面分析可以看出layout也是从顶层父View向子View的递归调用view.layout方法的过程，即父View根据上一步measure子View所得到的布局大小和布局参数，将子View放在合适的位置上。具体layout核心主要有以下几点：</li>
+<li>View.layout方法可被重载，ViewGroup.layout为final的不可重载，ViewGroup.onLayout为abstract的，子类必须重载实现自己的位置逻辑。</li>
+<li>measure操作完成后得到的是对每个View经测量过的measuredWidth和measuredHeight，layout操作完成之后得到的是对每个View进行位置分配后的mLeft、mTop、mRight、mBottom，这些值都是相对于父View来说的。</li>
+<li>凡是layout_XXX的布局属性基本都针对的是包含子View的ViewGroup的，当对一个没有父容器的View设置相关layout_XXX属性是没有任何意义的（前面《Android应用setContentView与LayoutInflater加载解析机制源码分析》也有提到过）。</li>
+<li>使用View的getWidth()和getHeight()方法来获取View测量的宽高，必须保证这两个方法在onLayout流程之后被调用才能返回有效值。</li>
+</ul>
+<h3 id="draw绘制"><a href="#draw绘制" class="headerlink" title="draw绘制"></a>draw绘制</h3><p>完成measure和Layout后，ViewRootImpl中的代码会创建一个Canvas对象，然后调用View的draw()方法来执行具体的绘制工。所以又回归到了ViewGroup与View的树状递归draw过程<br> 先来看下View树的递归draw流程图，如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8a05807e997a04ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onDraw流程图.png"></p>
+<p>这里写图片描述</p>
+<h4 id="draw原理总结"><a href="#draw原理总结" class="headerlink" title="draw原理总结"></a>draw原理总结</h4><p>可以看见，绘制过程就是把View对象绘制到屏幕上，整个draw过程需要注意如下细节：</p>
+<ul>
+<li>如果该View是一个ViewGroup，则需要递归绘制其所包含的所有子View。</li>
+<li>View默认不会绘制任何内容，真正的绘制都需要自己在子类中实现。</li>
+<li>View的绘制是借助onDraw方法传入的Canvas类来进行的。</li>
+<li>区分View动画和ViewGroup布局动画，前者指的是View自身的动画，可以通过setAnimation添加，后者是专门针对ViewGroup显示内部子视图时设置的动画，可以在xml布局文件中对ViewGroup设置layoutAnimation属性（譬如对LinearLayout设置子View在显示时出现逐行、随机、下等显示等不同动画效果）。</li>
+<li>在获取画布剪切区（每个View的draw中传入的Canvas）时会自动处理掉padding，子View获取Canvas不用关注这些逻辑，只用关心如何绘制即可。</li>
+<li>默认情况下子View的ViewGroup.drawChild绘制顺序和子View被添加的顺序一致，但是你也可以重载ViewGroup.getChildDrawingOrder()方法提供不同顺序。</li>
+</ul>
+<h2 id="view提供的API控制视图的方法"><a href="#view提供的API控制视图的方法" class="headerlink" title="view提供的API控制视图的方法"></a>view提供的API控制视图的方法</h2><h3 id="invalidate和postInvalidate方法源码分析"><a href="#invalidate和postInvalidate方法源码分析" class="headerlink" title="invalidate和postInvalidate方法源码分析"></a>invalidate和postInvalidate方法源码分析</h3><p>请求重新绘制视图，调用draw</p>
+<ul>
+<li>invalidate在主线程调用</li>
+<li>postInvalidate是在非主线程调用</li>
+</ul>
+<h3 id="View的requestLayout方法"><a href="#View的requestLayout方法" class="headerlink" title="View的requestLayout方法"></a>View的requestLayout方法</h3><p>requestLayout()方法会调用measure过程和layout过程，不会调用draw过程，也不会重新绘制任何View包括该调用者本身。</p>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>Android基础『自定义组件』</p>
+<p>Android基础『布局相关』</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/5ae3356014ed" target="_blank" rel="noopener">Android组件View绘制流程原理分析</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck9c53ec90034zc263mnj07ki" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Android基础三部曲『Handler+Message+Looper』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:33:35.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/">Android『消息传递』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>主流程图</p>
+<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><p>使用场景：<br>订单处理包含一系列操作：减少库存量、增加一条流水台账、修改总账，这几个操作要在<strong>同一个事务</strong>中完成，通常也即同一个线程中进行处理，如果累加公司应收款的操作失败了，则应该把前面的操作回滚，否则，提交所有操作，这要求这些操作使用<strong>相同的数据库连接对象，而这些操作的代码分别位于不同的模块类中</strong>。</p>
+<p>该类提供线程局部变量。这些变量不同于它们的正常变量，即每一个线程访问自身的局部变量时，都有它自己的，独立初始化的副本。<strong>和Thread直接有交互的是ThreadLocalMap，而不是ThreadLocal。我们平时在某个线程中使用ThreadLocal对当前线程的局部变量进行设置时，其内部实现只是ThreadLocal对当前线程的ThreadLocalMap进行操作而已。</strong></p>
+<p>所以<code>一个线程有一个ThreadLocalMap，而一个ThreadLocalMap内部使用Entry(ThreadLocal作为索引的hash对象定位元素，Value是实际存储的内容)数组存储ThreadLocal对象的，一个ThreadLocal仅能存放一个数据对象的副本，使之成为线程局部私有变量</code>。</p>
+<p><strong>虽然我们在ThreadLocal上调用set和get，但ThreadLocal本身并不存储数据对象，其背后都是从ThreadLocalMap中通过hash(ThreadLocal)来定位Entry元素，操作Entry中的value对象的。</strong></p>
+<p>还有一个问题，看源码知道set最后还是通过引用赋值的方式实现的，那么引用是怎么在多线程环境下实现<font color="#dd0000"><strong>独立备份</strong></font>的呢？</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck9c53ec80031zc269ma63ws4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java『数据容器』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T05:53:02.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/">Java『数据容器』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h4><p>先从Java中Object的hashCode()方法说起，从方法注释的第一行可以看到该方法的存在主要是为了支持HashMap：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by HashMap.</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> identityHashCode(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>结构</strong>：HashMap的设计初衷是为了在有限的容器内放置若干范围很大的数据。<strong>JDK1.8之前底层使用的是数组+链表，1.8之后当链表长度大于阈值(默认为8)时，会将链表转换成红黑树，以减少搜索时间</strong>；HashMap中有一个hash方法用来得到元素Key的hashCode值，这个hash方法是对Object的HashCode再做了一次优化，为了减少发生哈希碰撞的次数。</p>
+</li>
+<li><p><strong>问题</strong></p>
+<ul>
+<li><p>为什么HashMap的长度是2的幂次方？</p>
+<p><strong>为了更高效，因为如果除数是2的幂次方，那么取余操作等同于右移一位(hash % length) == (hash &amp; (length -1))</strong></p>
+</li>
+</ul>
+</li>
+<li><p><strong>注意</strong></p>
+<ul>
+<li>循环引用，当在多线程环境下，对HashMap进行put操作，可能会出发扩容；扩容意味着数组元素及元素下挂载的链表的复制，所以可能在扩容是会发生循环引用。</li>
+</ul>
+</li>
+<li><p><font color="#dd0000"><strong>equals和hashCode</strong></font></p>
+</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ck9c53ece003izc264t73gytm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
 
     </footer>
   </div>
@@ -756,7 +804,7 @@
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
+    <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
   </nav>
 
 </section>
@@ -777,7 +825,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
     </div>
   </div>
 
@@ -787,7 +835,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 17.5px;">Android</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/JetPack/" style="font-size: 12.5px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 12.5px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 12.5px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 12.5px;">源码学习</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" style="font-size: 10px;">组件化</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">读书笔记</a>
+      <a href="/tags/Android/" style="font-size: 17.5px;">Android</a> <a href="/tags/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/JetPack/" style="font-size: 12.5px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 12.5px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 12.5px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 12.5px;">源码学习</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" style="font-size: 10px;">组件化</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">读书笔记</a>
     </div>
   </div>
 
