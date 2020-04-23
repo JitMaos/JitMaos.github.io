@@ -15,7 +15,7 @@
 <meta property="og:description" content="http:&#x2F;&#x2F;www.javassist.org&#x2F; 文档翻译 读取和写入字节码 Javassist是一个用于处理Java字节码的类库。Java字节码被存储在class文件中，每个class文件包含一个Java类或者接口。 Javassist.CtClass是一个class文件的抽象代表。一个CtClass对象可以(在编译期)用来处理一个class文件。以下面代码为例： 1234ClassPool">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-03-19T07:54:49.088Z">
-<meta property="article:modified_time" content="2020-03-19T07:54:49.090Z">
+<meta property="article:modified_time" content="2020-04-23T02:22:46.290Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -99,6 +99,8 @@
 <p>从实现细节来说，ClassPool是一个以class的名字为key用来存储CtClass对象的哈希表，get()会从哈希表中根据传入的key查找CtClass对象。如果未能查找到缓存对象，get()方法会创建一个新的CtClass对象，并将这个新建的对象保存到哈希表中，然后返回给调用方。</p>
 <p>从ClassPool中获取到的CtClass对象可以被修改，在上面的代码中，cc的superclass被修改成了test.Point。</p>
 <p>writeFile()实现了从CtClass对象到class文件的转换，并将他写入到了本地磁盘。Javassist也提供了一种直接获取修改过的二进制代码的方法toBytecode()。除此之外，还可以直接载入CtClass：</p>
+<a id="more"></a>
+
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class clzzz = cc.toClass();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>定义一个新的class</p>
@@ -133,7 +135,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/" data-id="ck9c53ecf003mzc266g6yd4ac" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/" data-id="ck9c5feom003l6w26a3g6dztn" class="article-share-link">Share</a>
       
       
     </footer>
