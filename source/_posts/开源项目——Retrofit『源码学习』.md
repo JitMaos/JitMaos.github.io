@@ -42,7 +42,7 @@ Retrofit这个开源库代码量并不多，但是别人都说这个库很值得
 
    Retrofit2中也可以执行异步任务，也是enqueue(Callback<T/>)，实际上也是代理了一下OKHttp3中的Call的enqueue方法。回调需要在主线程中执行。
 
-
+<!--more-->
 
 ### 动态代理模式
 

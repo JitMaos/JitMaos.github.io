@@ -86,6 +86,8 @@ tags:
 
    从上面的代码可以看出来，，好吧，，可能一下子不容易看出来。Car_Factory是Car的提供者；Man_MembersInjector是Man上面的Car的注入器，在其中有Provider\<Car\>用于提供Car的实例。问题是前面明明是Factory，怎么这里需要的是Provider呢？其实**Factory是一种特殊的Provider，它继承自Provider**。可以看源码：
 
+   <!--more-->
+   
    ```java
    /**
     * An {@linkplain Scope unscoped} {@link Provider}. While a {@link Provider} <i>may</i> apply scoping semantics while providing an instance, a factory implementation is guaranteed to exercise the binding logic ({@link Inject} constructors, {@link Provides} methods) upon each call to {@link #get}.

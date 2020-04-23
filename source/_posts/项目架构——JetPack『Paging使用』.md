@@ -1,5 +1,5 @@
 ---
-title: JetPack『Paging&Room』
+title: 项目架构——JetPack『Paging使用』
 tags: [Android,JetPack,Paging]
 ---
 
@@ -18,6 +18,8 @@ Paging主要包含三部分，分别是DataSource、PageList、PageListAdapter�
 + `PageKeyedDataSource<Key, Value>` ：适用于目标数据根据**页信息**请求数据的场景，即`Key` 字段是**页相关的信息**。比如请求的数据的参数中包含类似`next/previous`页数的信息。
 + `ItemKeyedDataSource<Key, Value>` ：适用于目标数据的**加载依赖特定item**的信息， 即Key字段包含的是Item中的信息，**比如需要根据第N项的信息加载第N+1项的数据，传参中需要传入第N项的ID时，该场景多出现于论坛类应用评论信息的请求**。
 + `PositionalDataSource<T>`：适用于目标数据总数固定，通过特定的位置加载数据，这里Key是Integer类型的位置信息，T即Value。 比如从数据库中的1200条开始加在20条数据。
+
+<!--more-->
 
 #### PageList
 

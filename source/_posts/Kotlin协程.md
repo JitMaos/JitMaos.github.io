@@ -22,6 +22,8 @@ x2:Thread[main,5,main] //runBlocking中直接操作为主线程
 
 4. 使用await()可以阻塞主线程。
 
+   <!--more-->
+
 5. fun launch(): Job，返回的Job对象有三个方法，start、join、cancel分别对应协程的启动、切换、取消。
    fun async(): Deferred，返回的Deferred有方法await，该方法可以用来得到一个结果值。
 

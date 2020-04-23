@@ -14,9 +14,7 @@ tags:
 3. 基于**2**，Android 8.0引入了一个新方法**Context.startForegroundService()**，在系统创建服务后，应用有五秒的时间调用startForeground()，来显示新服务的可见通知(Notification)。**如果应用在此期间限制内未调用startForeground()，则系统将停止并声明此应用为ANR**。
 4. Android在8.0限制了后台服务这些，启动后台服务需要设置通知栏，使服务变成前台服务。但是在<font color="#dd0000">**9.0**</font>上，就会出现`Permission Denial: startForeground requires android.permission.FOREGROUND_SERVICE`。
 
-
-
-
+<!--more-->
 
 ### 保活方案
 

@@ -28,6 +28,8 @@ tags:
 
    writeFile()实现了从CtClass对象到class文件的转换，并将他写入到了本地磁盘。Javassist也提供了一种直接获取修改过的二进制代码的方法toBytecode()。除此之外，还可以直接载入CtClass：
 
+   <!--more-->
+
    ```java
    Class clzzz = cc.toClass();
    ```
