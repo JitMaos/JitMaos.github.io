@@ -4,7 +4,7 @@ date: 2019-04-09 19:33:54
 tags:
 ---
 
-![View结构图.png](https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![View结构图.png](http://47.110.40.63:8080/img/blog/View结构图.png)
 
 Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件
 
@@ -31,6 +31,8 @@ view绘制主要包括三个方面：
 - measure 测量组件本身的大小
 - layout  确定组件在视图中的位置
 - draw    根据位置和大小，将组件画出来
+
+<!--more-->
 
 视图绘制的起点在ViewRootImpl类的performTraversals()方法，该方法完成的工作主要是： **根据之前的状态，判定是否重新计算测试视图大小（measure）、是佛重新放置视图位置（layout）和是否重新重绘视图（draw）** ，部分源码如下：
 
@@ -59,7 +61,7 @@ private void performTraversals() {
 
 measure流程从根视图measure遍历整个view树结构，如下：
 
-![onMeasure流程图.png](https://upload-images.jianshu.io/upload_images/7186484-8b81cc0636106469.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![onMeasure流程图.png](http://47.110.40.63:8080/img/blog/onMeasure流程图.png)
 
 这里写图片描述
 
@@ -97,7 +99,7 @@ MeasureSpec.UNSPECIFIED //未指定模式，父View完全依据子View的设计�
 
 layout的流程主要也是遍历整个view树结构，调用view.layout(int l, int t, int r, int b)确定好view的具体坐标位置，流程图如下
 
-![onLayout流程图.png](https://upload-images.jianshu.io/upload_images/7186484-136df104f5f52329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![onLayout流程图.png](http://47.110.40.63:8080/img/blog/onLayout流程图.png)
 
 这里写图片描述
 
@@ -116,7 +118,7 @@ layout的流程主要也是遍历整个view树结构，调用view.layout(int l, 
 完成measure和Layout后，ViewRootImpl中的代码会创建一个Canvas对象，然后调用View的draw()方法来执行具体的绘制工。所以又回归到了ViewGroup与View的树状递归draw过程
  先来看下View树的递归draw流程图，如下：
 
-![onDraw流程图.png](https://upload-images.jianshu.io/upload_images/7186484-8a05807e997a04ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![onDraw流程图.png](http://47.110.40.63:8080/img/blog/onDraw流程图.png)
 
 这里写图片描述
 
@@ -143,12 +145,6 @@ layout的流程主要也是遍历整个view树结构，调用view.layout(int l, 
 ### View的requestLayout方法
 
 requestLayout()方法会调用measure过程和layout过程，不会调用draw过程，也不会重新绘制任何View包括该调用者本身。
-
-## 扩展
-
-Android基础『自定义组件』
-
-Android基础『布局相关』
 
 
 

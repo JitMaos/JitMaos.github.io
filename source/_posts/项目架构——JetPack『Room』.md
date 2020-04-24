@@ -64,8 +64,6 @@ public class Converters {
 
 从Room自动编译生成的代码可以知道，**fromXxx在load流程中调用，dateToXxx在bind流程中使用**
 
-<!--more-->
-
 #### CURD
 
 ##### 清空数据
@@ -95,7 +93,7 @@ fun findWithId(vararg id:Long)
 List<User> loadAllByIds(int[] userIds);
 ```
 
-
+<!--more-->
 
 #### 版本更新
 

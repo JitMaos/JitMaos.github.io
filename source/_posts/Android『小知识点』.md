@@ -44,6 +44,8 @@ AsyncQueryHandler是用于在ContentProvider上面执行<font color="#dd0000">**
 
 在Android 5.0中引入**JobScheduler**来执行一些**需要满足特定条件但不紧急的后台任务**，当一系列预置的条件被满足时，JobScheduler API为你的应用执行一个操作，jobScheduler API允许同时执行多个任务。这允许你的应用执行某些指定的任务时不需要考虑时机控制引起的电池消耗。<font color="#dd0000">**JobScheduler是一个系统级的作业调度器，我们将某些任务扔给系统，当达到我们设定的条件以后，JobScheduler再吊起我们的JobService执行我们的业务逻辑。**</font>
 
+<!--more-->
+
 ##### ComponentCallbacks和ComponentCallbacks2
 
 ComponentCallbacks定义了两个方法onConfigurationChanged()和onLowMemory()；**ComponentCallbacks2是API14新增的类，添加了onTrimMemory()**，<font color="#dd0000">**当系统决定对某个进程进行内存优化时会回调到。**</font>

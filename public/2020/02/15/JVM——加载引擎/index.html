@@ -15,7 +15,7 @@
 <meta property="og:description" content="看过一篇博客说的JVM分为三部分，加载引擎，执行引擎，垃圾回收引擎。想想很有道理。今天总结一下加载引擎。尝试回答类似这样的问题：  介绍下Java类加载机制？ java是使用双亲委派模型来进行类的加载的，我们先看一下它的工作过程：如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把这个请求委托给父类加载器去完成，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-02-15T03:17:25.000Z">
-<meta property="article:modified_time" content="2020-03-19T07:54:49.083Z">
+<meta property="article:modified_time" content="2020-04-23T02:28:49.179Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -92,19 +92,21 @@
 <ul>
 <li><p>介绍下Java类加载机制？</p>
 <p>java是使用<strong>双亲委派模型</strong>来进行类的加载的，我们先看一下它的工作过程：如果一个类加载器收到了类加载的请求，<code>它首先不会自己去尝试加载这个类，而是把这个请求委托给父类加载器去完成</code>，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有找到所需要加载的类）时，子加载器才会尝试自己去加载。<br>使用双亲委托机制的好处是：<code>能够有效确保一个类的全局唯一性，当程序中出现多个限定名相同的类时，类加载器在执行加载时，始终只会加载其中的某一个类</code>。</p>
-</li>
-</ul>
-<p>  <strong>1、加载</strong></p>
-<p>  　　由类加载器负责根据一个类的<strong>全限定名</strong>来读取此类的<strong>二进制字节流</strong>到JVM内部，并存储在运行时内存区的方法区，然后将其转换为一个与目标类型对应的java.lang.Class对象实例</p>
-<h4 id="2、验证"><a href="#2、验证" class="headerlink" title="2、验证"></a>2、验证</h4><p>  格式验证：验证是否符合class文件规范<br>  语义验证：检查一个被标记为final的类型是否包含子类；检查一个类中的final方法是否被子类进行重写；确保父类和子类之间没有不兼容的一些方法声明（比如方法签名相同，但方法的返回值不同）<br>  操作验证：在操作数栈中的数据必须进行正确的操作，对常量池中的各种符号引用执行验证（通常在解析阶段执行，检查是否可以通过符号引用中描述的全限定名定位到指定类型上，以及类成员信息的访问修饰符是否允许访问等）</p>
-<h4 id="3、准备"><a href="#3、准备" class="headerlink" title="3、准备"></a>3、准备</h4><p>  为类中的所有静态变量分配内存空间，并为其设置一个初始值（由于还没有产生对象，实例变量不在此操作范围内）<br>  被final修饰的static变量（常量），会直接赋值；</p>
-<h4 id="4、解析"><a href="#4、解析" class="headerlink" title="4、解析"></a>4、解析</h4><p>  将常量池中的符号引用转为直接引用（得到类或者字段、方法在内存中的指针或者偏移量，以便直接调用该方法），这个可以在初始化之后再执行。<br>  解析需要静态绑定的内容。 // 所有不会被重写的方法和域都会被静态绑定</p>
-<p>  　　<strong>以上2、3、4三个阶段又合称为链接阶段</strong>，链接阶段要做的是将加载到JVM中的二进制字节流的类数据信息合并到JVM的运行时状态中。</p>
-<h4 id="5、初始化（先父后子）"><a href="#5、初始化（先父后子）" class="headerlink" title="5、初始化（先父后子）"></a>5、初始化（先父后子）</h4><p>  4.1 为静态变量赋值</p>
-<p>  4.2 执行static代码块</p>
+<p><strong>1、加载</strong></p>
+<p>　　由类加载器负责根据一个类的<strong>全限定名</strong>来读取此类的<strong>二进制字节流</strong>到JVM内部，并存储在运行时内存区的方法区，然后将其转换为一个与目标类型对应的java.lang.Class对象实例</p>
+<h4 id="2、验证"><a href="#2、验证" class="headerlink" title="2、验证"></a>2、验证</h4><p>格式验证：验证是否符合class文件规范<br>语义验证：检查一个被标记为final的类型是否包含子类；检查一个类中的final方法是否被子类进行重写；确保父类和子类之间没有不兼容的一些方法声明（比如方法签名相同，但方法的返回值不同）<br>操作验证：在操作数栈中的数据必须进行正确的操作，对常量池中的各种符号引用执行验证（通常在解析阶段执行，检查是否可以通过符号引用中描述的全限定名定位到指定类型上，以及类成员信息的访问修饰符是否允许访问等）</p>
+<h4 id="3、准备"><a href="#3、准备" class="headerlink" title="3、准备"></a>3、准备</h4><p>为类中的所有静态变量分配内存空间，并为其设置一个初始值（由于还没有产生对象，实例变量不在此操作范围内）<br>被final修饰的static变量（常量），会直接赋值；</p>
+<a id="more"></a>
+
+<h4 id="4、解析"><a href="#4、解析" class="headerlink" title="4、解析"></a>4、解析</h4><p>将常量池中的符号引用转为直接引用（得到类或者字段、方法在内存中的指针或者偏移量，以便直接调用该方法），这个可以在初始化之后再执行。<br>解析需要静态绑定的内容。 // 所有不会被重写的方法和域都会被静态绑定</p>
+<p>　　<strong>以上2、3、4三个阶段又合称为链接阶段</strong>，链接阶段要做的是将加载到JVM中的二进制字节流的类数据信息合并到JVM的运行时状态中。</p>
+<h4 id="5、初始化（先父后子）"><a href="#5、初始化（先父后子）" class="headerlink" title="5、初始化（先父后子）"></a>5、初始化（先父后子）</h4><p>4.1 为静态变量赋值</p>
+<p>4.2 执行static代码块</p>
 <blockquote>
 <p>注意：static代码块只有jvm能够调用<br>　　　如果是多线程需要同时初始化一个类，仅仅只能允许其中一个线程对其执行初始化操作，其余线程必须等待，只有在活动线程执行完对类的初始化操作之后，才会通知正在等待的其他线程。</p>
 </blockquote>
+</li>
+</ul>
 <p>  因为子类存在对父类的依赖，所以<strong>类的加载顺序是先加载父类后加载子类，初始化也一样。</strong>不过，父类初始化时，子类静态变量的值也有有的，是默认值。</p>
 <p>  最终，方法区会存储当前类类信息，包括类的<strong>静态变量</strong>、<strong>类初始化代码</strong>（<strong>定义静态变量时的赋值语句</strong> 和 <strong>静态初始化代码块</strong>）、<strong>实例变量定义</strong>、<strong>实例初始化代码</strong>（<strong>定义实例变量时的赋值语句实例代码块</strong>和<strong>构造方法</strong>）和<strong>实例方法</strong>，还有<strong>父类的类信息引用。</strong></p>
 <ul>
@@ -134,7 +136,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ck9c53ecb003bzc264haxd2zi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ck9c5feoi003a6w266jz4cxb4" class="article-share-link">Share</a>
       
       
     </footer>

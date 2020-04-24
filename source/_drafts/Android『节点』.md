@@ -64,8 +64,8 @@ App启动从用户按下桌面图标开始。
 
 - **Active View**：是缓存在`屏幕内的ItemView`，当列表数据发生变化时，屏幕内的数据可以直接拿来复用，`无须进行数据绑定`。
 - **Scrap view**：缓存屏幕外的ItemView，这里所有的缓存的数据都是"脏的"，也就是数据需要重新绑定，也就是说`屏幕外的所有数据在进入屏幕的时候都要走一遍getView（）方法`。
-- 图片1：http://47.110.40.63:8080/img/blog/ListView缓存示意图.png
-- 图片2：http://47.110.40.63:8080/img/blog/ListView缓存流程图.png
+- 图片1：![img](http://47.110.40.63:8080/img/blog/ListView缓存示意图.png)
+- 图片2：![img](http://47.110.40.63:8080/img/blog/ListView缓存流程图.png)
 
 **RecyclerView**的缓存分为四级
 
@@ -552,4 +552,155 @@ public final class MySingleton implements Serializable{
 
 
 ## setContentView流程
+
+
+
+## 一些比喻
+
+摘自：https://www.jianshu.com/p/47eca41428d6
+
+SurfaceFling是摄像机，它只负责客观的捕捉当前的画面，然后真实的呈现给观众；WMS就是导演，它要负责话剧的舞台效果、演员站位；ViewRoot就是各个演员的长相和表情，取决于它们各自的条件与努力。可见，WMS与SurfaceFling的一个重要区别就是——后者只做与“显示”相关的事情，而WMS要处理对输入事件的派发。
+
+摘自：https://www.jianshu.com/p/5297e307a688
+
+Activity就像工匠，Window就像是窗户，View就像是窗花，LayoutInflater像剪刀，Xml配置像窗花图纸。
+Android根据他们不同的职能让他们各斯其活，同时也相互配合展示给我们灵活、精致的界面。
+
+摘自：https://www.jianshu.com/p/18bf94da4a67
+
+WindowManager.java抽象类，具体实现靠WindowManagerImpl
+
+WindowManagerImpl.java委托windmanagerGlobal干活
+
+WindowManagerGlobal.java真正完成windowmanager任务
+
+ViewRootImpl.java
+
+PhoneWindow.java这个才是我们看到的window
+
+PhoneWindowManager.java
+
+以上类全部在客户端中使用.
+
+IWindowSession:
+
+IWindowSession 在客户端中使用,他是window在客户端持有windowManagerService的类似于应用的东西,客户端通过IWindowSession向WMS发送请求.
+
+IWindowSession 在viewRootImpl构造函数中初始化:
+
+## Serializable和Parcelable区别
+
+
+
+
+
+## 多进程带来的问题
+
+- 静态成员和单例模式完全失效(不是同一块内存，会产生不同的副本)
+- 线程同步机制完全失效(不是同一块内存，所以对象也不是同一个，因此类锁、对象锁也不是同一个，不能保证线程同步)
+- SharedPreferences 可靠性下降(SharedPreferences不支持多个进程同时写，会有一定的几率丢失数据)
+- Application 多次创建(Android为每个进程分配独立的虚拟机，这个过程其实就是启动一个应用，所以Application会被创建多次)，所以我们不能直接将一些数据保存在Application中。
+
+## MeasureSpec详解
+
+摘自：https://www.jianshu.com/p/cecd0de7ec27
+
+**NSPECIFIED：不对View大小做限制，如：ListView，ScrollView**
+**EXACTLY：确切的大小，如：100dp或者march_parent**
+**AT_MOST：大小不可超过某数值，如：wrap_content**
+
+总结一下：
+不管父View是何模式，若子View有确切数值，则子View大小就是其本身大小，且mode是EXACTLY
+若子View是match_parent，则模式与父View相同，且大小同父View（若父View是UNSPECIFIED，则子View大小为0）
+若子View是wrap_content，则模式是AT_MOST，大小同父View，表示不可超过父View大小（若父View是UNSPECIFIED，则子View大小为0）
+
+## setContentView流程
+
+1. Activity有成员变量mWindow，是一个PhoneWindow，在Activity的attach()方法中初始化
+
+   ```java
+   //Activity.java
+   private void attach(...) {
+     mWindow = new PhoneWindow(this, window, activityConfigCallback);
+   }
+   ```
+
+2. 调用setContentView，实际上调用的是PhoneWindow的setContentView方法，Window是一个抽象类，PhoneWindow实现了Window。WindownManager是一个接口继承自ViewManager接口，ViewManager接口中定义了三个方法用于添加，更新，删除View。
+
+3. WindowManagerImpl是WindowManager的实现类，其有一个成员变量WindowManagerGlobal，**WindowManagerGlobal是实际干活的那个**，当调用PhoneWindow的setContentView时，最终会调到WindowManagerGlobal的addView，**addView又会调用ViewRootImpl的setView方法**，<font color="#dd0000">**而在ViewRootImpl的setView方法中，会调用IWindowSession类的addToDiaplay方法通过IPC将View和Window绑定**</font>。
+
+4. 回到PhoneWindow的setContentView方法中
+
+   首先判断decorview是否初始化过，如果没有，调用installDecor()。
+
+   如果contentParent为空，则调用generateLayout()，generateLayout中根据设置的feature生成不同的contentParent。
+
+   在前面讨论的ViewRootImpl的setView中会调用requestLayout()，requestLayout()又会调用scheduleTraversals()，scheduleTraversals()会post了一个mTraversalRunnable，mTraversalRunnable会调用doTraversal()，doTraversal最终调用performTraversals()，performTraversals()触发measure/layout/draw三个步骤。
+
+   ```java
+   public void setView(View view, WindowManager.LayoutParams attrs, View panelParentView) {
+        synchronized (this) {
+            if (mView == null) {
+                mView = view;
+                ……
+                requestLayout();;
+            }
+        }
+    }
+   @Override
+   public void requestLayout() {
+     if (!mHandlingLayoutInLayoutRequest) {
+       checkThread();
+       mLayoutRequested = true;
+       scheduleTraversals();
+     }
+   }
+   void scheduleTraversals() {
+     if (!mTraversalScheduled) {
+       mTraversalScheduled = true;
+       mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();
+       mChoreographer.postCallback(
+         Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null);
+       if (!mUnbufferedInputDispatch) {
+         scheduleConsumeBatchedInput();
+       }
+       notifyRendererOfFramePending();
+       pokeDrawLockIfNeeded();
+     }
+   }
+   ```
+
+   可以看到这里post了一个mTraversalRunnable，我们看看这个runnable做了啥事
+
+   ```
+    final class TraversalRunnable implements Runnable {
+           @Override
+           public void run() {
+               doTraversal();
+           }
+       }
+       final TraversalRunnable mTraversalRunnable = new TraversalRunnable();
+       void doTraversal() {
+           if (mTraversalScheduled) {
+               mTraversalScheduled = false;
+               mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);
+   
+               if (mProfile) {
+                   Debug.startMethodTracing("ViewAncestor");
+               }
+   
+               performTraversals();
+   
+               if (mProfile) {
+                   Debug.stopMethodTracing();
+                   mProfile = false;
+               }
+           }
+       }
+   
+   ```
+
+##measure，layout，draw流程
+
+摘自：[https://jitmaos.github.io/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/](https://jitmaos.github.io/2019/04/09/Android基础三部曲『onDraw+onMessage+onLayout』/)
 
