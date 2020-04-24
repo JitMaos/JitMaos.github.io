@@ -14,15 +14,15 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件  Window类时一个抽象类，提供绘制窗口的API PhoneWindow是继承Window的一个具体的类，该类内部包含了一个">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-8b81cc0636106469.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-136df104f5f52329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/7186484-8a05807e997a04ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://47.110.40.63:8080/img/blog/View%E7%BB%93%E6%9E%84%E5%9B%BE.png">
+<meta property="og:image" content="http://47.110.40.63:8080/img/blog/onMeasure%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
+<meta property="og:image" content="http://47.110.40.63:8080/img/blog/onLayout%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
+<meta property="og:image" content="http://47.110.40.63:8080/img/blog/onDraw%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
 <meta property="article:published_time" content="2019-04-09T11:33:54.000Z">
-<meta property="article:modified_time" content="2020-03-19T07:54:49.078Z">
+<meta property="article:modified_time" content="2020-04-24T03:31:44.364Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:image" content="http://47.110.40.63:8080/img/blog/View%E7%BB%93%E6%9E%84%E5%9B%BE.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -93,7 +93,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="https://upload-images.jianshu.io/upload_images/7186484-55c34c6a542e6edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="View结构图.png"></p>
+        <p><img src="http://47.110.40.63:8080/img/blog/View%E7%BB%93%E6%9E%84%E5%9B%BE.png" alt="View结构图.png"></p>
 <p>Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件</p>
 <ul>
 <li><strong>Window类时一个抽象类，提供绘制窗口的API</strong></li>
@@ -114,12 +114,14 @@
 <li>layout  确定组件在视图中的位置</li>
 <li>draw    根据位置和大小，将组件画出来</li>
 </ul>
+<a id="more"></a>
+
 <p>视图绘制的起点在ViewRootImpl类的performTraversals()方法，该方法完成的工作主要是： <strong>根据之前的状态，判定是否重新计算测试视图大小（measure）、是佛重新放置视图位置（layout）和是否重新重绘视图（draw）</strong> ，部分源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ......</span><br><span class="line">        <span class="comment">//最外层的根视图的widthMeasureSpec和heightMeasureSpec由来</span></span><br><span class="line">        <span class="comment">//lp.width和lp.height在创建ViewGroup实例时等于MATCH_PARENT</span></span><br><span class="line">        <span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</span><br><span class="line">        <span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);</span><br><span class="line">        ......</span><br><span class="line">        mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">        ......</span><br><span class="line">        mView.layout(<span class="number">0</span>, <span class="number">0</span>, mView.getMeasuredWidth(), mView.getMeasuredHeight());</span><br><span class="line">        ......</span><br><span class="line">        mView.draw(canvas);</span><br><span class="line">        ......</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="measure计算视图大小"><a href="#measure计算视图大小" class="headerlink" title="measure计算视图大小"></a>measure计算视图大小</h3><p>几乎所有的组件都是继承View类的，而关于view的测量工作，日常开发用得多的方法就是measure和onMeasure两个方法，measure不可重写，当我们自定义时主要重写onMeasure方法即可，在方法内部我们必须完成组件的mMeasuredWidth和mMeasuredHeight实际尺寸测量，而这个尺寸是需要父视图和子视图共同决定的</p>
 <p>measure流程从根视图measure遍历整个view树结构，如下：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8b81cc0636106469.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onMeasure流程图.png"></p>
+<p><img src="http://47.110.40.63:8080/img/blog/onMeasure%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="onMeasure流程图.png"></p>
 <p>这里写图片描述</p>
 <p>还要注意视图尺寸MeasureSpec是一个组合尺寸，它是一个32位bit值，高两位是尺寸模式specMode，低30位是尺寸大小值，我们可以利用提供的原声库方法很方便的进行尺寸组合和拆解：<br> specMode有三种： MeasureSpec.EXACTLY表示确定大小， MeasureSpec.AT_MOST表示最大大小， MeasureSpec.UNSPECIFIED不确定</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> measureSpec = MeasureSpec.makeMeasureSpec(windowSize, MeasureSpec.EXACTLY);    <span class="comment">//合成</span></span><br><span class="line"><span class="keyword">int</span> specMode = MeasureSpec.getMode(measureSpec);                                   <span class="comment">//拆解</span></span><br><span class="line"><span class="keyword">int</span> specSize = MeasureSpec.getSize(measureSpec);</span><br></pre></td></tr></table></figure>
@@ -139,7 +141,7 @@
 <li>使用View的getMeasuredWidth()和getMeasuredHeight()方法来获取View测量的宽高，必须保证这两个方法在onMeasure流程之后被调用才能返回有效值。</li>
 </ul>
 <h3 id="layout视图位置确定"><a href="#layout视图位置确定" class="headerlink" title="layout视图位置确定"></a>layout视图位置确定</h3><p>layout的流程主要也是遍历整个view树结构，调用view.layout(int l, int t, int r, int b)确定好view的具体坐标位置，流程图如下</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-136df104f5f52329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onLayout流程图.png"></p>
+<p><img src="http://47.110.40.63:8080/img/blog/onLayout%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="onLayout流程图.png"></p>
 <p>这里写图片描述</p>
 <p>当我们自定义一个组件时，通常时重写onLayout方法，里面实现好自己的逻辑，最后在调用layout方法完成视图位置确定，如果自定义组件时一个ViewGroup的话，还需要我们去遍历每一个child确定尺寸</p>
 <h4 id="layout原理总结"><a href="#layout原理总结" class="headerlink" title="layout原理总结"></a>layout原理总结</h4><ul>
@@ -150,7 +152,7 @@
 <li>使用View的getWidth()和getHeight()方法来获取View测量的宽高，必须保证这两个方法在onLayout流程之后被调用才能返回有效值。</li>
 </ul>
 <h3 id="draw绘制"><a href="#draw绘制" class="headerlink" title="draw绘制"></a>draw绘制</h3><p>完成measure和Layout后，ViewRootImpl中的代码会创建一个Canvas对象，然后调用View的draw()方法来执行具体的绘制工。所以又回归到了ViewGroup与View的树状递归draw过程<br> 先来看下View树的递归draw流程图，如下：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/7186484-8a05807e997a04ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onDraw流程图.png"></p>
+<p><img src="http://47.110.40.63:8080/img/blog/onDraw%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="onDraw流程图.png"></p>
 <p>这里写图片描述</p>
 <h4 id="draw原理总结"><a href="#draw原理总结" class="headerlink" title="draw原理总结"></a>draw原理总结</h4><p>可以看见，绘制过程就是把View对象绘制到屏幕上，整个draw过程需要注意如下细节：</p>
 <ul>
@@ -167,14 +169,12 @@
 <li>postInvalidate是在非主线程调用</li>
 </ul>
 <h3 id="View的requestLayout方法"><a href="#View的requestLayout方法" class="headerlink" title="View的requestLayout方法"></a>View的requestLayout方法</h3><p>requestLayout()方法会调用measure过程和layout过程，不会调用draw过程，也不会重新绘制任何View包括该调用者本身。</p>
-<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>Android基础『自定义组件』</p>
-<p>Android基础『布局相关』</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/5ae3356014ed" target="_blank" rel="noopener">Android组件View绘制流程原理分析</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck9c5feog00366w2678996xif" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck9dn2xwv0033by264y42202b" class="article-share-link">Share</a>
       
       
     </footer>
