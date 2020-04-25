@@ -94,6 +94,16 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AppDatabase.java</span></span><br><span class="line"><span class="meta">@Database</span>(entities = &#123;User<span class="class">.<span class="keyword">class</span>, <span class="title">Book</span>.<span class="title">class</span>&#125;, <span class="title">version</span> </span>= <span class="number">3</span>)</span><br><span class="line"><span class="meta">@TypeConverters</span>(&#123;Converters<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">abstract</span> <span class="title">class</span> <span class="title">AppDatabase</span> <span class="keyword">extends</span> <span class="title">RoomDatabase</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Converters.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Converters</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@TypeConverter</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">fromTimestamp</span><span class="params">(Long value)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : <span class="keyword">new</span> Date(value);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@TypeConverter</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title">dateToTimestamp</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> date == <span class="keyword">null</span> ? <span class="keyword">null</span> : date.getTime();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>从Room自动编译生成的代码可以知道，<strong>fromXxx在load流程中调用，dateToXxx在bind流程中使用</strong></p>
+<h4 id="CURD"><a href="#CURD" class="headerlink" title="CURD"></a>CURD</h4><h5 id="清空数据"><a href="#清空数据" class="headerlink" title="清空数据"></a>清空数据</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query(<span class="meta-string">"delete from word where id &gt; 0"</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">clear</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<p>回调方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RoomDatabase.Callback</span><br></pre></td></tr></table></figure>
+
+<p>根据id查询数据，使用:id指代参数中的id</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query(<span class="meta-string">"Select *from tablename where id=:id"</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">findWithId</span><span class="params">(<span class="keyword">vararg</span> id:<span class="type">Long</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>根据指定的id数组，查询</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query</span>(<span class="string">"SELECT * FROM user WHERE uid IN (:userIds)"</span>)</span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">loadAllByIds</span><span class="params">(<span class="keyword">int</span>[] userIds)</span></span>;</span><br></pre></td></tr></table></figure>
         
           <p class="article-more-link">
             <a href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/#more">Read More</a>
@@ -102,7 +112,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck9c5fep4004v6w260gfu4dtu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck9dn2xxr004vby26gcm1563k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li></ul>
@@ -149,7 +159,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="ck9c5feox004l6w26daq24yco" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="ck9dn2xxq004tby26fd924kqw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li></ul>
@@ -226,7 +236,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ck9c5feot00496w2619sw85t5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ck9dn2xxc004fby268hod1uxx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
@@ -288,7 +298,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" data-id="ck9c5feoo003u6w26cphp4myp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" data-id="ck9dn2xx4003sby2615jlg0nv" class="article-share-link">Share</a>
       
       
     </footer>
@@ -337,7 +347,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" data-id="ck9c5feom003n6w2622v31p75" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" data-id="ck9dn2xx3003pby268d110nll" class="article-share-link">Share</a>
       
       
     </footer>
@@ -396,7 +406,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="ck9c5feol003j6w269qo519bm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="ck9dn2xx0003fby268lhf5h4x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li></ul>
@@ -463,7 +473,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ck9c5feoh00386w26esxl6lzl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ck9dn2xww0038by26f7wn5qs3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -511,7 +521,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ck9c5feoi003a6w266jz4cxb4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ck9dn2xwz003dby265wnohs0l" class="article-share-link">Share</a>
       
       
     </footer>
@@ -558,7 +568,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ck9c5feoj003d6w26euur2iky" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ck9dn2xwx003aby264sgvgtle" class="article-share-link">Share</a>
       
       
     </footer>
@@ -607,7 +617,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/12/29/2019%E5%B9%B4%E6%80%BB%E7%BB%93/" data-id="ck9c5feoa002u6w26da8o5m8q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/12/29/2019%E5%B9%B4%E6%80%BB%E7%BB%93/" data-id="ck9dn2xwq002qby268xu53e18" class="article-share-link">Share</a>
       
       
     </footer>

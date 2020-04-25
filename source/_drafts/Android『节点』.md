@@ -704,3 +704,243 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 摘自：[https://jitmaos.github.io/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/](https://jitmaos.github.io/2019/04/09/Android基础三部曲『onDraw+onMessage+onLayout』/)
 
+## 浏览器缓存机制
+
+摘自：https://www.jianshu.com/p/39a9832847a6
+
+浏览器缓存机制是指通过 HTTP Header 部分的 Cache-Control（或 Expires）和 Last-Modified（或 Etag）等字段来控制文件缓存的机制。
+
+1. Last-Modified
+
+   标识文件在服务器的最新更新修改时间。请求资源时，浏览器通过 `If-Modified-Since` 字段带上本地缓存的最新修改时间，服务器通过比较缓存文件的修改时间是否一致，来判断文件是否有修改。如果没有修改，则服务器返回 304 告知浏览器继续使用缓存；否则返回 200，同时返回最新的文件。
+
+   
+
+   ```cpp
+   // 服务器返回
+   Last-Modified: Tue, 12 Jan 2016 09:31:27 GMT
+   // 客户端再次发送请求
+   If-Modified-Since: Tue, 12 Jan 2016 09:31:27 GMT
+   ```
+
+2. Cache-Control
+
+   相对值，单位是秒，指定某个文件从发出请求开始起的有效时长，在这个有效时长之内，浏览器直接使用缓存，而不发送请求。Cache-Control 不用要求服务器与客户端的时间同步，也不用服务器时刻同步修改配置 Expired 中的绝对时间，从而可以避免额外的网络请求。优先级比 Expires 更高。
+
+   
+
+   ```swift
+   Cache-Control: max-age=600, public
+   ```
+
+   > Cache-Control 通常与 Last-Modified 一起使用。一个用于控制缓存有效时间，一个在缓存失效后，向服务查询是否有更新。
+
+3. Expires
+
+   表示到期时间，一般用在 response 报文中，当超过此时间后响应将被认为是无效的而需要网络连接，反之而是直接使用缓存
+
+   
+
+   ```css
+   Expires: Thu, 12 Jan 2017 11:01:33 GMT
+   ```
+
+4. ETag
+
+   是对文件进行标识的特征字符串。浏览器向服务器请求文件时，通过 `If-None-Match` 字段把特征字串发送给服务器，服务器通过 Etag 比对来判断文件是否更新。Etag 一致，则返回 304；否则返回 200 和最新的文件。
+
+   
+
+   ```dart
+   // 服务器返回
+   ETag: 248b11be4d6c7db6b2a699988a6603a5
+   // 客户端再次发送请求
+   If-None-Match: 248b11be4d6c7db6b2a699988a6603a5
+   ```
+
+   `ETag` 和 `Last-Modified` 一同使用，是要其中一个判断缓存有效，则浏览器使用缓存数据
+
+5. Cache-Control:no-cache (Pragma:no-cache)
+
+   浏览器忽略本地缓存，请求 HEADER 中代码带上改字段，请求服务器获取最新的数据
+
+![img](http://47.110.40.63:8080/img/blog/网络资源缓存流程图.png)
+
+## 解决启动黑白屏问题
+
+摘自：https://www.jianshu.com/p/ac1fb0035aa3
+
+1. 设置Application的样式，android:windowBackground设置为splash图片
+
+   ```java
+   <style name="AppTheme.lanuchTheme" >
+         <item name="android:windowBackground">@drawable/launch_layout</item>
+         <item name="android:windowFullscreen">true</item>
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowContentOverlay">@null</item>
+   ```
+
+2. 将真的SplashActivity的背景设置为透明
+
+   ```java
+   <?xml version="1.0" encoding="utf-8"?>
+   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <ImageView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:src="@mipmap/bottom_imag"//bottom_imag为底部的图标和文字
+           android:layout_alignParentBottom="true"
+           android:layout_centerHorizontal="true"
+           android:layout_marginBottom="50dp"
+           />
+   </RelativeLayout>
+   ```
+
+## TCP/UDP/HTTP/SOCKET区别
+
+摘自：https://blog.csdn.net/hai_chao/article/details/79626161
+
+
+
+## 组件化通信
+
+摘自：https://www.jianshu.com/p/82b994fe532c
+
+一、页面跳转使用**统一路由管理**，如Arouter。
+
+二、使用共享数据，如把数据保存到SP、数据库等。然后发送一个广播
+
+三、使用EventBus这种进程内bus，需要定义Base Bean，通过key进行区分。
+
+## AsyncTask原理及不足
+
+摘自：https://blog.csdn.net/wjinhhua/article/details/60578133
+
+<font color="#dd0000">**AsyncTask内部是由一个串行线程池(SerialExecutor) + Handler的方式实现的**</font>。
+
+**涉及四个主要方法**
+
+```java
+onPreExecute() //在主线程运行，用于后台任务进行前做一些准备工作
+doInBackground(Params... params) //在子线程运行，用来处理后台任务，像网络请求，耗时处理等操作
+onProgressUpdate(Progress... values) //在主线程运行，在doInBackground通过publishProgress来更新进度
+onPostExecute(Result result)//在主线程运行，后台任务处理完毕调用，并返回后台任务的结果
+```
+
+**存在的缺陷**
+
+1. 线程池中已经有128个线程，缓冲队列已满，如果此时向线程提交任务，将会抛出RejectedExecutionException。过多的线程会引起大量消耗系统资源和导致应用FC的风险。
+
+2. <font color="#dd0000">**AsyncTask不会随着Activity的销毁而销毁，直到doInBackground()方法执行完毕(因为它运行在子线程中吧)**</font>。如果我们的Activity销毁之前，没有取消 AsyncTask，这有可能让我们的AsyncTask崩溃(crash)。因为它想要处理的view已经不存在了。所以，我们总是必须确保在销毁活动之前取消任务。**如果在doInBackgroud里有一个不可中断的操作，比如BitmapFactory.decodeStream()，调用了cancle() 也未必能真正地取消任务**。关于这个问题，在4.4后的AsyncTask中，都有判断是取消的方法isCancelled()，可能参考的这些作者都分析较早的版本，当然，这是笔者落后的原因。
+
+3. <font color="#dd0000">**如果AsyncTask被声明为Activity的非静态的内部类，那么AsyncTask会保留一个对创建了AsyncTask的Activity的引用（不如说是其内部的Handler引用了Activity吧)**</font>。如果Activity已经被销毁，AsyncTask的后台线程还在执行，它将继续在内存里保留这个引用，导致Activity无法被回收，引起内存泄露。
+
+4. <font color="#dd0000">**屏幕旋转或Activity在后台被系统杀掉等情况会导致Activity的重新创建，之前运行的AsyncTask会持有一个之前Activity的引用，这个引用已经无效，这时调用onPostExecute()再去更新界面将不再生效**</font>。
+
+## LinkedHashMap
+
+摘自：https://www.jianshu.com/p/8f4f58b4b8ab
+
+LinkedHashMap中存的Item是LinkedHashMapEntry
+
+![img](http://47.110.40.63:8080/img/blog/LinkedHashMap结构图.png)
+
+```java
+class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
+	static class LinkedHashMapEntry<K,V> extends HashMap.Node<K,V> {
+	  LinkedHashMapEntry<K,V> before, after;
+	  LinkedHashMapEntry(int hash, K key, V value, Node<K,V> next) {
+ 	   super(hash, key, value, next);
+	  }
+	}
+	transient LinkedHashMapEntry<K,V> head;
+	transient LinkedHashMapEntry<K,V> tail;
+}
+```
+
+LinkedHashMap支持两种元素访问顺序，由构造函数参数accessOrder决定，accessOrder=false时，表示和存储顺序有关，否则按照访问的顺序。
+
+LinkedHashMap是继承于HashMap，是基于HashMap和双向链表来实现的。
+
+HashMap无序；LinkedHashMap有序，可分为插入顺序和访问顺序两种。如果是访问顺序，那put和get操作已存在的Entry时，都会把Entry移动到双向链表的表尾(其实是先删除再插入)。
+
+LinkedHashMap存取数据，还是跟HashMap一样使用的Entry[]的方式，双向链表只是为了保证顺序。
+
+LinkedHashMap是线程不安全的。
+
+## LruCache实现原理
+
+摘自：https://www.jianshu.com/p/6d41994f1fee
+
+​			https://www.jianshu.com/p/1b25935acfa0
+
+LruCache(Least Recently Used)是一个基于LinkedHashMap进行封装的**线程安全**的缓存容器。<font color="#dd0000">**LruCache是在内存中使用的**</font>，DiskLruCache是在磁盘中使用的。
+
+自己实现一个LruCache的关键步骤
+
+`1.(必填)`你需要提供一个缓存容量作为构造参数。
+
+`2.（必填）` 覆写 sizeOf 方法 ，自定义设计一条数据放进来的容量计算，如果不覆写就无法预知数据的容量，不能保证缓存容量限定在最大容量以内。
+
+`3.（选填）` 覆写 `entryRemoved` 方法 ，你可以知道最少使用的缓存被清除时的数据（ evicted, key, oldValue, newVaule ）。
+
+`4.（记住）`LruCache是<font color="#dd0000">**线程安全**</font>的，在内部的 get、put、remove 包括 trimToSize 都是安全的（因为都上锁了）。
+
+`5.（选填）` 还有就是覆写 `create` 方法 。create()方法的执行可能需要很长时间，此时如果有其他线程也操作相同key的对象，则将当前create的对象舍弃。
+
+LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环链表，每次访问过的数据会被移动到<font color="#dd0000">**队列末尾**</font>，在使用过程中我们需要重写`sizeOf`方法来帮助LruCache计算缓存大小，每当缓存数据发生覆盖或者清理时会回调`entryRemoved`方法，并且LruCache是线程安全的，核心操作都上了同步锁。
+ Ps:我们可以手动调用`trimToSize`清理一批数据，也可以调用`resize`方法，重新赋值缓存大小的上限并计算当前空间是否需要清理，`snapshot`来获取缓存map的切片，注意是浅拷贝。
+
+## DiskLruCache使用及思考
+
+摘自：https://blog.csdn.net/guolin_blog/article/details/28863651
+
+**写入缓存**
+
+1. 使用DiskLruCache.open(File directory, int appVersion, int valueCount, long maxSize)方法得到一个DiskLruCache对象，**注意处理存储权限问题**，存储路径可以是任意的。
+
+2. 获取一个指定key的Editor对象
+
+   ```java
+   public Editor edit(String key) throws IOException
+   ```
+
+3. 调用editor.commit()提交缓存，或者调用editor.abort()放弃提交缓存。
+
+4. 可以调用flush()方法，将内存中的操作记录一次性同步到journal文件，通常在onPause()方法中使用。
+
+5. 和open方法相对应，close()用于关闭DiskLruCache对象的句柄（应该说是文件句柄吧)。可以在onDestory()中调用。
+
+**读取缓存**
+
+1. 调用Editor.get()返回一个目标key的SnapShot(存放key对应的values)。
+
+**底层原理**
+
+1. 整个DiskLruCache的运行依赖于journal文件，journal文件基本格式如下：
+
+   ![img](http://47.110.40.63:8080/img/blog/DiskLruCache文件截图.png)
+
+   **每次调用edit()会生成一条DIRTY记录，之后调用commit()会生成一条clean记录，调用abort会生成一条remove记录**。
+
+2. 每次往journal文件中添加操作行的时候，redundantOpCount变量会计数，如果该文件的行数超过了2000行，就会重建一次journal文件，清除不需要的记录行。
+
+3. DiskLruCache和LruCache的相同点是缓存文件都先写入，然后触发计算空间大小来判断是否删除近期时间最少使用的文件，直到缓存文件的大小大于阈值。
+
+4. 调用open的时候会逐行读取journal文件中的内容，将需要
+
+5. 每次先插入缓存，之后判断当前是否需要journalRebuildRequired(由2000条记录限制)，或者当前缓存总大小是否超过最大缓存文件限制，是的话，就调用trimToSize方法。
+
+   ```java
+   private void trimToSize() throws IOException {
+     while (size > maxSize) {
+       Map.Entry<String, Entry> toEvict = lruEntries.entrySet().iterator().next();
+       remove(toEvict.getKey()); //remove里会更新size字段，size由read记录后的文件数字计算得到
+     }
+   }
+   ```
+
+6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部。然后调用commit()的时候，会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
+

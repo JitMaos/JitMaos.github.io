@@ -15,7 +15,7 @@
 <meta property="og:description" content="项目介绍[官方文档翻译]Room框架提供了一种位于SQLite之上的健壮的数据库操作层。 Room可以帮助你缓存设备中的应用数据。这里的缓存作为唯一数据源服务于应用程序，不管当前是否有网络连接，都能提供连续不中断的数据浏览体验。 常用注解@TypeConverters1234567891011121314151617181920&#x2F;&#x2F;类定义package android.arch.persisten">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-03-19T07:54:49.068Z">
-<meta property="article:modified_time" content="2020-04-23T02:26:00.270Z">
+<meta property="article:modified_time" content="2020-04-23T02:33:07.635Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="JetPack">
 <meta property="article:tag" content="Room">
@@ -99,8 +99,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AppDatabase.java</span></span><br><span class="line"><span class="meta">@Database</span>(entities = &#123;User<span class="class">.<span class="keyword">class</span>, <span class="title">Book</span>.<span class="title">class</span>&#125;, <span class="title">version</span> </span>= <span class="number">3</span>)</span><br><span class="line"><span class="meta">@TypeConverters</span>(&#123;Converters<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">abstract</span> <span class="title">class</span> <span class="title">AppDatabase</span> <span class="keyword">extends</span> <span class="title">RoomDatabase</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Converters.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Converters</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@TypeConverter</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">fromTimestamp</span><span class="params">(Long value)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : <span class="keyword">new</span> Date(value);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@TypeConverter</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title">dateToTimestamp</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> date == <span class="keyword">null</span> ? <span class="keyword">null</span> : date.getTime();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>从Room自动编译生成的代码可以知道，<strong>fromXxx在load流程中调用，dateToXxx在bind流程中使用</strong></p>
-<a id="more"></a>
-
 <h4 id="CURD"><a href="#CURD" class="headerlink" title="CURD"></a>CURD</h4><h5 id="清空数据"><a href="#清空数据" class="headerlink" title="清空数据"></a>清空数据</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query(<span class="meta-string">"delete from word where id &gt; 0"</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">clear</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
 
 <p>回调方法</p>
@@ -112,7 +110,7 @@
 <p>根据指定的id数组，查询</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query</span>(<span class="string">"SELECT * FROM user WHERE uid IN (:userIds)"</span>)</span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">loadAllByIds</span><span class="params">(<span class="keyword">int</span>[] userIds)</span></span>;</span><br></pre></td></tr></table></figure>
 
-
+<a id="more"></a>
 
 <h4 id="版本更新"><a href="#版本更新" class="headerlink" title="版本更新"></a>版本更新</h4><h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ol>
 <li><p>有Compiler的引用，如果是Kotlin环境下的，需要使用kapt</p>
@@ -155,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck9c5fep4004v6w260gfu4dtu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ck9dn2xxr004vby26gcm1563k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li></ul>
