@@ -942,5 +942,17 @@ LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环
    }
    ```
 
-6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部。然后调用commit()的时候，会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
+6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，<font color="#dd0000">**基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部**</font>。然后调用commit()的时候，**会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件**。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
 
+## OKHTTP的缓存机制
+
+摘自：https://www.jianshu.com/p/2821000526df
+
+缓存分为服务端缓存和客户端缓存，服务端缓存指的是代理服务器、CDN上的缓存；
+
+摘自：ttps://blog.csdn.net/ignorewho/article/details/86744430
+
+1.okhttp缓存存储是基于文件存储，从启用缓存机制传入的两个参数也可以看出：directory->缓存文件目录，maxSize->缓存支持存储的最大字节数
+清理：
+1.缓存清理是基于LRU机制，清理最老且使用最少的数据
+2.内部维护一个清理线程，当size大于或等于maxSize时就会执行清理操作
