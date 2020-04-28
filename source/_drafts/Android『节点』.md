@@ -396,9 +396,9 @@ LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观�
 元注解指的是**用来修饰注解的注解**，包括：
 
 + @Retention：定义注解的保留策略
-  + SOURCE，注解会被编译器移除
+  + SOURCE，注解只会保留在.java源码中，<font color="#dd0000">**运行的时候注解会被编译器移除**</font>。
   + CLASS，注解可以编译器的保留在class文件中，**但是不能在虚拟机运行时保留**。这也是默认的注解保留行为。
-  + RUNTIME，注解可以在编译器及虚拟机的运行都保留下来，所以这时注解可以用反射读取。
+  + RUNTIME，注解可以在编译器及虚拟机的运行都保留下来，所以这时<font color="#dd0000">**注解可以用反射读取**</font>。
 + @Target：定义注解的作用目标
   + TYPE 类，接口(含注解)
   + FIELD 成员变量(含枚举常量)
@@ -944,15 +944,242 @@ LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环
 
 6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，<font color="#dd0000">**基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部**</font>。然后调用commit()的时候，**会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件**。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
 
+## Glide三级图片缓存
+
+
+
+## 插件化实现原理
+
+
+
+## OKHTTP任务管理
+
+
+
+
+
 ## OKHTTP的缓存机制
 
-摘自：https://www.jianshu.com/p/2821000526df
+摘自：https://www.jianshu.com/p/fd37321f74cc
 
-缓存分为服务端缓存和客户端缓存，服务端缓存指的是代理服务器、CDN上的缓存；
+http缓存分为两种，一种强制缓存，一种对比缓存，强制缓存生效时直接使用以前的请求结果，无需发起网络请求。对比缓存生效时，无论怎样都会发起网络请求，如果请求结果未改变，服务端会返回304，但不会返回数据，数据从缓存中取，如果改变了会返回数据。
 
-摘自：ttps://blog.csdn.net/ignorewho/article/details/86744430
+存储：
 
-1.okhttp缓存存储是基于文件存储，从启用缓存机制传入的两个参数也可以看出：directory->缓存文件目录，maxSize->缓存支持存储的最大字节数
+1. okhttp缓存存储是基于文件存储，从启用缓存机制传入的两个参数也可以看出：directory->缓存文件目录，maxSize->缓存支持存储的最大字节数。
+
 清理：
-1.缓存清理是基于LRU机制，清理最老且使用最少的数据
-2.内部维护一个清理线程，当size大于或等于maxSize时就会执行清理操作
+
+1. 缓存清理是基于LRU机制，清理最老且使用最少的数据
+2. 内部维护一个清理线程，当size大于或等于maxSize时就会执行清理操作
+
+**CacheStrategy**
+
+通过当前的request和一个<font color="#dd0000">**缓存中的response**</font>来决定当前request的响应是使用网络、缓存、或者二者都使用。
+
+```java
+class CacheStrategy {
+  //M->OKHTTP，要发送到服务器的Request，如果不走网络的话，为Null
+  public final @Nullable Request networkRequest;
+
+  //M->OKHTTP,缓存的response，可以用来作为结果返回，或者用来辅助验证，如果当前的call指定不使用缓存则返回null
+  public final @Nullable Response cacheResponse;
+  //M->OKHTTP,判断响应是否可缓存，根据http响应状态码判断是否可缓存
+  public static boolean isCacheable(Response response, Request request) {}
+  public static class Factory {
+    //更新cacheResponse的header的字段Date/Expires/Last-Modified/ETag/Age
+  }
+  //M->OKHTTP，基于缓存Response返回一个满足request的CacheStrategy
+  public CacheStrategy get() {
+    //1.根据Request和Response的cacheControl来返回一个cacheStategy
+    //2.根据Cache Response的header信息的etag/If-Modified-Since/If-Modified-Since返回一个cacheStrategy
+  }
+}
+```
+
+**CacheControl**
+
+```java
+- noCache();//不使用缓存，用网络请求
+- noStore();//不使用缓存，也不存储缓存
+- onlyIfCached();//只使用缓存
+- noTransform();//禁止转码
+- maxAge(10, TimeUnit.MILLISECONDS);//设置超时时间为10ms。
+- maxStale(10, TimeUnit.SECONDS);//超时之外的超时时间为10s
+- minFresh(10, TimeUnit.SECONDS);//超时时间为当前时间加上10秒钟。
+```
+
+**保存缓存**
+
+```java
+//CacheInterceptor.intercept
+if (cache != null) {
+  if (HttpHeaders.hasBody(response) && CacheStrategy.isCacheable(response, networkRequest)) {
+    //M->OKHTTP,关键代码！！保存response到缓存中,只保存GET请求的结果
+    CacheRequest cacheRequest = cache.put(response);
+    //
+    return cacheWritingResponse(cacheRequest, response);
+  }
+
+  //M->OKHTTP，post/patch/put/delete/move时，从缓存中移除request
+  if (HttpMethod.invalidatesCache(networkRequest.method())) {
+    try {
+      cache.remove(networkRequest);
+    } catch (IOException ignored) {
+      // The cache cannot be written.
+    }
+  }
+}
+```
+
+注意：cache.put(response)中只保存GET请求的结果
+
+```java
+@Nullable CacheRequest put(Response response) {
+  String requestMethod = response.request().method();
+  	...
+    if (!requestMethod.equals("GET")) {
+      // Don't cache non-GET responses. We're technically allowed to cache
+      // HEAD requests and some POST requests, but the complexity of doing
+      // so is high and the benefit is low.
+      return null;
+    }
+ 	  ...
+    try {
+      editor = cache.edit(key(response.request().url()));
+      if (editor == null) {
+        return null;
+      }
+      entry.writeTo(editor);
+      return new CacheRequestImpl(editor);
+    } catch (IOException e) {
+      abortQuietly(editor);
+      return null;
+    }
+}
+```
+
+## OKHTTP连接复用三要素
+
+摘自：https://www.jianshu.com/p/6166d28983a2
+
+**RealConnection是Connection的实现类，代表着链接socket的链路**，如果拥有了一个RealConnection就代表了我们已经跟服务器有了一条通信链路。
+
+allocations是关联StreamAllocation,它用来统计在一个连接上建立了哪些流，通过StreamAllocation的acquire方法和release方法可以将一个allcation对方添加到链表或者移除链表。
+
+**连接的复用**
+
+```java
+  //M->OKHTTP，从连接池中返回Address对应的连接，如果没有这样的连接，则返回null
+  @Nullable RealConnection get(Address address, StreamAllocation streamAllocation, Route route) {
+    //断言，判断线程是不是被自己锁住了
+    assert (Thread.holdsLock(this));
+    //M->OKHTTP,遍历已有连接集合
+    for (RealConnection connection : connections) {
+      //M->OKHTTP，关键代码！！如果connection和需求中的"地址"和"路由"匹配
+      if (connection.isEligible(address, route)) {
+        //M->OKHTTP，关键代码！！复用这个连接
+        streamAllocation.acquire(connection, true);
+        //返回这个连接
+        return connection;
+      }
+    }
+    return null;
+  }
+```
+
+遍历connections缓存列表，<font color="#dd0000">**当某个连接计数的次数小于限制的大小并且request的地址和缓存列表中此连接的地址完全匹配**</font>。则直接复用缓存列表中的connection作为request的连接。
+
+判断给定的Address和Route是否可以复用
+
+```java
+  //M->OKHTTP,判断面对给出的addres和route，这个realConnetion是否可以重用。判断依据：
+  //  如果连接达到共享上限，则不能重用
+  //  非host域必须完全一样，如果不一样不能重用
+  //  如果此时host域也相同，则符合条件，可以被复用
+  //  如果host不相同，在HTTP/2的域名切片场景下一样可以复用
+  public boolean isEligible(Address address, @Nullable Route route) {
+    // If this connection is not accepting new streams, we're done.
+    //M->OKHTTP 判断某个连接的计数是否小于限制
+    if (allocations.size() >= allocationLimit || noNewStreams) return false;
+
+    // If the non-host fields of the address don't overlap, we're done.
+    if (!Internal.instance.equalsNonHost(this.route.address(), address)) return false;
+
+    // If the host exactly matches, we're done: this connection can carry the address.
+    if (address.url().host().equals(this.route().address().url().host())) {
+      return true; // This connection is a perfect match.
+    }
+
+    // At this point we don't have a hostname match. But we still be able to carry the request if
+    // our connection coalescing requirements are met. See also:
+    // https://hpbn.co/optimizing-application-delivery/#eliminate-domain-sharding
+    // https://daniel.haxx.se/blog/2016/08/18/http2-connection-coalescing/
+
+    // 1. This connection must be HTTP/2.
+    if (http2Connection == null) return false;
+
+    // 2. The routes must share an IP address. This requires us to have a DNS address for both
+    // hosts, which only happens after route planning. We can't coalesce connections that use a
+    // proxy, since proxies don't tell us the origin server's IP address.
+    if (route == null) return false;
+    if (route.proxy().type() != Proxy.Type.DIRECT) return false;
+    if (this.route.proxy().type() != Proxy.Type.DIRECT) return false;
+    if (!this.route.socketAddress().equals(route.socketAddress())) return false;
+
+    // 3. This connection's server certificate's must cover the new host.
+    if (route.address().hostnameVerifier() != OkHostnameVerifier.INSTANCE) return false;
+    if (!supportsUrl(address.url())) return false;
+
+    // 4. Certificate pinning must match the host.
+    try {
+      address.certificatePinner().check(address.url().host(), handshake().peerCertificates());
+    } catch (SSLPeerUnverifiedException e) {
+      return false;
+    }
+
+    return true; // The caller's address can be carried by this connection.
+  }
+```
+
+**连接池的清理**
+
+一个连接池最多对应一个清理线程，清理线程不断的调用cleanup(long now)方法，清理连接上失效的Stream，记录空闲最久的连接，然后将该连接从连接池中移除。
+
+## EventBus源码
+
+
+
+
+
+## EventBus优点与缺点
+
+**优点**
+
+- 简单统一数据传递
+- 清晰明了的主次线程
+- 在activity与activity，或者Service与activity传递大数据时的唯一选择。因为序列化大数据进行传递时，是十分耗时缓慢的。用EventBus是最优解法。
+
+**缺点**
+
+- 容易滥用，你需要定义大量的常量或者新的实体类来区分接收者。管理EventBus的消息类别将会你的痛苦
+- EventBus，并不是真正的解耦。请不要在你独立的模块里使用EventBus来分发。你这个模块如果那天要直接放入另外一个项目里，你怎么解耦EventBus？
+
+## RxJava2基础使用
+
+
+
+## RxJava2常用操作符
+
+
+
+## RxJava2实现原理
+
+
+
+## TCP/IP五层模型
+
+![img](http://47.110.40.63:8080/img/blog/TCPIP五层模型.png)
+
+## Android类加载机制
+

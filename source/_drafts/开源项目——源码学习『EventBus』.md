@@ -133,6 +133,24 @@ List<SubscriberMethod> findSubscriberMethods(Class<?> subscriberClass) {
 
 
 
+### register流程
+
+
+
+### post流程
+
+
+
+### 调用方法流程
+
+
+
+### unregister流程
+
+
+
+
+
 
 
 
