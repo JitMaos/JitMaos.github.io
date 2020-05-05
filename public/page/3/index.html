@@ -64,72 +64,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-开源项目——Retrofit『源码学习』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" class="article-date">
-  <time datetime="2019-10-28T02:15:24.000Z" itemprop="datePublished">2019-10-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/">Retrofit『源码学习』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Retrofit这个开源库代码量并不多，但是别人都说这个库很值得学习，主要是因为其中用了一些设计模式，设计的比较巧妙，值得学习揣摩。闲话少叙，书归正传，管理带着问题看源码，先看下面几个问题：</p>
-<h3 id="几个问题："><a href="#几个问题：" class="headerlink" title="几个问题："></a>几个问题：</h3><ol>
-<li><p>只是声明定了一个接口对象，怎么实现的最后具体的解析成请求方法的？</p>
-</li>
-<li><p>如果结合RxJava2，那么返回对象是怎么转换成RxJava2的Observable的？</p>
-</li>
-<li><p>这里几个Factory(CallFactory、Converter.Factory、CallAdapter.Factory）分别什么用处？动态代理模式呢？</p>
-<p>答：</p>
-<p>CallFactory默认就是okhttp3.Call.Factory，是OkHttp3的Call接口的内部接口，包含一个newCall(Request）方法用于返回一个Call对象。可以用于指定自己的网络请求框架。</p>
-<p>Converter.Factory用于指定HTTP响应和请求内容的转换，比如服务器返回一个json字符串，需要转成JSON对象，可以通过..addConverterFactory(<strong>GsonConverterFactory</strong>.create())来实现，其中<strong>GsonConverterFactory</strong></p>
-</li>
-<li><p>使用Retrofit具体有什么好处？</p>
-<p>一是将接口定义和使用分离开来，但这实际上也可以通过自己的方法实现。我觉得可能更大的优势在于，<strong>方便切换网络框架、自定义数据解析规则(可能你使用了一套自己的加密解密算法)、以及和RxJava的集成使用</strong>。</p>
-</li>
-<li><p>Retrofit只能使用OKHttp作为网络请求框架吗？</p>
-<p>答：是的，目前代码中是写死的关联的是okhttp3.Call.Factory来创建对应的Call对象。但是可以自定义Call的Factory用于提供自定义的Call实现。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Retrofit.Builder.callFactory()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">callFactory</span><span class="params">(okhttp3.Call.Factory factory)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.callFactory = checkNotNull(factory, <span class="string">"factory == null"</span>);</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>为什么要代理okhttp3.call，而不是直接使用？</p>
-</li>
-<li><p>既然还是不能切换线程的话，为什么要关联主线程Looper？</p>
-<p>Retrofit2中也可以执行异步任务，也是enqueue(Callback<T/>)，实际上也是代理了一下OKHttp3中的Call的enqueue方法。回调需要在主线程中执行。</p>
-</li>
-</ol>
-        
-          <p class="article-more-link">
-            <a href="/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ck9dn2xx6003yby26edvramsi" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-读书笔记『HeadFirst-设计模式』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" class="article-date">
@@ -168,7 +102,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9dn2xxb004dby267z551ihn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9kkco9j004k85263o7id1er" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -222,7 +156,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9dn2xx5003wby26h6nvd9ky" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9kkco8w004085260uf6b293" class="article-share-link">Share</a>
       
       
     </footer>
@@ -282,7 +216,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9dn2xxa0049by265djd6tvi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ck9kkco8p003n8526d5ewgesw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
@@ -355,7 +289,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9dn2xx5003uby26a7hpcfq9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9kkco8s003s8526dfy4ci1j" class="article-share-link">Share</a>
       
       
     </footer>
@@ -405,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9dn2xx70040by268ilthf7w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ck9kkco9f004e852645l5g6b9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li></ul>
@@ -468,7 +402,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ck9dn2xwu0030by26aia8dp8t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ck9kkco8d00318526894s3dsa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -531,7 +465,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck9dn2xwv0033by264y42202b" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ck9kkco8g003885269smacuko" class="article-share-link">Share</a>
       
       
     </footer>
@@ -577,7 +511,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck9dn2xww0035by266bs21s5q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ck9kkco8g003685263fhjbun2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
@@ -640,11 +574,119 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ck9dn2xx0003gby26hms272h9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ck9kkco8m003i85265fqbgkh6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
 
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Kotlin相关" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" class="article-date">
+  <time datetime="2019-04-08T08:58:45.000Z" itemprop="datePublished">2019-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/">Kotlin相关</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一、Kotlin基础"><a href="#一、Kotlin基础" class="headerlink" title="一、Kotlin基础"></a>一、Kotlin基础</h3><h4 id="1-构造方法"><a href="#1-构造方法" class="headerlink" title="1.构造方法"></a>1.构造方法</h4><h4 id="1-1-主构造方法"><a href="#1-1-主构造方法" class="headerlink" title="1.1 主构造方法"></a>1.1 主构造方法</h4><p>在类的顶部声明，初始化语句块包含在类被创建时执行的代码，并与主构造方法一起使用。因为<strong>主构造方法不能包含初始化代码</strong>，所以需要使用初始化语句块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class User constructor(_nickname: String) &#123; &#x2F;&#x2F; 带一个参数的主构造方法</span><br><span class="line">    val nickname: String</span><br><span class="line">    init &#123; &#x2F;&#x2F; 初始化代码块</span><br><span class="line">        nickname &#x3D; _nickname</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以简化为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class User(_nickname: String) &#123;</span><br><span class="line">    val nickname &#x3D; _nickname &#x2F;&#x2F; 不使用初始化代码块，用参数来初始化属性</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进一步简化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class User(val nickname: String) &#x2F;&#x2F; &quot;val&quot; 表示相应的属性会用构造方法的参数来初始化</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2"><a href="#1-2" class="headerlink" title="1.2"></a>1.2</h4><ul>
+<li>@LayoutRes</li>
+</ul>
+<p>用来标注当前方法返回一个Int类型的资源。</p>
+<ul>
+<li>重写Setting方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> title: CharSequence? = <span class="string">""</span></span><br><span class="line">        set(value) &#123;</span><br><span class="line">            field = value</span><br><span class="line">            toolbarTitle?.text = title</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>apply函数，变换对象，返回自身 &amp;&amp; 动态设置按钮点击效果</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">tintIcon</span><span class="params">(imageView: <span class="type">ImageView</span>, colors: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">  imageView.apply &#123;</span><br><span class="line">    <span class="keyword">val</span> wrappedDrawable = DrawableCompat.wrap(drawable)</span><br><span class="line">      DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(colors))</span><br><span class="line">      setImageDrawable(wrappedDrawable)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Kotlin实现单例</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AppManager</span> <span class="title">private</span> <span class="title">constructor</span>()</span>&#123;</span><br><span class="line">    companion object &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> instance:AppManager? = <span class="keyword">null</span></span><br><span class="line">        <span class="meta">@Synchronized</span></span><br><span class="line">        <span class="function">fun <span class="title">instance</span><span class="params">()</span>:AppManager </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                instance = AppManager()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> instance!!</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>高阶函数使用</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> fun <span class="title">process</span> <span class="params">(b:(Activity)</span> -&gt; Boolean) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(list.isEmpty()) &#123;</span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   val iterator = list.iterator()</span><br><span class="line">     <span class="keyword">while</span>(iterator.hasNext()) &#123;</span><br><span class="line">       val next = iterator.next()</span><br><span class="line">         <span class="keyword">if</span>(b(next)) &#123;</span><br><span class="line">           <span class="keyword">if</span>(!next.isFinishing) &#123;</span><br><span class="line">             next.finish()</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="comment">//测试</span></span><br><span class="line"><span class="function">fun <span class="title">pop</span><span class="params">(activity:Activity)</span> </span>&#123;</span><br><span class="line">  process &#123; it == activity &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Extensions使用</p>
+<p>定义好Extensions后，需要导入才能使用</p>
+</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> View.<span class="title">visible</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (visibility != View.VISIBLE) &#123;</span><br><span class="line">        visibility = View.VISIBLE</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>By lazy 使用</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> compositeDisposable:CompositeDisposable <span class="keyword">by</span> lazy &#123; CompositeDisposable() &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用类的simpleName</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> TAG = <span class="string">"BaseView_<span class="subst">$&#123;javaClass.simpleName&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在类中定义别的类得扩展函数，<font color="#dd0000"><strong>这怎么想得到？</strong></font></li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//BaseViewModel.kt</span></span><br><span class="line"><span class="comment">//TODO WTF.ZMXDD</span></span><br><span class="line"><span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> Disposable.<span class="title">add</span><span class="params">()</span></span> &#123;</span><br><span class="line">  compositeDisposable.add(<span class="keyword">this</span>) <span class="comment">//this指代Disposable</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="二、Kotlin函数"><a href="#二、Kotlin函数" class="headerlink" title="二、Kotlin函数"></a>二、Kotlin函数</h3><h4 id="1-高阶函数"><a href="#1-高阶函数" class="headerlink" title="1.高阶函数"></a>1.高阶函数</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义</span></span><br><span class="line"><span class="keyword">var</span> itemLongClickListener: ((View, T, <span class="built_in">Int</span>) -&gt; <span class="built_in">Boolean</span>)? = <span class="literal">null</span></span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line">adapter.itemClickListener = &#123; view, item, position -&gt; <span class="built_in">Boolean</span></span><br><span class="line">    view.background = ColorDrawable(resources.getColor(R.color.red))</span><br><span class="line">    <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h3 id="Kotlin协程"><a href="#Kotlin协程" class="headerlink" title="Kotlin协程"></a>Kotlin协程</h3><p><strong>介绍</strong>：一个线程中可以包含多个协程，协程中可以嵌套协程；当线程需要执行阻塞任务时，可以把阻塞任务放到线程的协程中完成，相对于线程，<strong>协程更轻量，开销更少</strong>。总得来说使用协程可以提高CPU的利用率，减少多线程切换带来的开销。</p>
+<p><strong>使用</strong>：</p>
+<h3 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h3><ol>
+<li>Kotlin中创建的类的属性默认是private的，所以使用Dagger进行注入时会报<strong>Dagger does not support injection into private fields</strong>，解决办法使用@JvmField注释要注入的字段即可。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ck9kkco8o003m85261r2p883y" class="article-share-link">Share</a>
+      
+      
     </footer>
   </div>
   
@@ -696,7 +738,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
