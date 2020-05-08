@@ -1059,13 +1059,15 @@ if (cache != null) {
 }
 ```
 
-## OKHTTP连接复用三要素
+## OKHTTP连接复用
 
 摘自：https://www.jianshu.com/p/6166d28983a2
 
+概述：<font color="#dd0000">**OKHTTP的连接复用有点类似于Http的keep-alive机制，在timeout的空闲时间(okhttp的默认时间为5分钟)内，连接不会关闭，相同重复的request将复用原先的connection，减少握手的次数，以提高效率**</font>。
+
 **RealConnection是Connection的实现类，代表着链接socket的链路**，如果拥有了一个RealConnection就代表了我们已经跟服务器有了一条通信链路。
 
-allocations是关联StreamAllocation,它用来统计在一个连接上建立了哪些流，通过StreamAllocation的acquire方法和release方法可以将一个allcation对方添加到链表或者移除链表。
+**allocations是关联StreamAllocation，它用来统计在一个连接上建立了哪些流**，通过StreamAllocation的acquire方法和release方法可以将一个allcation对方添加到链表或者移除链表。
 
 **连接的复用**
 
@@ -1144,7 +1146,7 @@ allocations是关联StreamAllocation,它用来统计在一个连接上建立了�
 
 **连接池的清理**
 
-一个连接池最多对应一个清理线程，清理线程不断的调用cleanup(long now)方法，清理连接上失效的Stream，记录空闲最久的连接，然后将该连接从连接池中移除。
+**一个连接池最多对应一个清理线程，清理线程不断的调用cleanup(long now)方法，清理连接上失效的Stream，记录空闲最久的连接，然后将该连接从连接池中移除**。
 
 ## EventBus源码
 
@@ -1182,4 +1184,16 @@ allocations是关联StreamAllocation,它用来统计在一个连接上建立了�
 ![img](http://47.110.40.63:8080/img/blog/TCPIP五层模型.png)
 
 ## Android类加载机制
+
+
+
+# 组件化
+
+![img](http://47.110.40.63:8080/img/blog/Android应用分层实例一.jpg)
+
+![img](http://47.110.40.63:8080/img/blog/Android应用分层实例二.png)
+
+## ARouter原理剖析及手动实现
+
+摘自：https://www.jianshu.com/p/857aea5b54a8
 
