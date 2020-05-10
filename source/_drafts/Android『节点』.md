@@ -3,6 +3,8 @@ title: Android『节点』
 tags:
 ---
 
+#虚拟机
+
 ## Dalvik虚拟机
 
 Dalvik虚拟机主要具有以下特征：
@@ -15,7 +17,7 @@ Dalvik虚拟机主要具有以下特征：
 4. 每一个Android应用都运行在一个Dalvik虚拟机实例中，而每一个虚拟机实例都是一个独立的进程空间。虚拟机的线程机制，内存分配和管理，Mutex等的实现都以来底层操作系统。所有Android应用的线程都对应一个Linux线程，虚拟机因而可以<font color="#dd0000">**更多地依赖操作系统的线程调度和管理机制**</font>。
    不同的应用在不同的进程空间里运行，对不同来源的应用都使用不同的Linux用户来运行，可以更大程度地保护应用的安全和独立运行。
 
-
+#Android系统
 
 ## Android的启动过程
 
@@ -54,7 +56,7 @@ App启动从用户按下桌面图标开始。
 来源：简书
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
-
+#Android API
 
 ## RecyclerView和ListView缓存机制
 
@@ -129,29 +131,7 @@ App启动从用户按下桌面图标开始。
 **AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。`底层原理
 andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk。`
 
-## Synchronized与ReentrantLock区别
 
-在Synchronized优化以前，synchronized的性能是比ReenTrantLock差很多的，但是自从Synchronized引入了偏向锁，轻量级锁（自旋锁）后，两者的性能就差不多了，在两种方法都可用的情况下，官方甚至建议使用synchronized，其实synchronized的优化我感觉就借鉴了ReenTrantLock中的CAS技术。
-
-**Synchronized**
-
-进过编译，会在同步块的前后分别形成monitorenter和monitorexit这个两个字节码指令。在执行monitorenter指令时，首先要尝试获取对象锁。如果这个对象没被锁定，或者当前线程已经拥有了那个对象锁，把锁的计算器加1，相应的，在执行monitorexit指令时会将锁计算器就减1，当计算器为0时，锁就被释放了。如果获取对象锁失败，那当前线程就要阻塞，直到对象锁被另一个线程释放为止。
-
-**ReentrantLock**
-
-由于ReentrantLock是java.util.concurrent包下提供的一套互斥锁，相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项：
-
-1. 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程`可以选择放弃等待`，这相当于Synchronized来说可以避免出现死锁的情况。通过lock.lockInterruptibly()来实现这个机制。
-
-2. 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁是非公平锁，**ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好**。
-
-3. 锁绑定多个条件，一个ReentrantLock对象可以同时绑定多个对象。ReenTrantLock提供了一个Condition（条件）类，用来实现分组唤醒需要唤醒的线程们，而不是像synchronized要么随机唤醒一个线程要么唤醒全部线程。
-
-   Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，`Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中`，从而**可以有选择的进行线程通知，在调度线程上更加灵活**。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。
-
-`ReenTrantLock的实现是一种自旋锁，通过循环调用CAS+volatile操作来实现加锁。`
-
-`ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。`
 
 ##Hexo 博客实现文件同步与静态文件部署
 
@@ -423,60 +403,7 @@ LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观�
 
 KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用匹配失败后的信息，尽量减少模式串与主串的匹配次数以达到快速匹配的目的**。具体实现就是通过一个next()函数实现，函数本身包含了模式串的局部匹配信息。KMP算法的时间复杂度O(m+n)。
 
-## ButterKnife源码解析
 
-摘自：https://juejin.im/post/5acec2b46fb9a028c6761628
-
-1. 使用注解标注bindview和onclick。
-
-2. APT(Annotation Processing Tool)，准确的说是ButterKnifeProcessor会在编译器解析到这些注解，然后根据自定义规则，生成以"_ViewBinding"结尾的java文件。如：
-
-   ```java
-   public class MainActivity_ViewBinding implements Unbinder {
-     private MainActivity target;
-   
-     private View view2131165217;
-   
-     @UiThread
-     public MainActivity_ViewBinding(MainActivity target) {
-       //使用target.getWindow().getDecorView()获取rootView
-       this(target, target.getWindow().getDecorView());
-     }
-   
-     @UiThread
-     public MainActivity_ViewBinding(final MainActivity target, View source) {
-       this.target = target;
-   
-       View view;
-       //完成绑定1
-       target.title = Utils.findRequiredViewAsType(source, R.id.tv_title, "field 'title'", TextView.class);
-       view = Utils.findRequiredView(source, R.id.bt_submit, "method 'submit'");
-       view2131165217 = view;
-       //完成绑定2
-       view.setOnClickListener(new DebouncingOnClickListener() {
-         @Override
-         public void doClick(View p0) {
-           target.submit();
-         }
-       });
-     }
-   
-     @Override
-     @CallSuper
-     public void unbind() {
-       MainActivity target = this.target;
-       if (target == null) throw new IllegalStateException("Bindings already cleared.");
-       this.target = null;
-   
-       target.title = null;
-   
-       view2131165217.setOnClickListener(null);
-       view2131165217 = null;
-     }
-   }
-   ```
-
-三、在Activity、Fragment中调用bind方法，改方法会传入Activity、Fragment为参数。<font color="#dd0000">**bind方法最终只是为了将当前的Activity、Fragment作为参数，来构造一个Xxx_ViewBinding对象，在该对象的构造方法中，完成了需要注入对象的左右绑定**</font>，值得一提的是，rootView是直接通过target.getWindow().getDecorView()获取的。
 
 ## try-with-resources
 
@@ -493,6 +420,8 @@ try-with-resources 声明、try 块、catch 块。它要求在 try-with-resource
 首先，<font color="#dd0000">**协程本质上可以认为是运行在线程上的代码块，协程提供的 *挂起* 操作会使协程暂停执行，而不会导致线程阻塞**</font>。其次，协程是一种轻量级资源，即使创建了上千个协程，对于系统来说也不是一种很大的负担，就**如同在 Java 创建上千个 Runable 对象也不会造成过大负担一样**。通过这样设计，开发者可以极大的提高线程的使用率，用尽量少的线程执行尽量多的任务，其次调用者无需在编程时思考过多的资源浪费问题，可以在每当有异步或并发需求的时候就不假思索的开启协程。
 
 协程的挂起和 Java 的 NIO 机制是类似的，我们在一个线程中执行了一个原本会阻塞线程的任务，但是这个调用者线程没有发生阻塞，这是<font color="#dd0000">**因为它们有一个专门的线程来负责这些任务的流转**</font>，也就是说，当我们发起多个阻塞操作的时候，可能只会阻塞这一个专门的线程，它一直在等待，谁的阻塞结束了，它就把回调再分派过去，这样就完成了阻塞任务与阻塞线程的多对一，而不是以前的一对一，所以挂起也好，NIO 也好，本质上都没有彻底消灭阻塞，但是它们都使阻塞的线程大大减少，从而避免了大量的线程上下文状态切换以及避免了大量线程的产生，从而在 IO 密集型任务中大大提高了性能。
+
+#Java核心
 
 ## Java的异常体系
 
@@ -545,13 +474,37 @@ public final class MySingleton implements Serializable{
 
 <font color="#dd0000">**这样当JVM从内存中反序列化地"组装"一个新对象时，就会自动调用这个 readResolve方法来返回我们指定好的对象了， 单例规则也就得到了保证**</font>。
 
-## AIDL通信
+## Synchronized与ReentrantLock区别
+
+在Synchronized优化以前，synchronized的性能是比ReenTrantLock差很多的，但是自从Synchronized引入了偏向锁，轻量级锁（自旋锁）后，两者的性能就差不多了，在两种方法都可用的情况下，官方甚至建议使用synchronized，其实synchronized的优化我感觉就借鉴了ReenTrantLock中的CAS技术。
+
+**Synchronized**
+
+进过编译，会在同步块的前后分别形成monitorenter和monitorexit这个两个字节码指令。在执行monitorenter指令时，首先要尝试获取对象锁。如果这个对象没被锁定，或者当前线程已经拥有了那个对象锁，把锁的计算器加1，相应的，在执行monitorexit指令时会将锁计算器就减1，当计算器为0时，锁就被释放了。如果获取对象锁失败，那当前线程就要阻塞，直到对象锁被另一个线程释放为止。
+
+**ReentrantLock**
+
+由于ReentrantLock是java.util.concurrent包下提供的一套互斥锁，相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项：
+
+1. 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程`可以选择放弃等待`，这相当于Synchronized来说可以避免出现死锁的情况。通过lock.lockInterruptibly()来实现这个机制。
+
+2. 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁是非公平锁，**ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好**。
+
+3. 锁绑定多个条件，一个ReentrantLock对象可以同时绑定多个对象。ReenTrantLock提供了一个Condition（条件）类，用来实现分组唤醒需要唤醒的线程们，而不是像synchronized要么随机唤醒一个线程要么唤醒全部线程。
+
+   Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，`Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中`，从而**可以有选择的进行线程通知，在调度线程上更加灵活**。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。
+
+`ReenTrantLock的实现是一种自旋锁，通过循环调用CAS+volatile操作来实现加锁。`
+
+`ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。`
+
+## AIDL通信===
 
 
 
 
 
-## setContentView流程
+## setContentView流程===
 
 
 
@@ -588,7 +541,7 @@ IWindowSession 在客户端中使用,他是window在客户端持有windowManager
 
 IWindowSession 在viewRootImpl构造函数中初始化:
 
-## Serializable和Parcelable区别
+## Serializable和Parcelable区别===
 
 
 
@@ -944,15 +897,70 @@ LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环
 
 6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，<font color="#dd0000">**基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部**</font>。然后调用commit()的时候，**会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件**。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
 
-## Glide三级图片缓存
+## Glide三级图片缓存===
 
 
 
-## 插件化实现原理
+## 插件化实现原理===
 
+# 开源库
 
+## ButterKnife源码解析
 
-## OKHTTP任务管理
+摘自：https://juejin.im/post/5acec2b46fb9a028c6761628
+
+1. 使用注解标注bindview和onclick。
+
+2. APT(Annotation Processing Tool)，准确的说是ButterKnifeProcessor会在编译器解析到这些注解，然后根据自定义规则，生成以"_ViewBinding"结尾的java文件。如：
+
+   ```java
+   public class MainActivity_ViewBinding implements Unbinder {
+     private MainActivity target;
+   
+     private View view2131165217;
+   
+     @UiThread
+     public MainActivity_ViewBinding(MainActivity target) {
+       //使用target.getWindow().getDecorView()获取rootView
+       this(target, target.getWindow().getDecorView());
+     }
+   
+     @UiThread
+     public MainActivity_ViewBinding(final MainActivity target, View source) {
+       this.target = target;
+   
+       View view;
+       //完成绑定1
+       target.title = Utils.findRequiredViewAsType(source, R.id.tv_title, "field 'title'", TextView.class);
+       view = Utils.findRequiredView(source, R.id.bt_submit, "method 'submit'");
+       view2131165217 = view;
+       //完成绑定2
+       view.setOnClickListener(new DebouncingOnClickListener() {
+         @Override
+         public void doClick(View p0) {
+           target.submit();
+         }
+       });
+     }
+   
+     @Override
+     @CallSuper
+     public void unbind() {
+       MainActivity target = this.target;
+       if (target == null) throw new IllegalStateException("Bindings already cleared.");
+       this.target = null;
+   
+       target.title = null;
+   
+       view2131165217.setOnClickListener(null);
+       view2131165217 = null;
+     }
+   }
+   ```
+
+三、在Activity、Fragment中调用bind方法，改方法会传入Activity、Fragment为参数。<font color="#dd0000">**bind方法最终只是为了将当前的Activity、Fragment作为参数，来构造一个Xxx_ViewBinding对象，在该对象的构造方法中，完成了需要注入对象的左右绑定**</font>，值得一提的是，rootView是直接通过target.getWindow().getDecorView()获取的。
+
+## OKHTTP任务管理===
 
 
 
@@ -1148,7 +1156,7 @@ if (cache != null) {
 
 **一个连接池最多对应一个清理线程，清理线程不断的调用cleanup(long now)方法，清理连接上失效的Stream，记录空闲最久的连接，然后将该连接从连接池中移除**。
 
-## EventBus源码
+## EventBus源码===
 
 
 
@@ -1167,15 +1175,7 @@ if (cache != null) {
 - 容易滥用，你需要定义大量的常量或者新的实体类来区分接收者。管理EventBus的消息类别将会你的痛苦
 - EventBus，并不是真正的解耦。请不要在你独立的模块里使用EventBus来分发。你这个模块如果那天要直接放入另外一个项目里，你怎么解耦EventBus？
 
-## RxJava2基础使用
 
-
-
-## RxJava2常用操作符
-
-
-
-## RxJava2实现原理
 
 
 
@@ -1183,7 +1183,7 @@ if (cache != null) {
 
 ![img](http://47.110.40.63:8080/img/blog/TCPIP五层模型.png)
 
-## Android类加载机制
+## Android类加载机制===
 
 
 
@@ -1197,3 +1197,117 @@ if (cache != null) {
 
 摘自：https://www.jianshu.com/p/857aea5b54a8
 
+
+
+# 集合类
+
+
+
+## HashMap===
+
+
+
+# RxJava===
+
+
+
+## RxJava2基础使用===
+
+
+
+## RxJava2常用操作符===
+
+
+
+## RxJava2实现原理===
+
+## 内存泄漏问题
+
+摘自：https://blog.csdn.net/alex01550/article/details/86496045
+
+方案一
+
+1. 将disposal添加到CompositeDisposable中
+2. 在Activity的onDestory中clear调
+
+方案二
+
+1. 引入RxLifecycler，缺点是Activity、Fragment需要继承RxActivity、RxFragment。
+
+2. 调用compose()
+
+   ```kotlin
+   Observable.interval(1, TimeUnit.SECONDS)
+   .subscribeOn(Schedulers.io())
+   .observeOn(AndroidSchedulers.mainThread())
+   .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
+   .subscribe {
+     tv_count.text = it.toString()
+     loge(TAG, "count:$it")
+   }
+   ```
+
+方案三
+
+1. 引入autoDisposable库
+
+   ```java
+   implementation "com.uber.autodispose:autodispose-android-archcomponents-ktx:$autodispose_version"
+   implementation "com.uber.autodispose:autodispose-lifecycle-ktx:$autodispose_version"
+   ```
+
+2. 调用autoDisposable方法
+
+   ```java
+    Observable.interval(1, TimeUnit.SECONDS)
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .autoDisposable(AndroidLifecycleScopeProvider
+                      .from(this,Lifecycle.Event.ON_DESTROY))
+      .subscribe {
+      	tv_count.text = it.toString()
+        loge(TAG, "count:$it")
+     }
+   ```
+
+# 性能优化
+
+## 包体积优化===
+
+摘自：https://juejin.im/post/5e7ad1c0e51d450edc0cf053#heading-83
+
+![img](http://47.110.40.63:8080/img/blog/包体积优化思维导图.png)
+
+
+
+
+
+# Flutter
+
+## 异步编程
+
+**isolate**
+
+摘自：https://blog.csdn.net/email_jade/article/details/88941434
+
+在dart中，这里不是称呼线程，是Isolate，直译叫做隔离，这么古怪的名字，是因为隔离不共享数据，每个隔离中的变量都是不同的，不能相互共享。
+
+但是由于dart中的Isolate比较重量级，UI线程和Isolate中的数据的传输比较复杂，因此flutter为了简化用户代码，在foundation库中封装了一个轻量级compute操作，我们先看看compute，然后再来看Isolate。
+
+要使用compute，必须注意的有两点，一是我们的compute中运行的函数，必须是顶级函数或者是static函数，二是compute传参，只能传递一个参数，返回值也只有一个。
+
+但是，compute的使用还是有些限制，它没有办法多次返回结果，也没有办法持续性的传值计算，每次调用，相当于新建一个隔离，如果调用过多的话反而会适得其反。在某些业务下，我们可以使用compute，但是在另外一些业务下，我们只能使用dart提供的Isolate了
+
+**event loop**
+
+摘自：https://zhuanlan.zhihu.com/p/103398523
+
+Dart VM启动后，那么一个新的Thread就会被创建，并且只会有一个线程，它运行在自己的Isolate中。
+
+当这个Thread被创建后，DartVM会自动做以下3件事情：
+
+- 初始化2个队列，一个叫“MicroTask”，一个叫“Event”，都是FIFO队列
+- 执行 main() 方法，一旦执行完毕就做下一步
+- 启动 Event Loop
+
+Event Loop就像一个 infinite loop，被内部时钟来调谐，每一个tick，如果没有其他Dart Code在执行，就会做如下的事情（伪代码）：
