@@ -318,6 +318,149 @@ Flutter加入了**手势竞技场**的概念。在给同一个组件同时添加
   prefs.remove(k);
   ```
 
+**P220**：sqflite
+
++ 支持事务和批处理
++ 支持自动version管理
++ 支持增、删、改、查的Helper工具类
++ **支持Android/iOS后台线程的运行**
+
+**获取和删除**
+
+```dart
+var databasesPath = await getDatabasesPath();
+String path = join(databasePath,'demo.db');
+await deleteDatabase(path);
+```
+
+**打开并创建数据库**
+
+```dart
+Database database = await openDatabase(path,version:1,oncreate:(
+	Database db,int version) async {
+  	await db.execute('CREATE TABLE Test(id INTEGER ...)')
+	}
+));
+```
+
+**插入数据的两种方式**
+
+//方式一，直接使用sql
+
+```dart
+Future<int> rawInsert(String sql,[List<dynamic> arguments]);
+int id = await txn.rawInsert(
+	'INSERT INTO Test(name,value,num) VALUES(?,?,?)',['another name',1213,3.1212])
+);
+```
+
+//方式二，使用map
+
+```dart
+Future<int> insert(String table,Map<String,dynamic> values,{String nullColumnHack,ConflictAlgorithm conflictAlgorithm});
+```
+
+**修改的两种方式**，和插入一样，只是方法名变了
+
+```dart
+Future<int> rawUpdate(String sql,[List<dynamic> arguments]);
+```
+
+```dart
+Future<int> rawUpdate(String table,Map<String,dynamic> values,{String nullColumnHack,ConflictAlgorithm conflictAlgorithm});
+```
+
+**查询的两种方式**
+
+```dart
+Future<List<Map<String,dynamic>>> rawQuery(String sql,[List<dynamic> arguments]);
+```
+
+```dart
+Future<List<Map<String,dynamic>>> Query(String table,{
+  bool distinct,List<String> columns,String where,List<dynamic> whereArgs,
+  String groupBy,String having,String orderBy,int limit,int offset
+});
+```
+
+**物理删除的两种方式**
+
+```dart
+Future<int> rawDelete(String sql,[List<dynamic> arguments]);
+```
+
+```dart
+Future<int> delete(String table,{String where,List<dynamic> whereArgs})
+```
+
+**计算总记录数**
+
+```dart
+Sqflite.firstIntValue(await database.rawQuery('SELECT COUNT(*) FROM Test'))
+```
+
+**关闭数据库**
+
+```dart
+await databse.close()
+```
+
+### 第九章
+
+**P238**：添加未发布的package，编辑pubspec.yaml
+
+```dart
+dependencies:
+	plugin1:
+		path: ../plugin1/
+```
+
+添加git上的依赖
+
+```dart
+dependencies:
+	plugin1:
+		git:
+			url: git://github.com/flutter/plugin1.git
+```
+
+**P239**：调用flutter packages get之后，会生成pubspec.lock。该文件确保更新的package不会影响现有代码。
+
+**P240**：创建自己的package
+
+```dart
+flutter create --org com.example --template=plugin -i swift -a kotlin hello
+```
+
+--org：指定包名；-i：指定iOS语言；-a：指定Android语言
+
+**P241**：Platform Channel
+
+Platform Channel 是Flutter与Platform指定的通信机制，包括3种
+
+1. BasicMessageChannel：**用于传递字符串和半结构化的信息（在大内存数据块传递的情况使用）**
+2. MethodChannel：**用于传递方法的调用**
+3. EventChannel：**用于数据流(event streams)的通信**
+
+**P242**：Flutter的消息传递工具是BinaryMessager，传递的消息格式是二进制的。二进制格式的消息通过消息编解码器(Codec)解码为能识别的消息，并传递给Handler来进行处理。
+
+**P253**：在Android里每初始化一个FlutterView就会有一个FlutterEngine被初始化，这样就会有新的线程在Dart上运行。如果每个Activity中都有一个FlutterView，则会创建多个Flutter Engine实例，这会导致每个Flutter Engine实例加载的代码都独立运行在ioslate中，这种模式被称为多引擎模式。存在问题
+
+1. 冗余的资源问题。
+2. 插件注册问题。插件依赖Messenger传递消息，多个FlutterView时，插件的注册和通信将变得混乱和难以维护。
+3. Flutter Widget和Native页面的差异化问题。
+4. 增加页面之间通信的复杂度。
+
+**P254**：FlutterBoost的思想是把Flutter容器做成浏览器的样子，然后填写一个页面地址，再由容器去管理页面的绘制。在Native端，如果初始化容器，就设置容器对应页面的标志即可。
+
+
+
+
+
+
+
+
+
 
 
 

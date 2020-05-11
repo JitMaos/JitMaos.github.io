@@ -1280,6 +1280,22 @@ if (cache != null) {
 
 
 
+## Monkey测试
+
+**环境安装**
+
+摘自：https://www.jianshu.com/p/c86021fe958d
+
+**Full power：**  能量最高的状态，移动网络连接被激活，允许设备以最大的传输速率进行操作。
+
+**Low power：**  一种中间状态，对电量的消耗差不多是 Full power 状态下的 50%。
+
+**Standby：** 最低的状态，没有数据连接需要传输，电量消耗最少。
+
+![img](http://47.110.40.63:8080/img/blog/Android电量优化.png)
+
+
+
 
 
 # Flutter
@@ -1311,3 +1327,22 @@ Dart VM启动后，那么一个新的Thread就会被创建，并且只会有一�
 - 启动 Event Loop
 
 Event Loop就像一个 infinite loop，被内部时钟来调谐，每一个tick，如果没有其他Dart Code在执行，就会做如下的事情（伪代码）：
+
+## Platfrom Channel
+
+摘自：https://www.jianshu.com/p/cb96d62f5042
+
+Flutter提供了三种platform和dart端通信的方式：BasicMessageChannel，MethodChannle，EventChannel，通信过程都是全双工的。
+
+
+
+
+
+
+
+
+
+
+
+
+
