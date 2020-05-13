@@ -48,6 +48,8 @@ if(obj is Map<String,int>) {
 
 <font color="#dd0000">**~/ 除法，返回一个整数结果**</font>
 
+<!--more-->
+
 **级联操作符**：有点类似一些语言的链式调用。
 
 ```dart
@@ -455,7 +457,9 @@ Platform Channel 是Flutter与Platform指定的通信机制，包括3种
 
 
 
+读后感：
 
+这本书很一般，知识点都是浅浅的谈一下，其实没什么买的必要，不推荐
 
 
 
