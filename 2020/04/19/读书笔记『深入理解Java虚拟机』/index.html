@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>读书笔记『深入理解Java虚拟机』 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="##第一部分 走进Java 第1章 走进JavaP11：HotSpot VM的热点代码探测能力可以通过执行计数器找出最具有编译价值的代码，然后通知JIT编译器以方法为单位进行编译。如果一个方法被频繁调用，或方法中有效循环次数很多，将会分别处罚标准编译和OSR(栈上替换)编译动作。(这点在第11章关于热点代码的描述中有再次提到) P15：Dalvik VM并不是一个Java虚拟机，它没有遵循Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记『深入理解Java虚拟机』">
+<meta property="og:url" content="http://yoursite.com/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="##第一部分 走进Java 第1章 走进JavaP11：HotSpot VM的热点代码探测能力可以通过执行计数器找出最具有编译价值的代码，然后通知JIT编译器以方法为单位进行编译。如果一个方法被频繁调用，或方法中有效循环次数很多，将会分别处罚标准编译和OSR(栈上替换)编译动作。(这点在第11章关于热点代码的描述中有再次提到) P15：Dalvik VM并不是一个Java虚拟机，它没有遵循Java">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://47.110.40.63:8080/img/blog/Class%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="article:published_time" content="2020-04-19T14:29:40.479Z">
+<meta property="article:modified_time" content="2020-05-14T06:59:56.163Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="读书笔记">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://47.110.40.63:8080/img/blog/Class%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记『深入理解Java虚拟机』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" class="article-date">
+  <time datetime="2020-04-19T14:29:40.479Z" itemprop="datePublished">2020-04-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      读书笔记『深入理解Java虚拟机』
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##第一部分 走进Java</p>
+<h3 id="第1章-走进Java"><a href="#第1章-走进Java" class="headerlink" title="第1章 走进Java"></a>第1章 走进Java</h3><p><strong>P11</strong>：HotSpot VM的热点代码探测能力可以通过执行计数器找出最具有编译价值的代码，然后通知JIT编译器以<code>方法</code>为单位进行编译。如果一个方法被频繁调用，或方法中有效循环次数很多，将会分别处罚标准编译和OSR(栈上替换)编译动作。(这点在第11章关于热点代码的描述中有再次提到)</p>
+<p><strong>P15</strong>：Dalvik VM并不是一个Java虚拟机，<strong>它没有遵循Java虚拟机规范，不能直接执行Java的Class文件</strong>，使用的是<code>寄存器架构</code>而不是JVM中常见的<code>栈架构</code>。但它执行的dex文件可以通过Class文件转化而来。在Android2.2上已提供即时编译器实现(JIT)，在执行性能上有了很大的提高。</p>
+<h2 id="第二部分-自动内存管理机制"><a href="#第二部分-自动内存管理机制" class="headerlink" title="第二部分 自动内存管理机制"></a>第二部分 自动内存管理机制</h2><h3 id="第2章-Java内存区域与内存溢出异常"><a href="#第2章-Java内存区域与内存溢出异常" class="headerlink" title="第2章 Java内存区域与内存溢出异常"></a>第2章 Java内存区域与内存溢出异常</h3><p>运行时数据区包括：程序计数器、虚拟机栈、本地方法栈、方法区(非堆)、堆。其中前三个为线程私有的。</p>
+<p><strong>P39</strong>：程序计数器</p>
+<p>程序计数器是一块较小的内存空间，可以看作是<code>当前线程</code>所执行的字节码的<strong>行号指示器</strong>。字节码解释器工作时就是通过改变之歌计数器的值来选取下一条需要执行的字节码指令的。<strong>程序计数器是线程私有的</strong>，这很容易理解。如果正在执行的是Native方法，这个计数器值则为空。<code>程序计数器是内存区域中唯一Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域</code>(可能是因为它本身占据的内存很小吧)</p>
+<a id="more"></a>
+
+<p><strong>P40</strong>：Java虚拟机栈</p>
+<p>Java虚拟机栈也是线程私有的，<strong>它的生命周期和线程相同，虚拟机栈描述的是方法执行的内存模型</strong>，每个方法在执行时都会创建一个栈帧，用于存储<code>局部变量表、操作数栈、动态链接、方法出口等信息</code>(这些内容在第8章字节码执行引擎中详细展开，<code>本书的一个重点也在这里</code>)</p>
+<p>​    局部变量表所需的内存空间在编译期就完成了分配，当进入一个方式，这个方法需要在占中分配多大的局部变量空间是<strong>完全确定</strong>的，在方法运行期间不会改变局部变量表的大小。</p>
+<p>​    本地方法栈和虚拟机栈的作用非常相似，他们支之间的区别在于本地方法栈为本地Native方法服务。</p>
+<p><strong>P41</strong>：Java堆</p>
+<p>Java堆是被所有线程共享的一块内存区域，此内存区域唯一的目的就是存放<code>对象实例</code>，<strong>几乎</strong>所有的对象实例都在这里分配内存(随着JIT和逃逸分析技术的发展，对象分配，标量替换优化技术导致了一些微妙的变化，逃逸分析在第11章有分析)。</p>
+<p>Java堆是GC发生的主要区域，可以分为：新生代和老年代，或者：Eden、From Survivor、To Surviror(默认8:1:1)。</p>
+<p><code>方法区用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器(JIT)编译后的代码等数据</code>。（JDK1.8以后取消了永久代，改为元空间，类的元信息被存储在元空间中，元空间没有使用堆内存)</p>
+<p>运行时常量池是方法区的一部分(<code>在JDK1.6及以前是的；JDK1.7及以后将运行时常量池从方法区中移出，并在Java堆上开辟了一块区域用于存放常量池；</code>)。Class文件中除了有类的版本、字段、方法、接口等信息外，还有一项是常量池，<code>用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入运行时常量池中存放。</code></p>
+<p><strong>P44</strong>：对象的创建</p>
+<ol>
+<li>虚拟机遇到一条new指令时，首先将去检查这个指令的参数是否能在<code>常量池</code>中定位到一个类的<strong>符号引用</strong>，并且检查这个符号引用代表的类是否已经被加载、解析和初始化过。如果没有，那必须先执行相应的类加载过程。</li>
+<li>在类加载检查通过后，接下来虚拟机将为新生对象分配内存。分配对象内存可能存在<strong>指针碰撞</strong>的问题，解决方式有两种：一种是对分配内存空间的动作进行同步处理——时机上虚拟机采用CAS（在最后2章讲解的比较清楚）配上失败重试的方式保证更新操作的原子性；另一种是把内存分配动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为本地线程分配缓冲（TLAB)。</li>
+<li>内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值。</li>
+<li>虚拟机要对对象进行必要的设置，如：这个对象属于哪个类，如何能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息。这些信息存放在对象的<code>对象头</code>中。根据当前虚拟机的运行状态，如是否启用偏向锁(偏向锁在本书的最后有介绍)等，对象头会有不同的设置方式。</li>
+</ol>
+<p><strong>P47</strong>：对象的内存布局</p>
+<p>在HotSpot虚拟机中，对象在内存布局分为3部分：对象头、实例说几句、对齐填充（非必需且无意义)。</p>
+<p>对象头包含两部分信息：用于<code>存储对象自身运行时</code>数据(哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID等，官方称之为<strong>Mark Word</strong>)；另一部分是<code>类型指针</code>，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
+<p><strong>P56</strong>：String.intern()是一个Native方法，它的作用是：如果字符串常量池中已经包含一个等于此String对象的字符串，则返回代表池中这个字符串的String对象；否则，将此String对象包含的字符串添加到常量池中，并且返回此String对象的引用。<code>在JDK1.6及以前的版本中，常量池分配在永久代(方法区)中，JDK1.6之后分配到堆上</code></p>
+<h3 id="第3章-垃圾收集器与内存分配策略"><a href="#第3章-垃圾收集器与内存分配策略" class="headerlink" title="第3章 垃圾收集器与内存分配策略"></a>第3章 垃圾收集器与内存分配策略</h3><p><strong>P61</strong>：运行时数据区，哪些需要GC，哪些不需要？</p>
+<p>程序计数器、虚拟机栈、本地方法栈会随着线程的销毁而销毁，<strong>栈中的栈帧亦会随着方法的退出而出栈，且栈帧中分配多少内存基本上在类结构确定下来时就已知了</strong>，这几个区域不需要考虑垃圾回收。剩下的Java堆、方法区由于使用多少内存需要在运行期才能确实，所以他们是垃圾回收发生的主要场所。</p>
+<p><strong>P64</strong>：Java中可以作为GC Roots的<code>对象</code></p>
+<ol>
+<li><p>虚拟机栈(栈帧中的本地变量表)中引用的对象(书上写着本地变量表，应该就是局部变量表吧，局部变量表在第8章有详细介绍，用于存放方法参数和方法内部定义的局部变量)</p>
+</li>
+<li><p>方法区中类静态属性引用的对象</p>
+</li>
+<li><p>方法区中常量引用的对象</p>
+</li>
+<li><p>本地方法栈中JNI（即一般说的Native方法）引用的对象</p>
+</li>
+</ol>
+<p>怎么理解这几种类型呢？可以设想一个引用无非出现在这几个地方，一是类的成员变量中，这个成员变量如果是静态的，或者是常量，就存储在方法区中。所以上边2，3两点。或者出现在方法中，可以是方法的参数，也可以是方法的局部变量，这就是第1，4两点所说的。<code>那么类的非static非final成员变量是GCRoots吗？</code>有网友写了测试代码可以看一下：<a href="https://blog.csdn.net/u010798968/article/details/72835255" target="_blank" rel="noopener">【证】:那些可作为GC Roots的对象</a></p>
+<p><strong>P65</strong>：四种引用类型</p>
+<p><strong>强引用</strong>：类似”Object obj = new Object()”这类的引用，<code>只要强引用还存在，垃圾收集器永远不会回收掉被引用的对象</code>。</p>
+<p><strong>软引用</strong>：对于软引用关联的对象，在系统将要发生内存溢出异常之前，将会把这些对象列进回收范围之中进行<code>第二次回收</code>。</p>
+<p><strong>弱引用</strong>：被弱引用关联的对象只能生存到下一次垃圾收集发生之前。<code>当垃圾收集器工作时，无论内存当前内存是否足够，都会回收掉只被弱引用关联的对象</code>。</p>
+<p><strong>虚引用</strong>：一个对象是否存在虚引用，完全不会对其生存时间构成影响，也无法 通过虚引用来取得一个对象实例。<code>为一个对象设置虚引用关联的唯一目的就是能在这个对象被回收器回收是收到一个系统通知</code>。</p>
+<p><strong>P66</strong>：生存还是死亡</p>
+<p>即使在可达性分析算法中不可达的对象，也并非马上就会被回收。如果对象重写了finalize()方法，那么对象会被放置到一个叫F-Queue的队列中，之后由一个由虚拟机创建的Finalizer线程去执行，<strong>这里的执行仅仅是触发finalize()方法，不保证等待finalize()方法结束，因为这样可以避免无限期阻塞F-Queue</strong>。<code>如果对象在finalize()中重新绑定了GCRoot对象</code>，那么对象就又<strong>活</strong>了。</p>
+<p><strong>P67</strong>：<code>任何一个对象的finalize()方法都只会被系统自动调用一次，如果对象面临下一次回收，它的finalize()方法不会再次被执行</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FinalizeEscapeGC_3_2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> FinalizeEscapeGC_3_2 SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">isAlive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"yes ,i am still alive:)"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.finalize();</span><br><span class="line">        System.out.println(<span class="string">"finalize method executed!"</span>);</span><br><span class="line">        FinalizeEscapeGC_3_2.SAVE_HOOK = <span class="keyword">this</span>; <span class="comment">//自救</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        SAVE_HOOK = <span class="keyword">new</span> FinalizeEscapeGC_3_2();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//对象第一次成功拯救自己</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="comment">//因为finalize方法优先级很低，所以暂停1秒等待它</span></span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">if</span>(SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"no, i am dead:("</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//一样的代码再执行一次，这次失败了，因为对象的finalize()只能执行一次</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">if</span>(SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"no, i am dead:("</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">================&gt;&gt;&gt;</span><br><span class="line">finalize method executed!</span><br><span class="line">yes ,i am still alive:)</span><br><span class="line">no, i am dead:(</span><br></pre></td></tr></table></figure>
+
+<p><strong>P69</strong>：标记-清除 算法</p>
+<p>标记处所有需要回收的对象，在标记完成后同意回收所有被标记的对象。有两个不足：<strong>一是效率问题，标记和清除两个过程效率都不高；另一个是空间问题，标记清除之后产生大量不连续的内存空间，导致无法分配大对象。</strong></p>
+<p><strong>P70</strong>：复制算法</p>
+<p>将可用内存划分成大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活的对象复制到另一块上面，然后再把已使用过的内存空间一次性清理掉。</p>
+<p><strong>HotSpot虚拟机将新生代划分为一个Eden区和两个Survivor区，他们的比例是：8:1:1。当回收时，将Eden和其中一个Survivor中存活的对象复制到另外一个Survivor上去</strong>。如果Survivor空间不够时，需要依赖其他内存(这里指老年代)进行<code>分配担保</code>(Handle Promotion)。</p>
+<p><strong>P71</strong>：标记-整理 算法</p>
+<p>和标记-清除算法不同的地方是，标记完可收回对象之后，先将存活对象移动到内存的一端，然后清理到其与的部分。</p>
+<p><strong>P72</strong>：一般Java堆分为新生代和老年代，在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。而老年代中因为对象存活率高、没有额外空间对它进行分配担保，就必须使用<strong>标记-清除</strong>或<strong>标记-整理</strong>算法来进行回收。</p>
+<p><strong>P73</strong>：程序执行时并非在所有地方都能停顿下来开始GC，<code>只有到达安全点时才能暂停</code>。</p>
+<p><strong>P76</strong>：Serial收集器是最基本，发展历史最悠久的收集器。这个收集器是一个单线程的收集器。</p>
+<p><strong>P77</strong>：ParNew收集器其实就是Serial收集器的多线程版本。</p>
+<p><strong>P79</strong>：Parallel Scavenge收集器的特点是它的关注点和其他收集器不同，CMS等收集器的关注点是尽可能地缩短垃圾回收时用户线程的停顿时间，<strong>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量。</strong>吞吐量=运行用户代码时间 / (运行用户代码时间+垃圾收集时间)</p>
+<p><strong>P81</strong>：CMS(Concurrent Mark Sweep，并发低停顿收集器）收集器是一种<strong>以获取最短回收停顿时间</strong>为目标的收集器。</p>
+<p><strong>P84</strong>：G1收集器是当今收集器技术发展的最前沿成果之一，在后台维护一个优先列表，每次根据允许的收集时间，<font color="#dd0000"><strong>优先回收价值最大的Region</strong></font>。</p>
+<p><strong>P91</strong>：内存分配和回收策略</p>
+<p>对象的内存分配，往大方向讲，就是在堆上分配。对象<font color="#dd0000"><strong>主要</strong></font>分配在<strong>新生代的Eden(如果Eden去没有足够空间进行分配是，会触发一次minor GC)</strong>区上，如果启动了本地线程分配缓存，将按线程优先在TLAB上分配。少数情况下也可能直接分配在老年代中。</p>
+<p><strong>P93</strong>：大对象直接进入老年代</p>
+<p>所谓大对象，是指需要大量连续内存空间的Java对象，最典型的大对象就是那种很长的字符串以及数组。</p>
+<p><strong>P95</strong>：长期存活的对象将进入老年代</p>
+<p>虚拟机给<strong>每个对象</strong>定义了一个对象年龄(Age)计数器。对象在Survivor区中每<strong>熬过</strong>一次Minor GC，年龄就会增加1岁，当他的年龄增加到一定程度(默认为15岁)，就会被晋升到老年代中，对象的晋升阈值可以通过参数设置。</p>
+<p><strong>P97</strong>：动态对象年龄判定</p>
+<p>虚拟机并不是永远地要求对象的年龄必须达到了晋升阈值时才能晋升到老年代，<strong>如果在Survivor空间中相同年龄所有对象大小总和大于Survivor空间的一般，那么年龄大于等于改年龄的对象就可以直接进入老年代。</strong></p>
+<p><strong>P98</strong>：空间分配担保</p>
+<p>在发生Minor GC之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么Minor GC可以确保是安全的。如果不成立，虚拟机会查看HandlePromotionFailure是否允许担保失败，如果允许，则更具历史晋升到老年代的平均大小，判断是否进行Minor GC，如果有风险，则会进行一次Full GC。</p>
+<p>扩展：Minor GC &amp; Major GC &amp; Full GC</p>
+<p><strong>Minor GC</strong>指新生代GC，即发生在新生代（包括Eden区和Survivor区）的垃圾回收操作，当新生代无法为新生对象分配内存空间的时候，会触发Minor GC。因为新生代中大多数对象的生命周期都很短，所以发生Minor GC的频率很高，<font color="#dd0000"><strong>虽然它会触发stop-the-world，但是它的回收速度很快</strong></font>。</p>
+<p><strong>Major GC</strong>清理Tenured区，用于回收老年代，出现Major GC通常会出现至少一次Minor GC。</p>
+<p><strong>Full GC</strong>是针对整个新生代、老生代、元空间（metaspace，java8以上版本取代perm gen）的全局范围的GC。<font color="#dd0000"><strong>Full GC不等于Major GC，也不等于Minor GC+Major GC</strong></font>，发生Full GC需要看使用了什么垃圾收集器组合，才能解释是什么样的垃圾回收。</p>
+<h3 id="第4章-虚拟机新能监控与故障处理工具"><a href="#第4章-虚拟机新能监控与故障处理工具" class="headerlink" title="第4章 虚拟机新能监控与故障处理工具"></a>第4章 虚拟机新能监控与故障处理工具</h3><p><strong>P109</strong>：jstack：Java堆栈跟踪工具</p>
+<p>jstack(Stack Trace for Java) 命令用于生成虚拟机当前时刻的<strong>线程快照</strong>。线程快照就是当前虚拟机内每条线程正在执行的方法堆栈的集合，生成线程快照的主要目的就是定位线程出现长时间停顿的原因。</p>
+<h3 id="第5章-调优案例分析与实战"><a href="#第5章-调优案例分析与实战" class="headerlink" title="第5章 调优案例分析与实战"></a>第5章 调优案例分析与实战</h3><p><strong>P133</strong>：对于用户交互性强、对卡顿事件敏感的系统，可以给Java虚拟机分配超大堆的前提是有把握把应用程序的FullGC频率控制的足够低，比如十几小时乃至一天才出现一次FullGC，这种<strong>可以在深夜执行定时任务的方式触发FullGC甚至自动重启应用服务器来保存内存可用空间在一个稳定的水平</strong>。</p>
+<p><strong>P137</strong>：垃圾收集进行时，虚拟机虽然会对Direct Memory进行回收，但是Direct Memory却不能像新生代、老年代那样，发现空间不足了就通知收集齐进行垃圾回收，它只能等待老年代满了后Fu’llGC，然后<strong>顺便地</strong>帮它清理内存的废弃对象。</p>
+<h2 id="第三部分-虚拟机执行子系统"><a href="#第三部分-虚拟机执行子系统" class="headerlink" title="第三部分 虚拟机执行子系统"></a>第三部分 虚拟机执行子系统</h2><h3 id="第6章-类文件结构"><a href="#第6章-类文件结构" class="headerlink" title="第6章 类文件结构"></a>第6章 类文件结构</h3><p><strong>P163</strong>：<font color="#dd0000"><strong>代码编译的结果是从本地机器码转变为字节码</strong></font>。实现语言无关性的基础任然是<strong>虚拟机</strong>和<strong>字节码存储格式</strong>。Java虚拟机不和包括Java在内的任何语言绑定，<font color="#dd0000"><strong>它只与”Class”文件这种特定的二进制文件所关联</strong></font>，Class文件中包含了Java虚拟机指令集和符号表以及若干其他辅助信息。</p>
+<p><strong>P164</strong>：Class文件是一组以<font color="#dd0000"><strong>8位字节</strong></font>位基础单元的二进制流，各个数据项目严格按照顺序紧凑地排列在Class文件之中，<strong>中间没有添加任何分隔符</strong>，这使得整个Class文件存储的内容几乎全部是程序运行的必要数据。当遇到需要占用8个字节以上空间的数据项时，则会按照高位在前的方式分割成若干个8位字节进行存储。</p>
+<p><strong>P165</strong>：根据Java虚拟机规范约定，Class文件采用一种类似于C语言结构体的伪结构体来存储数据，这种伪结构中只有两种数据类型：<font color="#dd0000"><strong>无符号数和表</strong></font>。</p>
+<p>无符号数术语基本的数据类型，以u1,u2,u4,u8分别表示1个字节，2个字节，4个字节，8个字节的无符号数，<strong>无符号数可以用来描述数字，索引引用，数量制或者按照UTF-8编码构成的字符串值</strong>。</p>
+<p>表是由多个无符号数或其他表作为数据项构成的符合数据类型，所有表都习惯性地以”_info”结尾。</p>
+<p><img src="http://47.110.40.63:8080/img/blog/Class%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.jpg" alt="img"></p>
+<p><strong>P166</strong>：每个Clas文件头<strong>4个字节</strong>称为魔数，它的唯一作用是确定这个文件是否为一个能被虚拟机接受的Class文件。<strong>很多文件存储标准中都使用魔数来进行身份识别，如gif/jpeg等。</strong></p>
+<p><strong>P168</strong>：Class文件结构中只有<strong>常量池</strong> 的容量计数是从1开始，这样做的目的在于满足后面某些指向常量池的索引值的数据在<strong>特定情况下表达<em>不引用任何一个常量池项目</em>的含义</strong>。<font color="#dd0000"><strong>常量池容量为0x0016，即22，表示常量池中有21项常量</strong></font>。</p>
+<p>常量池中存放两类常量：字面量和符号引用。字面量比较接近Java语言层面的常量概念，如文本字符串、声明为final的常量值等。而符号引用则属于编译原理方面的概念，包含以下三类：</p>
+<ul>
+<li>类和接口的全限定名(Fully Qualified Name)</li>
+<li>字段的名称和描述符(Descriptor)</li>
+<li>方法的名称和描述符</li>
+</ul>
+<p>Java代码在进行编译时，并不会像C和C++那要有<strong>链接</strong>的步骤，而是<strong>在虚拟机加载Class文件的时候进行动态链接</strong>。也就是说，<font color="#dd0000"><strong>在Class文件中不会保存各个方法、字段的最终内存布局信息，因此这些字段、方法的符号引用不经过运行期转换的话无法得到真正的内存入口地址，也就是无法直接被虚拟机使用</strong></font>。当虚拟机运行时，需要从常量池获得对应的符号引用，再在类创建时或运行时解析、翻译到具体的内存地址之中。</p>
+<p><strong>P170</strong>：Java程序中如果定义超过64KB英文字符的变量或方法名，将无法编译。因为Java方法、字段名的最大长度为u2类型，而u2最大能表达的值为65536。</p>
+<p><strong>P171</strong>：可以使用javap命令查看class文件字节码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javap -verbose TestClass</span><br></pre></td></tr></table></figure>
+
+<p><strong>P175</strong>：<strong>字段表</strong>用于描述接口或类中声明的变量。字段包括类级变量以及实例级变量，但不包括在方法内部声明的局部变量。<strong>各个修饰符（private、static、final、volatile…)都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。</strong>而字段叫什么名字、字段被定义为什么数据类型，这都都是无法固定的，<font color="#dd0000"><strong>只能引用常量池中的常量来表述（这就是为什么版本之后就是常量池的原因，因为后面的字段表需要有引用常量）。</strong></font></p>
+<p><strong>P312</strong>：对于运行期的Java语言来说，ArrayList<int>与ArrayList<String>就是同一个类，所以泛型技术实际上是Java语言的一颗语法糖，Java语言中泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//编译不过，因为List&lt;String&gt;和List&lt;Integer&gt;在编译之后会被擦除，都变成了类型List&lt;E&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(List&lt;String&gt; items)</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(List&lt;Integer&gt; items)</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" data-id="cka6fc47a0050az26h8axbb1u" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/05/06/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E5%A4%A7%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E3%80%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          读书笔记『Flutter从0到1构建大前端应用』
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android基础『V1V2V3签名』</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android%EF%BC%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%8C%E7%94%B5%E9%87%8F%E4%BC%98%E5%8C%96/" rel="tag">Android，性能优化，电量优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 17.5px;">Android</a> <a href="/tags/Android%EF%BC%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%8C%E7%94%B5%E9%87%8F%E4%BC%98%E5%8C%96/" style="font-size: 10px;">Android，性能优化，电量优化</a> <a href="/tags/Flutter/" style="font-size: 12.5px;">Flutter</a> <a href="/tags/Framework/" style="font-size: 10px;">Framework</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/JetPack/" style="font-size: 12.5px;">JetPack</a> <a href="/tags/Kotlin/" style="font-size: 12.5px;">Kotlin</a> <a href="/tags/MVVM/" style="font-size: 10px;">MVVM</a> <a href="/tags/Paging/" style="font-size: 10px;">Paging</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/Room/" style="font-size: 10px;">Room</a> <a href="/tags/RxJava2/" style="font-size: 12.5px;">RxJava2</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">开源项目学习</a> <a href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" style="font-size: 12.5px;">源码学习</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" style="font-size: 10px;">组件化</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">编程语言</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『本地电量监测』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/06/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E5%A4%A7%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E3%80%8F/">读书笔记『Flutter从0到1构建大前端应用』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/">读书笔记『深入理解Java虚拟机』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js“ > </script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
