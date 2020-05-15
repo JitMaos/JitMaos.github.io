@@ -1,5 +1,5 @@
 ---
-title: Android『本地电量监测』
+title: Android『电量检测及优化使用』
 tags: [Android，性能优化，电量优化]
 ---
 
