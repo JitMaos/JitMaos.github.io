@@ -87,6 +87,103 @@ App启动从用户按下桌面图标开始。
 
   刚才说了**Cache默认的缓存数量是2个**，当Cache缓存满了以后会根据FIFO（先进先出）的规则把Cache先缓存进去的ViewHolder移出并缓存到RecycledViewPool中，**RecycledViewPool默认的缓存数量是5个。RecycledViewPool与Cache相比不同的是，从Cache里面移出的ViewHolder再存入RecycledViewPool之前ViewHolder的数据会被全部重置**，相当于一个新的ViewHolder，而且Cache是根据position来获取ViewHolder，而RecycledViewPool是根据itemType获取的，如果没有重写getItemType（）方法，itemType就是默认的。`因为RecycledViewPool缓存的ViewHolder是全新的，所以取出来的时候需要走onBindViewHolder（）方法`。
 
+## 关于Context
+
+摘自：https://www.jianshu.com/p/f0fb461a2b2c
+
+一个Context相当于一个事情发生的<font color="#dd0000">**场景**</font>，看以下类图，**Context类本身是一个纯abstract类，它有两个具体的实现子类：ContextImpl和ContextWrapper**。Context
+
+![img](http://47.110.40.63:8080/img/blog/Context结构图.png)
+
+<font color="#dd0000">**Context类本身是一个纯abstract类**</font>，它有两个具体的实现子类：ContextImpl和ContextWrapper。其中ContextWrapper类，如其名所言，这只是一个包装而已，<font color="#dd0000">**ContextWrapper构造函数中必须包含一个真正的Context引用，同时ContextWrapper中提供了attachBaseContext（）用于给ContextWrapper对象中指定真正的Context对象，调用ContextWrapper的方法都会被转向其所包含的真正的Context对象**</font>。ContextThemeWrapper类，如其名所言，其内部包含了与主题（Theme）相关的接口，这里所说的主题就是指在AndroidManifest.xml中通过android：theme为Application元素或者Activity元素指定的主题。当然，**只有Activity才需要主题，Service是不需要主题的**，因为Service是没有界面的后台场景，**所以Service直接继承于ContextWrapper**，Application同理。而ContextImpl类则真正实现了Context中的所以函数，应用程序中所调用的各种Context类的方法，其实现均来自于该类。一句话总结：**Context的两个子类分工明确，其中ContextImpl是Context的具体实现类，ContextWrapper是Context的包装类。Activity，Application，Service虽都继承自ContextWrapper（Activity继承自ContextWrapper的子类ContextThemeWrapper），但它们初始化的过程中都会创建ContextImpl对象，由ContextImpl实现Context中的方法**。
+
+**一个应用程序有几个Context**
+
+在应用程序中Context的具体实现子类就是：Activity，Service，Application。那么<font color="#dd0000">**Context数量=Activity数量+Service数量+1**</font>。**Broadcast Receiver，Content Provider并不是Context的子类，他们所持有的Context都是其他地方传过去的，所以并不计入Context总数**。
+
+**Context能干什么**
+
+Context到底可以实现哪些功能呢？这个就实在是太多了，弹出Toast、启动Activity、启动Service、发送广播、操作数据库等等都需要用到Context。
+
+**Context使用场景表格**
+
+![img](http://47.110.40.63:8080/img/blog/Context使用场景表格.png)
+
+上图中Application和Service所不推荐的两种使用情况。
+
+1：如果我们用ApplicationContext去启动一个LaunchMode为standard的Activity的时候会报错：
+
+```java
+android.util.AndroidRuntimeException: Calling startActivity from outside of an Activity context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
+```
+
+<font color="#dd0000">**这是因为非Activity类型的Context并没有所谓的任务栈，所以待启动的Activity就找不到栈了**</font>。解决这个问题的方法就是**为待启动的Activity指定FLAG_ACTIVITY_NEW_TASK**标记位，这样启动的时候就为它创建一个新的任务栈，而此时Activity是以singleTask模式启动的。所有这种用Application启动Activity的方式不推荐使用，Service同Application。
+
+2：<font color="#dd0000">**在Application和Service中去layout inflate也是合法的，但是会使用系统默认的主题样式，如果你自定义了某些样式可能不会被使用。所以这种方式也不推荐使用**</font>。
+ 一句话总结：凡是跟UI相关的，都应该使用Activity做为Context来处理；其他的一些操作，Service,Activity,Application等实例都可以，当然了，注意Context引用的持有，防止内存泄漏。
+
+**如何获取Context**
+
+通常我们想要获取Context对象，主要有以下四种方法
+
+1：**View.getContext()**,返回当前View对象的Context对象，通常是当前正在展示的Activity对象。
+ 2：**Activity.getApplicationContext()**,获取当前Activity所在的(应用)进程的Context对象，通常我们使用Context对象时，要优先考虑这个全局的进程Context。
+ 3：**ContextWrapper.getBaseContext()**:用来获取一个ContextWrapper进行装饰之前的Context，可以使用这个方法，这个方法在实际开发中使用并不多，也不建议使用。
+ 4：**Activity.this** 返回当前的Activity实例，如果是UI控件需要使用Activity作为Context对象，但是默认的Toast实际上使用ApplicationContext也可以。
+
+**getApplication()和getApplicationContext()**
+
+<font color="#dd0000">**这两者返回的是同一个内存地址的对象**</font>，区别更多是语义上的，**getApplication()只在Activity和Service中才能调用的到**。那么也许在绝大多数情况下我们都是在Activity或者Service中使用Application的，但是如果在一些其它的场景，**比如BroadcastReceiver中也想获得Application的实例，这时就可以借助getApplicationContext()方法了**。
+
+**Context引起的内存泄露**
+
+**1. 错误的单例模式**
+
+```java
+public class Singleton {
+    private static Singleton instance;
+    private Context mContext;
+
+    private Singleton(Context context) {
+        this.mContext = context;
+    }
+
+    public static Singleton getInstance(Context context) {
+        if (instance == null) {
+            instance = new Singleton(context);
+        }
+        return instance;
+    }
+}
+```
+
+这是一个非线程安全的单例模式，instance作为静态对象，其生命周期要长于普通的对象，其中也包含Activity，假如Activity A去getInstance获得instance对象，传入this，常驻内存的Singleton保存了你传入的Activity A对象，并一直持有，即使Activity被销毁掉，但因为它的引用还存在于一个Singleton中，就不可能被GC掉，这样就导致了内存泄漏。
+
+**2. View持有Activity引用**
+
+```java
+public class MainActivity extends Activity {
+    private static Drawable mDrawable;
+
+    @Override
+    protected void onCreate(Bundle saveInstanceState) {
+        super.onCreate(saveInstanceState);
+        setContentView(R.layout.activity_main);
+        ImageView iv = new ImageView(this);
+        mDrawable = getResources().getDrawable(R.drawable.ic_launcher);
+        iv.setImageDrawable(mDrawable);
+    }
+}
+```
+
+有一个静态的Drawable对象当ImageView设置这个Drawable时，ImageView保存了mDrawable的引用，而ImageView传入的this是MainActivity的mContext，因为被static修饰的mDrawable是常驻内存的，MainActivity是它的间接引用，MainActivity被销毁时，也不能被GC掉，所以造成内存泄漏。
+
+**正确使用Context**
+
+1. 当Application的Context能搞定的情况下，并且生命周期长的对象，优先使用Application的Context。
+2. 不要让生命周期长于Activity的对象持有到Activity的引用。
+3. <font color="#dd0000">**尽量不要在Activity中使用非静态内部类，因为非静态内部类会隐式持有外部类实例的引用，如果使用静态内部类，将外部实例引用作为弱引用持有**</font>。
+
 ## 屏幕适配
 
 **今日头条适配方案**
@@ -1354,15 +1451,49 @@ Event Loop就像一个 infinite loop，被内部时钟来调谐，每一个tick�
 
 Flutter提供了三种platform和dart端通信的方式：BasicMessageChannel，MethodChannle，EventChannel，通信过程都是全双工的。
 
+# NDK相关
+
+## CMake必知必会
+
+摘自：https://mp.weixin.qq.com/s/1NJZ17rmgFeQ6c3TPLIN_g
+
+https://blog.csdn.net/sjt19910311/article/details/51660209
+
+CMake 是一个跨平台构建系统，在 Android Studio 引入 CMake 之前，它就已经被广泛运用了。
+
+总结官网对 CMake 的使用，其实也就如下的步骤：
+
+1. add_library 指定要编译的库，并将**所有**的 `.c` 或 `.cpp` 文件包含指定。
+2. include_directories 将**头文件**添加到搜索路径中
+3. set_target_properties 设置库的一些属性
+4. target_link_libraries **将库与其他库相关联**
+
+在 cpp 的同一目录下创建 `CMakeLists.txt` 文件，内容如下：
+
+```
+# 指定 CMake 使用版本
+cmake_minimum_required(VERSION 3.9)
+# 工程名
+project(HelloCMake)
+# 编译可执行文件
+add_executable(HelloCMake main.cpp )
+```
+
+其中，通过 `cmake_minimum_required` 方法指定 CMake 使用版本，通过 `project` 指定工程名。
+
+而 `add_executable` 就是指定**最后编译的可执行文件名称和需要编译的 cpp 文件**，如果工程很大，有多个 cpp 文件，那么都要把它们添加进来(**使用空格分隔**)。
 
 
 
+**add_library**
 
+````shell
+add_library(<name> [STATIC | SHARED | MODULE]
+[EXCLUDE_FROM_ALL]
+source1 source2 … sourceN)
+````
 
-
-
-
-
+添加一个名为< name >的库文件，该库文件将会根据调用的命令里列出的源文件来创建。< name >对应于逻辑目标名称，而且在一个工程的全局域内必须是唯一的。待构建的库文件的实际文件名根据对应平台的命名约定来构造（比如lib< name >.a或者< name >.lib）。STATIC库是目标文件的归档文件，在链接其它目标的时候使用。SHARED库会被动态链接，在运行时被加载。MODULE库是不会被链接到其它目标中的插件，但是可能会在运行时使用dlopen-系列的函数动态链接。如果没有类型被显式指定，这个选项将会根据变量BUILD_SHARED_LIBS的当前值是否为真决定是STATIC还是SHARED。
 
 
 
