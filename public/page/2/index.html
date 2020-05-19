@@ -64,6 +64,97 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Java『Javap命令』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/Java%E3%80%8EJavap%E5%91%BD%E4%BB%A4%E3%80%8F/" class="article-date">
+  <time datetime="2020-03-19T07:54:49.086Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/19/Java%E3%80%8EJavap%E5%91%BD%E4%BB%A4%E3%80%8F/">Java『Javap命令』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>看JVM的运行时数据区，包括：虚拟机栈、程序计数器、本地方法栈、方法区和堆；其中虚拟机栈中存储的是栈帧，而栈帧是由<font color="#dd0000"><strong>局部变量表、操作数栈</strong></font>、动态链接、方法出口等组成。今天学习一下Javap命令，通过对字节码进行反编译来查看局部变量表的细节。</p>
+<p>javap -v cclassName，不仅会输出行号、本地变量表信息、反编译汇编代码，还会输出当前类用到的常量池等信息。<br>javap -l className，会输出行号和本地变量表信息。<br>javap -c className，会对当前class字节码进行反编译生成汇编代码。</p>
+<ol>
+<li>新建TreeNode.java</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> val;</span><br><span class="line">    <span class="keyword">public</span> TreeNode left;</span><br><span class="line">    <span class="keyword">public</span> TreeNode right;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TreeNode</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123; val = x; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用javac编译生成class文件</li>
+<li>输入命令：javap -v TreeNode.class</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">Classfile TreeNode<span class="class">.<span class="keyword">class</span></span></span><br><span class="line"><span class="class">  <span class="title">Last</span> <span class="title">modified</span> 2020-2-3</span>; size <span class="number">370</span> bytes</span><br><span class="line">  MD5 checksum <span class="number">6</span>db15fb197ff5952f8b106978416b74a</span><br><span class="line">  Compiled from <span class="string">"TreeNode.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">leon</span>.<span class="title">LeetCode</span>.<span class="title">TreeNode</span></span></span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: <span class="number">52</span></span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #4.#19         // java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">   #2 = Fieldref           #3.#20         // com/leon/LeetCode/TreeNode.val:I</span><br><span class="line">   #3 = Class              #21            // com/leon/LeetCode/TreeNode</span><br><span class="line">   #4 = Class              #22            // java/lang/Object</span><br><span class="line">   #5 = Utf8               val</span><br><span class="line">   #6 = Utf8               I</span><br><span class="line">   #7 = Utf8               left</span><br><span class="line">   #8 = Utf8               Lcom/leon/LeetCode/TreeNode;</span><br><span class="line">   #9 = Utf8               right</span><br><span class="line">  #10 = Utf8               &lt;init&gt;</span><br><span class="line">  #11 = Utf8               (I)V</span><br><span class="line">  #12 = Utf8               Code</span><br><span class="line">  #13 = Utf8               LineNumberTable</span><br><span class="line">  #14 = Utf8               LocalVariableTable</span><br><span class="line">  #15 = Utf8               this</span><br><span class="line">  #16 = Utf8               x</span><br><span class="line">  #17 = Utf8               SourceFile</span><br><span class="line">  #18 = Utf8               TreeNode.java</span><br><span class="line">  #19 = NameAndType        #10:#23        // "&lt;init&gt;":()V</span><br><span class="line">  #20 = NameAndType        #5:#6          // val:I</span><br><span class="line">  #21 = Utf8               com/leon/LeetCode/TreeNode</span><br><span class="line">  #22 = Utf8               java/lang/Object</span><br><span class="line">  #23 = Utf8               ()V</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">int</span> val;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> com.leon.LeetCode.TreeNode left;</span><br><span class="line">    descriptor: Lcom/leon/LeetCode/TreeNode;</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> com.leon.LeetCode.TreeNode right;</span><br><span class="line">    descriptor: Lcom/leon/LeetCode/TreeNode;</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> com.leon.LeetCode.TreeNode(<span class="keyword">int</span>);</span><br><span class="line">    descriptor: (I)V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">2</span>, args_size=<span class="number">2</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">4</span>: aload_0</span><br><span class="line">         <span class="number">5</span>: iload_1</span><br><span class="line">         6: putfield      #2                  // Field val:I</span><br><span class="line">         <span class="number">9</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">10</span>: <span class="number">0</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">10</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcom/leon/LeetCode/TreeNode;</span><br><span class="line">            <span class="number">0</span>      <span class="number">10</span>     <span class="number">1</span>     x   I</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>常见的字节码命令</p>
+<table>
+<thead>
+<tr>
+<th>Bytecode</th>
+<th>Stackbefore-&gt;after</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>iconst_0</td>
+<td>-&gt;0</td>
+<td>Loads the int value 0 onto the stack //从栈中读取变量</td>
+</tr>
+<tr>
+<td>istore_1</td>
+<td>value-&gt;</td>
+<td>Store int value into variable 1 //将变量压入栈</td>
+</tr>
+<tr>
+<td>istore_2</td>
+<td>value-&gt;</td>
+<td>Store int value into variable 2 //将变量压入栈</td>
+</tr>
+<tr>
+<td>iinc</td>
+<td>No change</td>
+<td>Increment local variable #index by signed byte const</td>
+</tr>
+<tr>
+<td>iload_1</td>
+<td>-&gt;value</td>
+<td>Loads an int value from variable 1 //加载变量的值</td>
+</tr>
+<tr>
+<td>iadd</td>
+<td>value 1,value 2-&gt;result</td>
+<td>Adds 2 ints together //将两个变量相加</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/Java%E3%80%8EJavap%E5%91%BD%E4%BB%A4%E3%80%8F/" data-id="ckacju80h003cf22688me7x2v" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Android『保活相关』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" class="article-date">
@@ -100,60 +191,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" data-id="cka6fc464002xaz2630p3hyfk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Android%E3%80%8E%E4%BF%9D%E6%B4%BB%E7%9B%B8%E5%85%B3%E3%80%8F/" data-id="ckacju80a002vf2264t647xyi" class="article-share-link">Share</a>
       
       
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-项目架构——JetPack『Paging使用』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" class="article-date">
-  <time datetime="2020-03-19T07:54:49.068Z" itemprop="datePublished">2020-03-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/">项目架构——JetPack『Paging使用』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文结合Paging和Room实现一个简单的Demo，演示这两个库的用法。</p>
-<h3 id="Paging"><a href="#Paging" class="headerlink" title="Paging"></a>Paging</h3><p>Paging是Google推出的的JetPack框架中的一员，用于处理列表的分页加载。</p>
-<p>Paging主要包含三部分，分别是DataSource、PageList、PageListAdapter。</p>
-<h4 id="DataSource"><a href="#DataSource" class="headerlink" title="DataSource"></a>DataSource</h4><p>表示数据源，通常是这样的DataSource&lt;Key,Value&gt;，其中Key表示<strong>加载数据的条件信息</strong>，Value表示<strong>加载的数据实体</strong>。<font color="#dd0000"><strong>DataSource是一个抽象类</strong></font>，可以使用它的子类：</p>
-<ul>
-<li><code>PageKeyedDataSource&lt;Key, Value&gt;</code> ：适用于目标数据根据<strong>页信息</strong>请求数据的场景，即<code>Key</code> 字段是<strong>页相关的信息</strong>。比如请求的数据的参数中包含类似<code>next/previous</code>页数的信息。</li>
-<li><code>ItemKeyedDataSource&lt;Key, Value&gt;</code> ：适用于目标数据的<strong>加载依赖特定item</strong>的信息， 即Key字段包含的是Item中的信息，<strong>比如需要根据第N项的信息加载第N+1项的数据，传参中需要传入第N项的ID时，该场景多出现于论坛类应用评论信息的请求</strong>。</li>
-<li><code>PositionalDataSource&lt;T&gt;</code>：适用于目标数据总数固定，通过特定的位置加载数据，这里Key是Integer类型的位置信息，T即Value。 比如从数据库中的1200条开始加在20条数据。</li>
-</ul>
-        
-          <p class="article-more-link">
-            <a href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="cka6fc478004xaz26c7i2gx9g" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li></ul>
-
     </footer>
   </div>
   
@@ -209,10 +249,61 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="cka6fc47b0053az260lsadf22" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8ERoom%E3%80%8F/" data-id="ckacju8170050f2268b2rhbq9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Room/" rel="tag">Room</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/" rel="tag">开源项目学习</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-项目架构——JetPack『Paging使用』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" class="article-date">
+  <time datetime="2020-03-19T07:54:49.068Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/">项目架构——JetPack『Paging使用』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文结合Paging和Room实现一个简单的Demo，演示这两个库的用法。</p>
+<h3 id="Paging"><a href="#Paging" class="headerlink" title="Paging"></a>Paging</h3><p>Paging是Google推出的的JetPack框架中的一员，用于处理列表的分页加载。</p>
+<p>Paging主要包含三部分，分别是DataSource、PageList、PageListAdapter。</p>
+<h4 id="DataSource"><a href="#DataSource" class="headerlink" title="DataSource"></a>DataSource</h4><p>表示数据源，通常是这样的DataSource&lt;Key,Value&gt;，其中Key表示<strong>加载数据的条件信息</strong>，Value表示<strong>加载的数据实体</strong>。<font color="#dd0000"><strong>DataSource是一个抽象类</strong></font>，可以使用它的子类：</p>
+<ul>
+<li><code>PageKeyedDataSource&lt;Key, Value&gt;</code> ：适用于目标数据根据<strong>页信息</strong>请求数据的场景，即<code>Key</code> 字段是<strong>页相关的信息</strong>。比如请求的数据的参数中包含类似<code>next/previous</code>页数的信息。</li>
+<li><code>ItemKeyedDataSource&lt;Key, Value&gt;</code> ：适用于目标数据的<strong>加载依赖特定item</strong>的信息， 即Key字段包含的是Item中的信息，<strong>比如需要根据第N项的信息加载第N+1项的数据，传参中需要传入第N项的ID时，该场景多出现于论坛类应用评论信息的请求</strong>。</li>
+<li><code>PositionalDataSource&lt;T&gt;</code>：适用于目标数据总数固定，通过特定的位置加载数据，这里Key是Integer类型的位置信息，T即Value。 比如从数据库中的1200条开始加在20条数据。</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E2%80%94%E2%80%94JetPack%E3%80%8EPaging%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckacju8180053f2263cp9a3t7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JetPack/" rel="tag">JetPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Paging/" rel="tag">Paging</a></li></ul>
 
     </footer>
   </div>
@@ -256,7 +347,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="cka6fc46v004gaz2654106vss" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" data-id="ckacju810004gf226etsrgzkj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/" rel="tag">TCP</a></li></ul>
@@ -333,7 +424,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="cka6fc46u004daz26fwijetl8" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8Ekotlin-wanandroid%E3%80%8F/" data-id="ckacju80z004df226f9hgdpjm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVVM/" rel="tag">MVVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
@@ -395,7 +486,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" data-id="cka6fc46j003waz26ekpdccrd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Dragger2%E3%80%8C%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8D/" data-id="ckacju80p003wf226cist7z6r" class="article-share-link">Share</a>
       
       
     </footer>
@@ -444,7 +535,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" data-id="cka6fc46i003raz26dd4c2u7w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Kotlin%E5%8D%8F%E7%A8%8B/" data-id="ckacju80n003rf226fprkgr2n" class="article-share-link">Share</a>
       
       
     </footer>
@@ -503,7 +594,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="cka6fc46a003caz26dybnakhs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Flutter%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" data-id="ckacju80k003jf226d7xp957o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li></ul>
@@ -570,55 +661,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="cka6fc46a003aaz26btxn24nz" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-JVM——加载引擎" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" class="article-date">
-  <time datetime="2020-02-15T03:17:25.000Z" itemprop="datePublished">2020-02-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/">JVM——加载引擎</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>看过一篇博客说的JVM分为三部分，加载引擎，执行引擎，垃圾回收引擎。想想很有道理。今天总结一下加载引擎。尝试回答类似这样的问题：</p>
-<ul>
-<li><p>介绍下Java类加载机制？</p>
-<p>java是使用<strong>双亲委派模型</strong>来进行类的加载的，我们先看一下它的工作过程：如果一个类加载器收到了类加载的请求，<code>它首先不会自己去尝试加载这个类，而是把这个请求委托给父类加载器去完成</code>，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有找到所需要加载的类）时，子加载器才会尝试自己去加载。<br>使用双亲委托机制的好处是：<code>能够有效确保一个类的全局唯一性，当程序中出现多个限定名相同的类时，类加载器在执行加载时，始终只会加载其中的某一个类</code>。</p>
-<p><strong>1、加载</strong></p>
-<p>　　由类加载器负责根据一个类的<strong>全限定名</strong>来读取此类的<strong>二进制字节流</strong>到JVM内部，并存储在运行时内存区的方法区，然后将其转换为一个与目标类型对应的java.lang.Class对象实例</p>
-<h4 id="2、验证"><a href="#2、验证" class="headerlink" title="2、验证"></a>2、验证</h4><p>格式验证：验证是否符合class文件规范<br>语义验证：检查一个被标记为final的类型是否包含子类；检查一个类中的final方法是否被子类进行重写；确保父类和子类之间没有不兼容的一些方法声明（比如方法签名相同，但方法的返回值不同）<br>操作验证：在操作数栈中的数据必须进行正确的操作，对常量池中的各种符号引用执行验证（通常在解析阶段执行，检查是否可以通过符号引用中描述的全限定名定位到指定类型上，以及类成员信息的访问修饰符是否允许访问等）</p>
-<h4 id="3、准备"><a href="#3、准备" class="headerlink" title="3、准备"></a>3、准备</h4><p>为类中的所有静态变量分配内存空间，并为其设置一个初始值（由于还没有产生对象，实例变量不在此操作范围内）<br>被final修饰的static变量（常量），会直接赋值；</p>
-        
-          <p class="article-more-link">
-            <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="cka6fc46b003eaz2624jgbl1d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ckacju80f0035f226bmlo5blj" class="article-share-link">Share</a>
       
       
     </footer>
@@ -685,7 +728,11 @@
       <ul>
         
           <li>
-            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『本地电量监测』</a>
+            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『电量检测及优化使用』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Flutter实战』</a>
           </li>
         
           <li>
@@ -698,10 +745,6 @@
         
           <li>
             <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
           </li>
         
       </ul>

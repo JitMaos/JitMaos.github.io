@@ -64,6 +64,54 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-JVM——加载引擎" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" class="article-date">
+  <time datetime="2020-02-15T03:17:25.000Z" itemprop="datePublished">2020-02-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/">JVM——加载引擎</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>看过一篇博客说的JVM分为三部分，加载引擎，执行引擎，垃圾回收引擎。想想很有道理。今天总结一下加载引擎。尝试回答类似这样的问题：</p>
+<ul>
+<li><p>介绍下Java类加载机制？</p>
+<p>java是使用<strong>双亲委派模型</strong>来进行类的加载的，我们先看一下它的工作过程：如果一个类加载器收到了类加载的请求，<code>它首先不会自己去尝试加载这个类，而是把这个请求委托给父类加载器去完成</code>，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有找到所需要加载的类）时，子加载器才会尝试自己去加载。<br>使用双亲委托机制的好处是：<code>能够有效确保一个类的全局唯一性，当程序中出现多个限定名相同的类时，类加载器在执行加载时，始终只会加载其中的某一个类</code>。</p>
+<p><strong>1、加载</strong></p>
+<p>　　由类加载器负责根据一个类的<strong>全限定名</strong>来读取此类的<strong>二进制字节流</strong>到JVM内部，并存储在运行时内存区的方法区，然后将其转换为一个与目标类型对应的java.lang.Class对象实例</p>
+<h4 id="2、验证"><a href="#2、验证" class="headerlink" title="2、验证"></a>2、验证</h4><p>格式验证：验证是否符合class文件规范<br>语义验证：检查一个被标记为final的类型是否包含子类；检查一个类中的final方法是否被子类进行重写；确保父类和子类之间没有不兼容的一些方法声明（比如方法签名相同，但方法的返回值不同）<br>操作验证：在操作数栈中的数据必须进行正确的操作，对常量池中的各种符号引用执行验证（通常在解析阶段执行，检查是否可以通过符号引用中描述的全限定名定位到指定类型上，以及类成员信息的访问修饰符是否允许访问等）</p>
+<h4 id="3、准备"><a href="#3、准备" class="headerlink" title="3、准备"></a>3、准备</h4><p>为类中的所有静态变量分配内存空间，并为其设置一个初始值（由于还没有产生对象，实例变量不在此操作范围内）<br>被final修饰的static变量（常量），会直接赋值；</p>
+        
+          <p class="article-more-link">
+            <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ckacju80i003ef226fd73h8pg" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JVM——运行时数据区" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" class="article-date">
@@ -101,7 +149,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="cka6fc46b003faz261q35amjx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ckacju80i003ff2261n870hhl" class="article-share-link">Share</a>
       
       
     </footer>
@@ -165,7 +213,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="cka6fc46m0043az26a1niarcb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ckacju80r0041f226gn3w144b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
@@ -215,7 +263,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="cka6fc46z004paz269g3f2m3r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckacju812004pf22691gf5149" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -269,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="cka6fc46l0041az269dfl3yu9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckacju80r0043f226eqa7hty5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -329,7 +377,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="cka6fc46h003naz26eyyz8mov" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckacju80k003mf2261chmaeqx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
@@ -402,7 +450,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="cka6fc46k003yaz260i092wsh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckacju80q003yf226b8pz9wdt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -452,7 +500,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="cka6fc46o0046az26crb723g0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckacju80x0046f226aryi5o5l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li></ul>
@@ -515,7 +563,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="cka6fc466002zaz262x3j4qq2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ckacju80b002xf22637tx9542" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -578,57 +626,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="cka6fc4690037az26brhw78zk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ckacju80g003af226b34b2tro" class="article-share-link">Share</a>
       
       
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Android基础三部曲『Handler+Message+Looper』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-09T11:33:35.000Z" itemprop="datePublished">2019-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/">Android『消息传递』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>主流程图</p>
-<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><p>使用场景：<br>订单处理包含一系列操作：减少库存量、增加一条流水台账、修改总账，这几个操作要在<strong>同一个事务</strong>中完成，通常也即同一个线程中进行处理，如果累加公司应收款的操作失败了，则应该把前面的操作回滚，否则，提交所有操作，这要求这些操作使用<strong>相同的数据库连接对象，而这些操作的代码分别位于不同的模块类中</strong>。</p>
-<p>该类提供线程局部变量。这些变量不同于它们的正常变量，即每一个线程访问自身的局部变量时，都有它自己的，独立初始化的副本。<strong>和Thread直接有交互的是ThreadLocalMap，而不是ThreadLocal。我们平时在某个线程中使用ThreadLocal对当前线程的局部变量进行设置时，其内部实现只是ThreadLocal对当前线程的ThreadLocalMap进行操作而已。</strong></p>
-<p>所以<code>一个线程有一个ThreadLocalMap，而一个ThreadLocalMap内部使用Entry(ThreadLocal作为索引的hash对象定位元素，Value是实际存储的内容)数组存储ThreadLocal对象的，一个ThreadLocal仅能存放一个数据对象的副本，使之成为线程局部私有变量</code>。</p>
-<p><strong>虽然我们在ThreadLocal上调用set和get，但ThreadLocal本身并不存储数据对象，其背后都是从ThreadLocalMap中通过hash(ThreadLocal)来定位Entry元素，操作Entry中的value对象的。</strong></p>
-<p>还有一个问题，看源码知道set最后还是通过引用赋值的方式实现的，那么引用是怎么在多线程环境下实现<font color="#dd0000"><strong>独立备份</strong></font>的呢？</p>
-        
-          <p class="article-more-link">
-            <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="cka6fc4680035az26h4h6f9dg" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
-
     </footer>
   </div>
   
@@ -693,7 +693,11 @@
       <ul>
         
           <li>
-            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『本地电量监测』</a>
+            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『电量检测及优化使用』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Flutter实战』</a>
           </li>
         
           <li>
@@ -706,10 +710,6 @@
         
           <li>
             <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
           </li>
         
       </ul>

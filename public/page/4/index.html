@@ -64,6 +64,54 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Android基础三部曲『Handler+Message+Looper』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:33:35.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/">Android『消息传递』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>主流程图</p>
+<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><p>使用场景：<br>订单处理包含一系列操作：减少库存量、增加一条流水台账、修改总账，这几个操作要在<strong>同一个事务</strong>中完成，通常也即同一个线程中进行处理，如果累加公司应收款的操作失败了，则应该把前面的操作回滚，否则，提交所有操作，这要求这些操作使用<strong>相同的数据库连接对象，而这些操作的代码分别位于不同的模块类中</strong>。</p>
+<p>该类提供线程局部变量。这些变量不同于它们的正常变量，即每一个线程访问自身的局部变量时，都有它自己的，独立初始化的副本。<strong>和Thread直接有交互的是ThreadLocalMap，而不是ThreadLocal。我们平时在某个线程中使用ThreadLocal对当前线程的局部变量进行设置时，其内部实现只是ThreadLocal对当前线程的ThreadLocalMap进行操作而已。</strong></p>
+<p>所以<code>一个线程有一个ThreadLocalMap，而一个ThreadLocalMap内部使用Entry(ThreadLocal作为索引的hash对象定位元素，Value是实际存储的内容)数组存储ThreadLocal对象的，一个ThreadLocal仅能存放一个数据对象的副本，使之成为线程局部私有变量</code>。</p>
+<p><strong>虽然我们在ThreadLocal上调用set和get，但ThreadLocal本身并不存储数据对象，其背后都是从ThreadLocalMap中通过hash(ThreadLocal)来定位Entry元素，操作Entry中的value对象的。</strong></p>
+<p>还有一个问题，看源码知道set最后还是通过引用赋值的方式实现的，那么引用是怎么在多线程环境下实现<font color="#dd0000"><strong>独立备份</strong></font>的呢？</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ckacju80f0037f226hrvtdokz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Java『数据容器』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" class="article-date">
@@ -115,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="cka6fc46d003jaz26hqok6g3k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ckacju80j003if226a3a0apep" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
@@ -225,7 +273,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="cka6fc46j003uaz26akek5d6e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ckacju80n003uf226418paox7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -275,7 +323,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="cka6fc46p0048az2618bt384g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ckacju80y0048f2268dcwfxqu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li></ul>
@@ -332,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="cka6fc46y004naz26f1cf171s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckacju812004nf2262pab3i1y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -377,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="cka6fc46d003iaz26arh92j1o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ckacju80j003gf2269302hjhs" class="article-share-link">Share</a>
       
       
     </footer>
@@ -422,7 +470,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="cka6fc46w004iaz26dli6hk8m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckacju810004if2268oy5d8g2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -488,7 +536,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="cka6fc477004uaz269mp20g5y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckacju814004sf226br9ee1e9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -557,7 +605,11 @@
       <ul>
         
           <li>
-            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『本地电量监测』</a>
+            <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『电量检测及优化使用』</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Flutter实战』</a>
           </li>
         
           <li>
@@ -570,10 +622,6 @@
         
           <li>
             <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/">读书笔记『Java并发编程实战』</a>
           </li>
         
       </ul>
