@@ -66,6 +66,8 @@ tags: [Android，性能优化，电量优化]
 
 23. -f 加载monkey脚本文件进行测试，比如 adb shell monkey -f sdcard/monkey.txt -v -v 500
 
+<!--more-->
+
 ##Monkey使用
 
 1.进入adb目录

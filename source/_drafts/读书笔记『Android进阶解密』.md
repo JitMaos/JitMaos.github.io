@@ -87,3 +87,85 @@ void start_property_service() {
 
 3. Instrumentation可以看做是ActivityThread的管家
 
+**P85**：Android8.0之前并没有采用AIDL，而是采用了类似AIDL的形式，用AMS的代理对象ActivityManagerProxy来与AMS进行进程间通信，Android8.0使用IActivityManager替代了ActivityManagerProxy，**它是AMS在本地的代理。**execStartActivity方法最终调用的是AMS的startActivity方法。
+
+```java
+private static final Singleton<IActivityManager> IActivityManagerSingleton = new 
+  Singleton<IActivityManager>() {
+  @override 
+  protected IActivityManager create() {
+    final IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE); //1
+    final IActivityManager am = IActivityManager.Stub.asInterface(b); //2
+    return am;
+  }
+}
+```
+
+###4.12 AMS到ApplicationThread的调用过程
+
+![img](http://47.110.40.63:8080/img/blog/AMS到ApplicationThread过程时序图.jpg)
+
+**P93**
+
+```java
+final boolean realStartActivityLocked(ActivityRecord r,ProcessRecord app,boolean andResume,boolean checkConfi) throws RemoteException {
+  ...
+    app.thread.scheduleLaunchActivity(new Intent(r.intent),r.appToken,System.identityHashCode(r) .....)
+    ...
+    return true;
+}
+```
+
+这里的app指的是Process（要启动Activity的应用程序进程），**app.thread指的是IApplicationThread，它的实现是ActivityThread的内部类ApplicationThread，其中ApplicaitonThread继承了IApplicaitonThread.Stub**。通过ApplicationThreadL来与应用程序进行Binder通信，换句话说，<font color="#dd0000">**ApplicationThread是AMS所在进程（SystemServer进程）和应用程序进程的通信桥梁**</font>。
+
+###4.1.3 ActivityThread启动Activity过程
+
+![img](http://47.110.40.63:8080/img/blog/ActivityThread启动Activity时序图.jpg)
+
+**P96**：因为ApplicationThread是一个Binder，它的调用逻辑运行在Binder线程池中，所以需要用H将代码的逻辑切换到主线程中。
+
+```java
+frameworks/base/core/java/android/app/AndroidThread.java
+private Activity performLaunchActivity(ActivityClientRecord r,Intent customIntent) {
+	...
+  //创建要启动Activity的上下文环境
+  ContextImpl appContext = createBaseContextForActivity(r); 
+  java.lang.ClassLoader cl = appContext.getClassLoader(); 
+  activity = mInstrumentation.newActivity(cl,component.getClassName(),r.intent); //1
+  ...
+  activity.attach(...); //2
+  ...
+  mInstrumentation.callActivityOnCreate(activity,r.state,r.persistentState); //3
+}
+```
+
+1-> 调用Instrumentation的newActivity创建Activity，<font color="#dd0000">**有些需求可以通过hook Instrumentation来实现一些功能，就是基于newActivity创建Activity的机制。**</font>
+
+2-> 在attach中初始化Activity，<font color="#dd0000">**在attach方法中会创建Window对象，并与Activity自身进行关联。**</font>
+
+扩展：
+
+摘自：https://blog.csdn.net/huaxun66/article/details/78151361
+
+<font color="#dd0000">**总体流程**</font>
+1.Launcher通过Binder机制通知AMS启动一个Activity.
+2.AMS使Launcher栈最顶端Activity进入onPause状态.
+3.AMS通知Process使用Socket和Zygote进程通信，请求创建一个新进程.
+4.Zygote收到Socket请求，fork出一个进程，并调用ActivityThread#main().
+5.ActivityThread通过Binder通知SystemServer进程中的AMS启动应用程序.
+6.AMS通知ActivityStackSupervisor真正的启动Activity.
+7.ActivityStackSupervisor通知ApplicationThread启动Activity.
+8.ApplicationThread发消息给ActivityThread，需要启动一个Activity.
+9.ActivityThread收到消息之后，通知LoadedApk创建Applicaition，并且调用其onCteate()方法.
+10.ActivityThread装载目标Activity类，并调用Activity#attach().
+11.ActivityThread通知Instrumentation调用Activity#onCreate().
+12.Instrumentation调用Activity#performCreate()，在Activity#performCreate()中调用自身onCreate()方法.
+
+### 4.2Service的启动过程
+
+
+
+图片来源：
+
+https://blog.csdn.net/huaxun66/article/details/78151361
+

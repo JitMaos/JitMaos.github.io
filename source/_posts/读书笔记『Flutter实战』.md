@@ -125,6 +125,8 @@ enableFlags(bold: true, hidden: false);
 
 <font color="#dd0000">**注意，不能同时使用可选的位置参数和可选的命名参数**</font>
 
+<!--more-->
+
 **Future.wait**
 
 它接受一个Future数组参数，只有数组中所有Future都执行成功后，才会触发then的成功回调，只要有一个Future执行失败，就会触发错误回调。下面，我们通过模拟Future.delayed 来模拟两个数据获取的异步任务，等两个异步任务都执行成功时，将两个异步任务的结果拼接打印出来，代码如下：

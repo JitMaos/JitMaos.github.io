@@ -41,6 +41,8 @@ AMS服务用来管理Activity的创建，当需要启动Activity时，会通过S
 
 ## App启动过程
 
+摘自：https://www.jianshu.com/p/d1e8002df580
+
 App启动从用户按下桌面图标开始。
 
 - App都是由桌面启动器启动的，桌面启动器自身也是一个App，它也存在一个进程，称为Launcher进程，也叫调用者进程。
@@ -51,12 +53,40 @@ App启动从用户按下桌面图标开始。
 - ActivityThread中会调用prepareMainLooper()方法，创建一个Looper对象，Looper对象会创建一个消息队列MessageQueue，调用Looper.loop()方法后UI线程会进入消息循环体，不断从消息队列中取出消息Message对象并处理消息。
 - ApplicationThread类监听到了创建Activity的请求，ActivityThread通过ClassLoader类加载器加载Activity并创建Activity实例，然后回调onCreate()方法。
 
-作者：sendtion
-链接：https://www.jianshu.com/p/d1e8002df580
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+#
+
+
+
+# 算法
+
+
+
+
 
 #Android API
+
+## ActivityThread
+
+摘自：https://blog.csdn.net/xu_song/article/details/81983724
+
+安卓应用程序的入口是什么呢？我想不少人可能回答说:application的onCreate方法，其实并不是的，即使是application，**也有一个方法比onCreate先执行，这个方法就是attachBaseContext(Context context)方法:一般情况下，可以在这个方法中进行多dex的分包注入**，比如下面的代码:
+
+```
+@Override
+    protected void attachBaseContext(Context base) {
+        MultiDex.install(base);
+        super.attachBaseContext(base);
+        try {
+            HandlerInject.hookHandler(base);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+```
+
+application并不是安卓程序的入口，跟Java程序类似，都是有一个入口的，而这个入口就是ActivityThread，<font color="#dd0000">**ActiviyThread也有一个main方法，这个main方法是安卓应用程序真正的入口**</font>。
+
+**ActivityThread的作用很多，但最主要的作用是根据AMS(ActivityManagerService的要求，通过IApplicationTHread的接口)负责调度和执行activities、broadcasts和其它操作**。
 
 ## RecyclerView和ListView缓存机制
 
@@ -304,7 +334,124 @@ b 、然后就各个surface 之间可能有重叠，比如说在上面的简略�
 
   在实际中对这些Surface 进行merge 可以采用两种方式，一种就是采用软件的形式来merge ，还一种就是采用硬件的方式，软件的方式就是我们的SurfaceFlinger ，而硬件的方式就是Overlay 。
 
-## 线程状态
+##利用Choreographer监测APP卡顿
+
+摘自：https://www.jianshu.com/p/9e8f88eac490
+
+Android系统每隔16ms发出VSYNC信号，触发对UI进行渲染。开发者可以使Choreographer#postFrameCallback**设置自己的callback**与Choreographer交互，你设置的FrameCallCack（doFrame方法）会在下一个frame被渲染时触发。理论上来说两次回调的时间周期应该在16ms，如果超过了16ms我们则认为发生了卡顿，我们主要就是利用两次回调间的时间周期来判断，
+
+```java
+Choreographer.getInstance()
+  .postFrameCallback(new Choreographer.FrameCallback() {
+    @Override
+    public void doFrame(long l) {
+      //移除消息
+      Handler.removeMessage();
+      //发送延时消息
+      Hnadler.sendMessageAtTime(...)
+      //we need to register for the next frame callback
+      Choreographer.getInstance().postFrameCallback(this);
+    }
+  });
+```
+
+发送的延时消息在执行的时间没有被remove掉，说明发生了卡顿，这时候可以进行卡顿相关信息的采集，如果在渲染下一帧的时候该消息还没有被处理，这时候将该消息remove掉，此场景说明未发生卡顿；
+
+<font color="#dd0000">**VSync信号由SurfaceFlinger实现并定时发送（每16ms发送）Choreographer.FrameDisplayEventReceiver收到信号后，调用onVsync方法组织消息发送到主线程处理。Choreographer主要功能是当收到VSync信号时，去调用使用通过postCallBack设置的回调函数，在postCallBack调用doFrame，在doFrame中渲染下一帧**</font>；FrameDisplayEventReceiver相关代码如下：
+
+```java
+//Choreographer.java
+/**
+     * FrameDisplayEventReceiver继承自DisplayEventReceiver接收底层的VSync信号开始处理UI过程。
+     * VSync信号由SurfaceFlinger实现并定时发送。FrameDisplayEventReceiver收到信号后，
+     * 调用onVsync方法组织消息发送到主线程处理。这个消息主要内容就是run方法里面的doFrame了，
+     * 这里mTimestampNanos是信号到来的时间参数。
+     */
+private final class FrameDisplayEventReceiver extends DisplayEventReceiver
+  implements Runnable {
+  private boolean mHavePendingVsync;
+  private long mTimestampNanos;
+  private int mFrame;
+
+  public FrameDisplayEventReceiver(Looper looper, int vsyncSource) {
+    super(looper, vsyncSource);
+  }
+
+  @Override
+  public void onVsync(long timestampNanos, int builtInDisplayId, int frame) {
+    mTimestampNanos = timestampNanos;
+    mFrame = frame;
+    // 发送Runnable(callback参数即当前对象FrameDisplayEventReceiver)到FrameHandler，请求执行doFrame
+    Message msg = Message.obtain(mHandler, this);
+    msg.setAsynchronous(true);
+    // 此处mHandler为FrameHandler，该Handler对应的Looper是主线程的Looper
+    mHandler.sendMessageAtTime(msg, timestampNanos / TimeUtils.NANOS_PER_MS);
+  }
+
+  @Override
+  public void run() {
+    mHavePendingVsync = false;
+    doFrame(mTimestampNanos, mFrame);
+  }
+}
+```
+
+## 属性动画驱动力来自哪里
+
+摘自：https://www.jianshu.com/p/30cfa00fc7a4
+
+https://www.jianshu.com/p/cdba60a1104f
+
+**View Animation**
+
+```java
+//ViewRootImpl.java
+void scheduleTraversals() {
+  ...
+    mChoreographer.postCallback(
+    Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null);
+  ...
+}
+```
+
+**Property Animation**
+
+在`AnimationHandler`中的循环取帧的关键代码
+
+```java
+public class AnimationHandler {
+    private final Choreographer.FrameCallback mFrameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            doAnimationFrame(getProvider().getFrameTime());
+            if (mAnimationCallbacks.size() > 0) {
+                getProvider().postFrameCallback(this);
+            }
+        }
+    };
+  
+    interface AnimationFrameCallback {
+        boolean doAnimationFrame(long frameTime);
+        void commitAnimationFrame(long frameTime);
+    }
+}
+```
+
+```java
+class ValueAnimator extends Animator implements AnimationHandler.AnimationFrameCallback{
+      public final boolean doAnimationFrame(long frameTime) {
+        ...
+    }
+}
+```
+
+1.动画是由许多帧组成的
+2.PropertyValuesHolder封装了帧的数据，并被动画类加以利用
+3.利用Choreographer.FrameCallback的回调方法，来不停的调用帧执行流程
+3.在计算变量数据的时候，插值器会去影响到最后输出的数据，从而达到某些效果
+4.通过反射的原理，去修改属性的值，连贯起来出现了动画
+
+## 线程状态===
 
 
 
@@ -431,41 +578,6 @@ Reference提供了2个构造函数，一个带queue，一个不带queue。<font 
 
 实现了一个队列的入队(enqueue)和出队(poll还有remove)操作，内部元素就是泛型的Reference，并且Queue的实现，是由Reference自身的链表结构( 单向循环链表 )所实现的。**ReferenceQueue名义上是一个队列，但实际内部并非有实际的存储结构，它的存储是依赖于内部节点之间的关系来表达**。
 
-## LeakCanary
-
-摘自：https://blog.csdn.net/braintt/article/details/99685243
-
-LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观察的Activity或者Fragment销毁时，我们会使用一个弱引用去包装当前销毁的Activity或者Fragment,并且将它与本地的一个ReferenceQueue队列关联。我们知道如果GC触发了，系统会将当前的引用对象存入队列中。**
-如果没有被回收，队列中则没有当前的引用对象。所以LeakCanary会去判断，**ReferenceQueue是否有当前观察的Activity或者Fragment的引用对象，第一次判断如果不存在，就去手动触发一次GC，然后做第二次判断，如果还是不存在，则表明出现了内存泄漏。**
-
-## 常见的内存泄漏
-
-摘自：https://www.cnblogs.com/sjxbg/p/11643715.html
-
-1. 对象被静态成员引用
-
-   ```java
-   private Random random = new Random();
-   public static final ArrayList<Double> list = new ArrayList<Double>(1000000);
-   for (int i = 0; i < 1000000; i++) { list.add(random.nextDouble()); }
-   ```
-
-   ArrayList是在堆上动态分配的对象，正常情况下使用完毕后，会被gc回收，但是在此示例中，由于被静态成员list引用，而静态成员是不会被回收的，所以会导致这个很大的ArrayList一直停留在堆内存中。
-
-2. String的intern方法
-
-   在大字符串上调用String.intern() 方法，intern()会将String放在jvm的内存池中（PermGen ），而jvm的内存池是不会被gc的。因此如果大字符串调用intern()方法后，会产生大量的无法gc的内存，导致内存泄漏。
-
-   如果必须要使用大字符串的intern方法，应该通过-XX:MaxPermSize参数调整PermGen内存的大小。
-
-3. 读取流后没有关闭
-
-   开发中经常忘记关闭流，这样会导致内存泄漏。因为每个流在操作系统层面都对应了打开的文件句柄，流没有关闭，**会导致操作系统的文件句柄一直处于打开状态，jvm会消耗内存来跟踪操作系统打开的文件句柄**。
-
-4. 将没有实现hashcode和equals方法的对象加入到HashSet中
-
-   当一个对象被存储在Hashset中后，如果修改参与计算hashcode有关的字段，那么修改后的hashcode的值就与一开始存储进来的hashcode的值不同了，**这样contains无法通过hashcode找到该元素，所以无法删除**。
-
 ## Java 注解
 
 **元注解**
@@ -517,6 +629,52 @@ try-with-resources 声明、try 块、catch 块。它要求在 try-with-resource
 首先，<font color="#dd0000">**协程本质上可以认为是运行在线程上的代码块，协程提供的 *挂起* 操作会使协程暂停执行，而不会导致线程阻塞**</font>。其次，协程是一种轻量级资源，即使创建了上千个协程，对于系统来说也不是一种很大的负担，就**如同在 Java 创建上千个 Runable 对象也不会造成过大负担一样**。通过这样设计，开发者可以极大的提高线程的使用率，用尽量少的线程执行尽量多的任务，其次调用者无需在编程时思考过多的资源浪费问题，可以在每当有异步或并发需求的时候就不假思索的开启协程。
 
 协程的挂起和 Java 的 NIO 机制是类似的，我们在一个线程中执行了一个原本会阻塞线程的任务，但是这个调用者线程没有发生阻塞，这是<font color="#dd0000">**因为它们有一个专门的线程来负责这些任务的流转**</font>，也就是说，当我们发起多个阻塞操作的时候，可能只会阻塞这一个专门的线程，它一直在等待，谁的阻塞结束了，它就把回调再分派过去，这样就完成了阻塞任务与阻塞线程的多对一，而不是以前的一对一，所以挂起也好，NIO 也好，本质上都没有彻底消灭阻塞，但是它们都使阻塞的线程大大减少，从而避免了大量的线程上下文状态切换以及避免了大量线程的产生，从而在 IO 密集型任务中大大提高了性能。
+
+## SharedPreference优化
+
+摘自：
+
+```java
+public void apply() {
+  final long startTime = System.currentTimeMillis();
+
+  final MemoryCommitResult mcr = commitToMemory();
+  final Runnable awaitCommit = new Runnable() {
+    @Override
+    public void run() {
+      try {
+        mcr.writtenToDiskLatch.await();
+      } catch (InterruptedException ignored) {
+      }
+
+      if (DEBUG && mcr.wasWritten) {
+        Log.d(TAG, mFile.getName() + ":" + mcr.memoryStateGeneration
+              + " applied after " + (System.currentTimeMillis() - startTime)
+              + " ms");
+      }
+    }
+  };
+
+  QueuedWork.addFinisher(awaitCommit);
+  Runnable postWriteRunnable = new Runnable() {
+    @Override
+    public void run() {
+      awaitCommit.run();
+      QueuedWork.removeFinisher(awaitCommit);
+    }
+  };
+
+  SharedPreferencesImpl.this.enqueueDiskWrite(mcr, postWriteRunnable);
+
+  // Okay to notify the listeners before it's hit disk
+  // because the listeners should always get the same
+  // SharedPreferences instance back, which has the
+  // changes reflected in memory.
+  notifyListeners(mcr);
+}
+```
+
+
 
 #Java核心
 
@@ -600,8 +758,6 @@ public final class MySingleton implements Serializable{
 
 
 
-
-## setContentView流程===
 
 
 
@@ -854,6 +1010,10 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 
 
+
+
+#Android架构设计
+
 ## 组件化通信
 
 摘自：https://www.jianshu.com/p/82b994fe532c
@@ -863,6 +1023,51 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 二、使用共享数据，如把数据保存到SP、数据库等。然后发送一个广播
 
 三、使用EventBus这种进程内bus，需要定义Base Bean，通过key进行区分。
+
+
+
+## 插件化实现原理===
+
+
+
+# 源码分析
+
+
+
+## LeakCanary
+
+摘自：https://blog.csdn.net/braintt/article/details/99685243
+
+LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观察的Activity或者Fragment销毁时，我们会使用一个弱引用去包装当前销毁的Activity或者Fragment,并且将它与本地的一个ReferenceQueue队列关联。我们知道如果GC触发了，系统会将当前的引用对象存入队列中。**
+如果没有被回收，队列中则没有当前的引用对象。所以LeakCanary会去判断，**ReferenceQueue是否有当前观察的Activity或者Fragment的引用对象，第一次判断如果不存在，就去手动触发一次GC，然后做第二次判断，如果还是不存在，则表明出现了内存泄漏。**
+
+## 常见的内存泄漏
+
+摘自：https://www.cnblogs.com/sjxbg/p/11643715.html
+
+1. 对象被静态成员引用
+
+   ```java
+   private Random random = new Random();
+   public static final ArrayList<Double> list = new ArrayList<Double>(1000000);
+   for (int i = 0; i < 1000000; i++) { list.add(random.nextDouble()); }
+   ```
+
+   ArrayList是在堆上动态分配的对象，正常情况下使用完毕后，会被gc回收，但是在此示例中，由于被静态成员list引用，而静态成员是不会被回收的，所以会导致这个很大的ArrayList一直停留在堆内存中。
+
+2. String的intern方法
+
+   在大字符串上调用String.intern() 方法，intern()会将String放在jvm的内存池中（PermGen ），而jvm的内存池是不会被gc的。因此如果大字符串调用intern()方法后，会产生大量的无法gc的内存，导致内存泄漏。
+
+   如果必须要使用大字符串的intern方法，应该通过-XX:MaxPermSize参数调整PermGen内存的大小。
+
+3. 读取流后没有关闭
+
+   开发中经常忘记关闭流，这样会导致内存泄漏。因为每个流在操作系统层面都对应了打开的文件句柄，流没有关闭，**会导致操作系统的文件句柄一直处于打开状态，jvm会消耗内存来跟踪操作系统打开的文件句柄**。
+
+4. 将没有实现hashcode和equals方法的对象加入到HashSet中
+
+   当一个对象被存储在Hashset中后，如果修改参与计算hashcode有关的字段，那么修改后的hashcode的值就与一开始存储进来的hashcode的值不同了，**这样contains无法通过hashcode找到该元素，所以无法删除**。
 
 ## AsyncTask原理及不足
 
@@ -996,12 +1201,6 @@ LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环
 
 ## Glide三级图片缓存===
 
-
-
-## 插件化实现原理===
-
-# 开源库
-
 ## ButterKnife源码解析
 
 摘自：https://juejin.im/post/5acec2b46fb9a028c6761628
@@ -1057,11 +1256,70 @@ LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环
 
 三、在Activity、Fragment中调用bind方法，改方法会传入Activity、Fragment为参数。<font color="#dd0000">**bind方法最终只是为了将当前的Activity、Fragment作为参数，来构造一个Xxx_ViewBinding对象，在该对象的构造方法中，完成了需要注入对象的左右绑定**</font>，值得一提的是，rootView是直接通过target.getWindow().getDecorView()获取的。
 
-## OKHTTP任务管理===
+## OKHTTP任务管理
 
+1. 在构造OkHttpClient对象的Builder时，会在Builder的构造方法中创建一个Dispatcher()，Dispatcher在OkHttp中扮演了一个管理调度器的角色。
 
+2. **Dispatcher中包含三个任务队列，分别是：readyAsyncCalls(异步就绪等待队列)、runningAsyncCalls(运行中的异步任务队列)和runningSyncCalls(运行中的同步任务队列)。**同时，Dispatcher中还包含了一个线程池，<font color="#dd0000">**这是一个基于同步队列(SynchronousQueue)的线程池**</font>，Dispatcher在提交任务到线程池时会对当前线程执行情况做校验：
 
+   ```java
+   synchronized void enqueue(AsyncCall call) {
+       if (runningAsyncCalls.size() < maxRequests && runningCallsForHost(call) < maxRequestsPerHost) {
+         runningAsyncCalls.add(call);
+         executorService().execute(call);
+       } else {
+         readyAsyncCalls.add(call);
+       }
+     }
+   ```
 
+   **注意，maxRequests和maxRequestPerHost只对异步任务做限制。**
+
+3. <font color="#dd0000">**不管是同步任务还是异步任务，最后都会执行execute()**</font>，这段代码被包含在一个catch块中，该catch块后面的finally中都执行了Dispatcher.finished(Call)方法
+
+   ```java
+   @Override public Response execute() throws IOException {
+       synchronized (this) {
+         if (executed) throw new IllegalStateException("Already Executed");
+         executed = true;
+       }
+       captureCallStackTrace();
+       eventListener.callStart(this);
+       try {
+         client.dispatcher().executed(this);
+         Response result = getResponseWithInterceptorChain();
+         if (result == null) throw new IOException("Canceled");
+         return result;
+       } catch (IOException e) {
+         eventListener.callFailed(this, e);
+         throw e;
+       } finally {
+         client.dispatcher().finished(this);
+       }
+     }
+   ```
+
+4. 在finished方法中会根据isPromoteCall来决定是否会触发promoteCalls方法(Dispatcher有多个重载的finished()方法，**同步任务不触发promoteCalls，异步方法触发promoteCalls方法**)：
+
+   ```java
+     private void promoteCalls() {
+       if (runningAsyncCalls.size() >= maxRequests) return; // Already running max capacity.
+       if (readyAsyncCalls.isEmpty()) return; // No ready calls to promote.
+   
+       for (Iterator<AsyncCall> i = readyAsyncCalls.iterator(); i.hasNext(); ) {
+         AsyncCall call = i.next();
+   
+         if (runningCallsForHost(call) < maxRequestsPerHost) {
+           i.remove();
+           runningAsyncCalls.add(call);
+           executorService().execute(call);
+         }
+         if (runningAsyncCalls.size() >= maxRequests) return; // Reached max capacity.
+       }
+     }
+   ```
+
+   从代码中可以看出promoteCalls方法是用于**从就绪等待队列中拿去任务到异步运行队列的**。
 
 ## OKHTTP的缓存机制
 
@@ -1163,6 +1421,14 @@ if (cache != null) {
     }
 }
 ```
+
+**总结**
+
+- OkHttp 的缓存机制是按照 Http 的缓存机制实现。
+- OkHttp 具体的数据缓存逻辑封装在 Cache 类中，它利用 DiskLruCache 实现。
+- 默认情况下，OkHttp 不进行缓存数据。
+- 可以在构造 OkHttpClient 时设置 Cache 对象，在其构造函数中指定缓存目录和缓存大小。
+- 如果对 OkHttp 内置的 Cache 类不满意，可以自行实现 InternalCache 接口，在构造 OkHttpClient 时进行设置，这样就可以使用自定义的缓存策略了。
 
 ## OKHTTP连接复用
 
@@ -1411,9 +1677,61 @@ Android 加载 so 文件本身就是一种运行时动态加载可执行代码�
 
 ![img](http://47.110.40.63:8080/img/blog/Android电量优化.png)
 
+## 启动提速之初始化任务分级
 
+摘自：http://www.imooc.com/article/40398
 
+**原因**
 
+应用启动过程从用户点击launcher图标到看到第一帧这个过程中，主要会经过以下这些过程：
+
+> main()->Application:attachBaseContext()->onCreate()->Activity:onCreate()->onStart()->onPostCreate()->onResume()->onPostResume()
+
+而一般我们的初始化任务主要都会集中化在Application:onCreate()方法中，这就使得初始化任务在第一帧绘制之前得完成，这就造成了卡图标、应用启动慢。
+
+Activity的创建都会辗转到ActivityThread:performLaunchActivity()这个方法中，在这个方法中可以知道这么几件事：
+
+1、先通过Instrumentation:newActivity()来创建一个Activity实例
+2、再判断Application实例是否已创建，已创建则直接返回，否则调用
+Instrumentation:newApplication()来创建Application实例，在这个过程中会依次执行attachBaseContext()和onCreate()方法
+3、之后Activity:attach()方法会创建一个PhoneWindow对象，它就是界面，它有一个DecorView，调用setContentView()时会给配置DecorView，其中就会设置一个背景：
+
+![img](https://img2.sycdn.imooc.com/5b3899ef00018dba13160278.jpg)
+
+我们的View也是add进DecorView中显示，它作为RootView肯定是最先显示，所以可以给它设置个默认背景
+
+4、最后依次调用Activity的onCreate、onStart等方法
+
+**措施**
+
+1、任务分级
+2、任务并行
+3、界面预显示
+
+![img](http://47.110.40.63:8080/img/blog/启动提速_初始化任务分级.jpg)
+
+**分级带来的问题**
+
+正常启动过程那肯定是没问题的，不过有这么几种场景：
+
+> 1、App切回后台，内存不足导致Application被回收，从最近任务列表中恢复界面时Application需重新创建
+> 2、应用没挂起时，Push推送需从Notification跳入应用内某界面
+> 3、应用没挂起时，浏览器外链需跳入应用内某界面
+
+**这些Case可能导致的问题是被跳入的界面使用到了未初始化的SDK，可能导致Crash或者数据异常，所以目标页面启动前必须确保SDK已经初始化，这个过程的原因是没有唤起启动页来初始化SDK，可以通过hook newActivity解决**。
+
+```
+public Activity newActivity(ClassLoader cl, String className, Intent intent) throws InstantiationException, IllegalAccessException, ClassNotFoundException {    if (InitializeOptimizer.isApplicationCreated()
+            && (InitializeUtil.isOuterChainIntent(intent) || 
+InitializeUtil.isNotificationIntent(intent)) && (!InitializeOptimizer.isHighSDKInitialized()
+            || !InitializeOptimizer.isLowSDKInitialized()
+            || !InitializeOptimizer.isAsyncSDKInitialized())) {
+        InitializeOptimizer.setApplicationCreated(false);
+        intent.addCategory(InitializeUtil.INITIALIZE_CATEGORY);        return (Activity) cl.loadClass(InitializeOptimizer.getLaunchClassName()).newInstance();
+    }
+    InitializeOptimizer.setApplicationCreated(false);    return super.newActivity(cl, className, intent);
+}
+```
 
 # Flutter
 
