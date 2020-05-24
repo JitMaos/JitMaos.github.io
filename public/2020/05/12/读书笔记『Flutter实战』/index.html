@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://47.110.40.63:8080/img/blog/Flutter%E5%8E%9F%E7%94%9F%E9%80%9A%E4%BF%A1%E9%80%9A%E9%81%93%E7%A4%BA%E6%84%8F%E5%9B%BE.png">
 <meta property="og:image" content="http://47.110.40.63:8080/img/blog/Flutter%E4%B8%89%E6%A3%B5%E6%A0%91%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png">
 <meta property="article:published_time" content="2020-05-11T23:27:03.067Z">
-<meta property="article:modified_time" content="2020-05-18T13:52:34.091Z">
+<meta property="article:modified_time" content="2020-05-22T08:04:21.030Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://47.110.40.63:8080/img/blog/Flutter%E5%8E%9F%E7%94%9F%E9%80%9A%E4%BF%A1%E9%80%9A%E9%81%93%E7%A4%BA%E6%84%8F%E5%9B%BE.png">
@@ -145,6 +145,8 @@
 
 <p>可选命名参数在Flutter中使用非常多。</p>
 <p><font color="#dd0000"><strong>注意，不能同时使用可选的位置参数和可选的命名参数</strong></font></p>
+<a id="more"></a>
+
 <p><strong>Future.wait</strong></p>
 <p>它接受一个Future数组参数，只有数组中所有Future都执行成功后，才会触发then的成功回调，只要有一个Future执行失败，就会触发错误回调。下面，我们通过模拟Future.delayed 来模拟两个数据获取的异步任务，等两个异步任务都执行成功时，将两个异步任务的结果拼接打印出来，代码如下：</p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Future.wait([</span><br><span class="line">  <span class="comment">//2秒后返回结果</span></span><br><span class="line">  Future.delayed(<span class="keyword">new</span> <span class="built_in">Duration</span>(seconds:<span class="number">2</span>),()&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"hello"</span>;</span><br><span class="line">  &#125;),</span><br><span class="line">  Futuren.delayed(<span class="keyword">new</span> <span class="built_in">Duration</span>(seconds:<span class="number">4</span>),()&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"world"</span>;</span><br><span class="line">  &#125;)</span><br><span class="line">]).then((results)&#123;</span><br><span class="line">  <span class="built_in">print</span>(result[<span class="number">0</span>] + result[<span class="number">1</span>]);</span><br><span class="line">&#125;).catchError((e)&#123;</span><br><span class="line">  <span class="built_in">print</span>(e);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -749,7 +751,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckacju81r005yf2264bemgs8v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckahx5buw0060xo26akhch5f0" class="article-share-link">Share</a>
       
       
     </footer>

@@ -53,15 +53,35 @@ App启动从用户按下桌面图标开始。
 - ActivityThread中会调用prepareMainLooper()方法，创建一个Looper对象，Looper对象会创建一个消息队列MessageQueue，调用Looper.loop()方法后UI线程会进入消息循环体，不断从消息队列中取出消息Message对象并处理消息。
 - ApplicationThread类监听到了创建Activity的请求，ActivityThread通过ClassLoader类加载器加载Activity并创建Activity实例，然后回调onCreate()方法。
 
-#
-
-
-
 # 算法
 
+## 跳跃表
 
+摘自：https://www.jianshu.com/p/dc252b5efca6
 
+![img](http://47.110.40.63:8080/img/blog/跳跃表.jpeg)
 
+(1). 跳跃表的每一层都是一条有序的链表.
+(2). 跳跃表的查找次数近似于层数，时间复杂度为O(logn)，插入、删除也为 O(logn)。
+(3). 跳跃表空间复杂度为O(n)，实际上是O(2n)
+(4). 跳跃表是一种随机化的数据结构(通过抛硬币来决定层数)。
+(5). 插入元素时，对该元素进行投硬币，决定是否提取为关键节点。
+(6). 删除元素时，需逐层同步删除。
+
+跳跃表的优点是维持结构平衡的成本比较低，完全依赖随机。而二叉查找树在多次插入删除后，需要Rebalance来重新调整结构平衡
+
+## KMP字符串匹配算法
+
+KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用匹配失败后的信息，尽量减少模式串与主串的匹配次数以达到快速匹配的目的**。具体实现就是通过一个next()函数实现，函数本身包含了模式串的局部匹配信息。KMP算法的时间复杂度O(m+n)。
+
+# 其他
+
+##Hexo 博客实现文件同步与静态文件部署
+
+核心方法是hexo -g d会自动提交静态文件到远程master分支，不管当前在哪个分支上。所以：
+
+1. 在master分支上提交静态文件
+2. 本地切换到hexo分支，并把本地文件提交到远程hexo分支，之后使用hexo clean；hexo -g d提交静态文件，静态文件会自动生成在master分支上。
 
 #Android API
 
@@ -258,31 +278,6 @@ public class MainActivity extends Activity {
 **AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。`底层原理
 andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk。`
 
-
-
-##Hexo 博客实现文件同步与静态文件部署
-
-核心方法是hexo -g d会自动提交静态文件到远程master分支，不管当前在哪个分支上。所以：
-
-1. 在master分支上提交静态文件
-2. 本地切换到hexo分支，并把本地文件提交到远程hexo分支，之后使用hexo clean；hexo -g d提交静态文件，静态文件会自动生成在master分支上。
-
-## 跳跃表
-
-摘自：https://www.jianshu.com/p/dc252b5efca6
-
-![img](http://47.110.40.63:8080/img/blog/跳跃表.jpeg)
-
-(1). 跳跃表的每一层都是一条有序的链表.
-(2). 跳跃表的查找次数近似于层数，时间复杂度为O(logn)，插入、删除也为 O(logn)。
-(3). 跳跃表空间复杂度为O(n)，实际上是O(2n)
-(4). 跳跃表是一种随机化的数据结构(通过抛硬币来决定层数)。
-(5). 插入元素时，对该元素进行投硬币，决定是否提取为关键节点。
-(6). 删除元素时，需逐层同步删除。
-
-
-跳跃表的优点是维持结构平衡的成本比较低，完全依赖随机。而二叉查找树在多次插入删除后，需要Rebalance来重新调整结构平衡
-
 ## 自定义权限
 
 摘自：https://www.cnblogs.com/liuzhipenglove/p/7102889.html
@@ -313,8 +308,6 @@ protectionLevel：normal, dangerous, signature, signatureOrSystem
 
 
 ![img](http://47.110.40.63:8080/img/blog/mmap实现一次拷贝完成进程通信.png)
-
-
 
 ## SurfaceFlinger
 
@@ -450,24 +443,6 @@ class ValueAnimator extends Animator implements AnimationHandler.AnimationFrameC
 3.利用Choreographer.FrameCallback的回调方法，来不停的调用帧执行流程
 3.在计算变量数据的时候，插值器会去影响到最后输出的数据，从而达到某些效果
 4.通过反射的原理，去修改属性的值，连贯起来出现了动画
-
-## 线程状态===
-
-
-
-## wait/sleep/notify
-
-**wait和sleep的区别**
-
-<font color="#dd0000">**wait 会释放锁，而 sleep 一直持有锁**</font>。wait 通常被用于线程间交互，sleep 通常被用于暂停执行。如果能够帮助你记忆的话，**可以简单认为和锁相关的方法都定义在Object类中**，因此调用Thread.sleep是不会影响锁的相关行为。<font color="#dd0000">**调用wait后，需要别的线程执行notify/notifyAll才能够重新获得CPU执行时间。**</font>
-
-## Minor/Major/Full GC
-
-**Minor GC**指新生代GC，即发生在新生代（包括Eden区和Survivor区）的垃圾回收操作，当新生代无法为新生对象分配内存空间的时候，会触发Minor GC。因为新生代中大多数对象的生命周期都很短，所以发生Minor GC的频率很高，<font color="#dd0000">**虽然它会触发stop-the-world，但是它的回收速度很快**</font>。
-
-**Major GC**清理Tenured区，用于回收老年代，出现Major GC通常会出现至少一次Minor GC。
-
-**Full GC**是针对整个新生代、老生代、元空间（metaspace，java8以上版本取代perm gen）的全局范围的GC。<font color="#dd0000">**Full GC不等于Major GC，也不等于Minor GC+Major GC**</font>，发生Full GC需要看使用了什么垃圾收集器组合，才能解释是什么样的垃圾回收。
 
 ## BlockCanary原理
 
@@ -608,16 +583,6 @@ Reference提供了2个构造函数，一个带queue，一个不带queue。<font 
 
 需要继承**AbstractProcessor**，并实现其中的process方法，在process方法中，使用JavaPoet生成Java文件。
 
-## KMP字符串匹配算法
-
-KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用匹配失败后的信息，尽量减少模式串与主串的匹配次数以达到快速匹配的目的**。具体实现就是通过一个next()函数实现，函数本身包含了模式串的局部匹配信息。KMP算法的时间复杂度O(m+n)。
-
-
-
-## try-with-resources
-
-try-with-resources 声明、try 块、catch 块。它要求在 try-with-resources 声明中<font color="#dd0000">**定义的变量实现了 AutoCloseable 接口，这样在系统可以自动调用它们的close方法，从而替代了finally中关闭资源的功能**</font>。
-
 ## Kotlin协程的底层实现原理
 
 摘自：https://www.jianshu.com/p/d23c688feae7
@@ -632,7 +597,7 @@ try-with-resources 声明、try 块、catch 块。它要求在 try-with-resource
 
 ## SharedPreference优化
 
-摘自：
+摘自：https://zhuanlan.zhihu.com/p/22913991
 
 ```java
 public void apply() {
@@ -674,9 +639,34 @@ public void apply() {
 }
 ```
 
+## AIDL通信===
 
+## 多进程带来的问题
+
+- 静态成员和单例模式完全失效(不是同一块内存，会产生不同的副本)
+- 线程同步机制完全失效(不是同一块内存，所以对象也不是同一个，因此类锁、对象锁也不是同一个，不能保证线程同步)
+- SharedPreferences 可靠性下降(SharedPreferences不支持多个进程同时写，会有一定的几率丢失数据)
+- Application 多次创建(Android为每个进程分配独立的虚拟机，这个过程其实就是启动一个应用，所以Application会被创建多次)，所以我们不能直接将一些数据保存在Application中。
 
 #Java核心
+
+## 线程状态===
+
+
+
+## wait/sleep/notify
+
+**wait和sleep的区别**
+
+<font color="#dd0000">**wait 会释放锁，而 sleep 一直持有锁**</font>。wait 通常被用于线程间交互，sleep 通常被用于暂停执行。如果能够帮助你记忆的话，**可以简单认为和锁相关的方法都定义在Object类中**，因此调用Thread.sleep是不会影响锁的相关行为。<font color="#dd0000">**调用wait后，需要别的线程执行notify/notifyAll才能够重新获得CPU执行时间。**</font>
+
+## Minor/Major/Full GC
+
+**Minor GC**指新生代GC，即发生在新生代（包括Eden区和Survivor区）的垃圾回收操作，当新生代无法为新生对象分配内存空间的时候，会触发Minor GC。因为新生代中大多数对象的生命周期都很短，所以发生Minor GC的频率很高，<font color="#dd0000">**虽然它会触发stop-the-world，但是它的回收速度很快**</font>。
+
+**Major GC**清理Tenured区，用于回收老年代，出现Major GC通常会出现至少一次Minor GC。
+
+**Full GC**是针对整个新生代、老生代、元空间（metaspace，java8以上版本取代perm gen）的全局范围的GC。<font color="#dd0000">**Full GC不等于Major GC，也不等于Minor GC+Major GC**</font>，发生Full GC需要看使用了什么垃圾收集器组合，才能解释是什么样的垃圾回收。
 
 ## Java的异常体系
 
@@ -685,6 +675,10 @@ Thorwable类所有异常和错误的超类，有两个子类Error和Exception，
 Error是程序无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。
 
 Exception是程序本身可以处理的异常，这种异常分两大类运行时异常和非运行时异常。程序中应当尽可能去处理这些异常。
+
+## try-with-resources
+
+try-with-resources 声明、try 块、catch 块。它要求在 try-with-resources 声明中<font color="#dd0000">**定义的变量实现了 AutoCloseable 接口，这样在系统可以自动调用它们的close方法，从而替代了finally中关闭资源的功能**</font>。
 
 ## 线程池种类，关键参数
 
@@ -753,8 +747,6 @@ public final class MySingleton implements Serializable{
 
 `ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。`
 
-## AIDL通信===
-
 
 
 
@@ -799,13 +791,6 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 
 
-
-## 多进程带来的问题
-
-- 静态成员和单例模式完全失效(不是同一块内存，会产生不同的副本)
-- 线程同步机制完全失效(不是同一块内存，所以对象也不是同一个，因此类锁、对象锁也不是同一个，不能保证线程同步)
-- SharedPreferences 可靠性下降(SharedPreferences不支持多个进程同时写，会有一定的几率丢失数据)
-- Application 多次创建(Android为每个进程分配独立的虚拟机，这个过程其实就是启动一个应用，所以Application会被创建多次)，所以我们不能直接将一些数据保存在Application中。
 
 ## MeasureSpec详解
 
@@ -1020,9 +1005,9 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 一、页面跳转使用**统一路由管理**，如Arouter。
 
-二、使用共享数据，如把数据保存到SP、数据库等。然后发送一个广播
+二、**使用共享数据，如把数据保存到SP、数据库等。然后发送一个广播**
 
-三、使用EventBus这种进程内bus，需要定义Base Bean，通过key进行区分。
+三、使用EventBus这种进程内bus，**需要定义Base Bean**，通过key进行区分。
 
 
 
@@ -1038,7 +1023,7 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 摘自：https://blog.csdn.net/braintt/article/details/99685243
 
-LeakCanary实现内存泄漏的主要判断逻辑是这样的。**当我们观察的Activity或者Fragment销毁时，我们会使用一个弱引用去包装当前销毁的Activity或者Fragment,并且将它与本地的一个ReferenceQueue队列关联。我们知道如果GC触发了，系统会将当前的引用对象存入队列中。**
+LeakCanary实现内存泄漏的主要判断逻辑是这样的。<font color="#dd0000">**当我们观察的Activity或者Fragment销毁时，我们会使用一个弱引用去包装当前销毁的Activity或者Fragment,并且将它与本地的一个ReferenceQueue队列关联。我们知道如果GC触发了，系统会将当前的引用对象存入队列中**</font>。
 如果没有被回收，队列中则没有当前的引用对象。所以LeakCanary会去判断，**ReferenceQueue是否有当前观察的Activity或者Fragment的引用对象，第一次判断如果不存在，就去手动触发一次GC，然后做第二次判断，如果还是不存在，则表明出现了内存泄漏。**
 
 ## 常见的内存泄漏
@@ -1801,8 +1786,6 @@ add_executable(HelloCMake main.cpp )
 
 而 `add_executable` 就是指定**最后编译的可执行文件名称和需要编译的 cpp 文件**，如果工程很大，有多个 cpp 文件，那么都要把它们添加进来(**使用空格分隔**)。
 
-
-
 **add_library**
 
 ````shell
@@ -1813,5 +1796,21 @@ source1 source2 … sourceN)
 
 添加一个名为< name >的库文件，该库文件将会根据调用的命令里列出的源文件来创建。< name >对应于逻辑目标名称，而且在一个工程的全局域内必须是唯一的。待构建的库文件的实际文件名根据对应平台的命名约定来构造（比如lib< name >.a或者< name >.lib）。STATIC库是目标文件的归档文件，在链接其它目标的时候使用。SHARED库会被动态链接，在运行时被加载。MODULE库是不会被链接到其它目标中的插件，但是可能会在运行时使用dlopen-系列的函数动态链接。如果没有类型被显式指定，这个选项将会根据变量BUILD_SHARED_LIBS的当前值是否为真决定是STATIC还是SHARED。
 
+###Android JNI 函数注册的两种方式(静态注册/动态注册)
+
+摘自：https://www.jianshu.com/p/1d6ec5068d05
+
+静态注册
+ 优点: 理解和使用方式简单, 属于傻瓜式操作, 使用相关工具按流程操作就行, 出错率低
+ 缺点: 当需要更改类名,包名或者方法时, 需要按照之前方法重新生成头文件, 灵活性不高
+
+动态注册
+ 优点: 灵活性高, 更改类名,包名或方法时, 只需对更改模块进行少量修改, 效率高
+ 缺点: 对新手来说稍微有点难理解, 同时会由于搞错签名, 方法, 导致注册失败
 
 
+
+作者：smewise
+链接：https://www.jianshu.com/p/1d6ec5068d05
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
