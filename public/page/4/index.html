@@ -64,6 +64,67 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Android基础三部曲『onDraw+onMessage+onLayout』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:33:54.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/">Android基础三部曲『onDraw+onMessage+onLayout』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://47.110.40.63:8080/img/blog/View%E7%BB%93%E6%9E%84%E5%9B%BE.png" alt="View结构图.png"></p>
+<p>Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件</p>
+<ul>
+<li><strong>Window类时一个抽象类，提供绘制窗口的API</strong></li>
+<li><strong>PhoneWindow是继承Window的一个具体的类，该类内部包含了一个DecorView对象，该DectorView对象是所有应用窗口(Activity界面)的根View</strong></li>
+<li><strong>DecorView继承FrameLayout，里面id=content的就是我们传入的布局视图</strong></li>
+</ul>
+<p>依据面向对象从抽象到具体我们可以类比上面关系就像如下：<br> Window是一块电子屏，PhoneWindow是一块手机电子屏，DecorView就是电子屏要显示的内容，Activity就是手机电子屏安装位置</p>
+<h2 id="setContentView流程"><a href="#setContentView流程" class="headerlink" title="setContentView流程"></a>setContentView流程</h2><p><strong>setContentView整个过程主要是如何把Activity的布局文件或者java的View添加至窗口里，重点概括为：</strong></p>
+<ol>
+<li>创建一个DecorView的对象mDecor，该mDecor对象将作为整个应用窗口的根视图。</li>
+<li>依据Feature等style theme创建不同的窗口修饰布局文件，并且通过findViewById获取Activity布局文件该存放的地方（窗口修饰布局文件中id为content的FrameLayout）。</li>
+<li>将Activity的布局文件添加至id为content的FrameLayout内。</li>
+<li>当setContentView设置显示OK以后会回调Activity的onContentChanged方法。Activity的各种View的findViewById()方法等都可以放到该方法中，系统会帮忙回调。</li>
+</ol>
+<h2 id="android的View绘制"><a href="#android的View绘制" class="headerlink" title="android的View绘制"></a>android的View绘制</h2><p>view绘制主要包括三个方面：</p>
+<ul>
+<li>measure 测量组件本身的大小</li>
+<li>layout  确定组件在视图中的位置</li>
+<li>draw    根据位置和大小，将组件画出来</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ckal0v28x003ol9268g6bclxb" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Android基础三部曲『Handler+Message+Looper』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" class="article-date">
@@ -100,7 +161,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ckahx5brf0036xo26a3wcgmlr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ckal0v28u003ll926f2pnb3zy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
@@ -163,7 +224,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ckahx5brr003mxo26872l3nep" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ckal0v293003yl926agcaf9lc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
@@ -273,7 +334,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ckahx5bs5003xxo26hzu6d8b1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ckal0v2940042l926dr9db343" class="article-share-link">Share</a>
       
       
     </footer>
@@ -323,7 +384,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ckahx5bsi0047xo26fw8t55lf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ckal0v29a004hl926ggcc83sl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li></ul>
@@ -380,7 +441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckahx5bts004sxo26dzvw489y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckal0v29f004ul92617eh2rac" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -425,7 +486,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ckahx5brq003lxo26b2k85rdq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ckal0v291003vl9269alw8fpy" class="article-share-link">Share</a>
       
       
     </footer>
@@ -470,7 +531,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckahx5btn004mxo2653hzd6hv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckal0v29c004ll92660y5cyt2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -536,7 +597,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckahx5btt004vxo26a50r559y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckal0v29h004yl9267e96acpr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -605,6 +666,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/">Android『进阶解密』</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『电量检测及优化使用』</a>
           </li>
         
@@ -618,10 +683,6 @@
         
           <li>
             <a href="/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/">读书笔记『深入理解Java虚拟机』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
           </li>
         
       </ul>

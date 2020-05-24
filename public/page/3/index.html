@@ -64,6 +64,71 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Android基础三部曲『touch事件传递』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" class="article-date">
+  <time datetime="2020-02-18T10:56:06.000Z" itemprop="datePublished">2020-02-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/">Android基础三部曲『Touch事件传递』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>touch事件传递，这里有三个关键的方法，分别是<code>dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent</code>，其中<strong>View和Activity没有onInterceptTouchEvent，只有ViewGroup三个方法都有</strong>。调用过程是：dispatch(分发)-&gt;intercept(是否拦截)-&gt;ontouch(处理)。事件由Activity经ViewGroup传递到View，如果一路事件都没有被消费掉，那么事件又会由View经ViewGroup传递到Activity直到被处理掉。<strong>View的dispatchTouchEvent是将事件分发给了自己。</strong></p>
+<p>二、重写onInterceptTouchEvent返回true(默认false)，则后续事件不会往下dispatch，子控件的diaptchTouchEvent无法接受touch事件；如果此时没有重写onTouchEvent，使之返回true，那么ACTION_DOWN将有父控件中onTouchEvent返回true的父控件处理，或者一直传递到Activity，由Activity处理；需要特别注意的是：假设A处理了ACTION_DOWN事件，则后续的ACTION_MOVE、ACTION_UP事件也由A处理！！</p>
+<p>三、dispatchTouchEvent的调用逻辑，如果是ViewGroup，则先调用自己的onInterceptTouchEvent,如果是true,则直接返回；如果是false，则调用子View/ViewGroup的dispatchTouchEvent事件，如果子组件没有消费掉事件，则返回到本组件的onTouchEvent，则返回onTouchEvent的返回值！！</p>
+<p>四、只重写onTouchEvent，使之返回true，表示消费了该touch事件，需要特别注意的是：假设ViewGroup A处理了ACTION_DOWN事件，不光是后续的ACTION_MOVE、ACTION_UP事件也由A处理，甚至子View的dispatchTouchEvent都不会调用，因为此时本View的dispatchTouchEvent返回true，表示事件已经被handled</p>
+<p>五、不管是重写onTouchEvent返回true，还是重写onIterceptTouchEvent返回true，都说明事件已经不需要往子view传递了，此时子view的dispatchTouchEvent将无法收到事件。如果onIterceptTouchEvent返回true,而onTouchEvent没有重写，则事件会继续往父控件传递，直到某个父控件消费了事件，或者传递到Activity，由Activity消费掉。</p>
+<p>六、在onTouchEvent中返回true，消费了事件，则事件不会再往上级组件传递；但是依然会调用父控件、Activity的dispatchTouchEvent事件，也就是说父控件还是有机会拦截事件的。</p>
+<p>七、在dispatchTouchEvent中返回true(默认返回false)，表示该事件已经被handled，不再继续分发；这样事件不会向传递给父控件处理，不管有没重写本组件的onTouchView消费该事件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">boolean</span> handled = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (onFilterTouchEventForSecurity(ev)) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> actionMasked = action &amp; MotionEvent.ACTION_MASK;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// Check for interception.</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line">        <span class="comment">//ViewGroup去判断这个事件该不该去拦截，首先是这个事件得是ACTION_DOWN事件或者该事件的mFirstTouchTarget（目标子View）是不为空的才会考虑要不要拦截。***这说明mFirstTouchTarget为空的情况下，ACTION_MOVE和ACTION_UP事件是不会经过这个拦截判断的，而是直接intercepted = true表示事件被直接拦截掉。</span></span><br><span class="line"><span class="comment">//      那么mFirstTouchTarget（目标子View）这个变量到底是什么呢？什么时候会为空呢？</span></span><br><span class="line">        <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN</span><br><span class="line">                || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//这个变量是控制是不是不允许父控件去拦截该事件的，取值是看"mGroupFlags"的取值，这里面涉及到一个方法：requestDisallowInterceptTouchEvent()方法。这个方法确定"mGroupFlags"的取值，控制请求父布局不拦截该事件，而是交给自己去做处理。这个方法在处理滑动冲突等场景时经常用到。</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (!disallowIntercept) &#123;</span><br><span class="line">                intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">                ev.setAction(action); <span class="comment">// restore action in case it was changed</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// There are no touch targets and this action is not an initial down</span></span><br><span class="line">            <span class="comment">// so this view group continues to intercept touches.</span></span><br><span class="line">            intercepted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">            <span class="keyword">if</span> (!canceled &amp;&amp; !intercepted) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// If the event is targeting accessibility focus we give it to the</span></span><br><span class="line">                <span class="comment">// view that has accessibility focus and if it does not handle it</span></span><br><span class="line">                <span class="comment">// we clear the flag and dispatch the event to all children as usual.</span></span><br><span class="line">                <span class="comment">// We are looking up the accessibility focused host to avoid keeping</span></span><br><span class="line">                <span class="comment">// state since these events are very rare.</span></span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Dispatch to touch targets.</span></span><br><span class="line">            <span class="keyword">if</span> (mFirstTouchTarget == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// No touch targets so treat this as an ordinary view.</span></span><br><span class="line">                handled = dispatchTransformedTouchEvent(ev, canceled, <span class="keyword">null</span>,</span><br><span class="line">                        TouchTarget.ALL_POINTER_IDS);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// Dispatch to touch targets, excluding the new touch target if we already</span></span><br><span class="line">                <span class="comment">// dispatched to it.  Cancel touch targets if necessary.</span></span><br><span class="line">                ...</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Update list of touch targets for pointer up or cancel, if needed.</span></span><br><span class="line">            <span class="keyword">if</span> (canceled</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_UP</span><br><span class="line">                    || actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">                resetTouchState();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_UP) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> actionIndex = ev.getActionIndex();</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> idBitsToRemove = <span class="number">1</span> &lt;&lt; ev.getPointerId(actionIndex);</span><br><span class="line">                removePointersFromTouchTargets(idBitsToRemove);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!handled &amp;&amp; mInputEventConsistencyVerifier != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mInputEventConsistencyVerifier.onUnhandledEvent(ev, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> handled;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="默认情况"><a href="#默认情况" class="headerlink" title="默认情况"></a>默认情况</h4><p><img src="https://upload-images.jianshu.io/upload_images/7186484-19bd3ac2770676b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Touch默认流程.png"></p>
+<h4 id="dispatchTouchEvent返回值"><a href="#dispatchTouchEvent返回值" class="headerlink" title="dispatchTouchEvent返回值"></a>dispatchTouchEvent返回值</h4><p><code>dispatchTouchEvent()中调用了onInterceptTouchEvent()和dispatchTransformedTouchEvent()方法，dispatchTransformedTouchEvent()调用了super.dispatchTouchEvent()方法</code>，所以如果重写dispatchTouchEvent方法</p>
+<ul>
+<li>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-5dd5920e40b17322.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回true.png"></li>
+<li>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-7b303e08235b2003.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dispatchTouchEvent返回false.png"></li>
+</ul>
+<h4 id="onInterceptTouchEvent返回值"><a href="#onInterceptTouchEvent返回值" class="headerlink" title="onInterceptTouchEvent返回值"></a>onInterceptTouchEvent返回值</h4><ul>
+<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-ef4951c9034fc86a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onInterceptTouchEvent返回true.png"></p>
+</li>
+<li><p>返回false<br>onInterceptTouchEvent和onTouchEvent如果返回false的话， 效果和默认的一样</p>
+</li>
+</ul>
+<h4 id="onTouchEvent返回值"><a href="#onTouchEvent返回值" class="headerlink" title="onTouchEvent返回值"></a>onTouchEvent返回值</h4><ul>
+<li><p>返回true<br><img src="https://upload-images.jianshu.io/upload_images/7186484-6ec1d110a654160d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回true.png"></p>
+</li>
+<li><p>返回false<br><img src="https://upload-images.jianshu.io/upload_images/7186484-d0c296fdd731ac2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onTouch返回false.png"></p>
+</li>
+</ul>
+<p>参考：</p>
+<p><a href="https://www.jianshu.com/p/c98a41a9a5f3" target="_blank" rel="noopener">一步步探索学习Android Touch事件分发传递机制（一）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/18/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8Etouch%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E3%80%8F/" data-id="ckal0v28v003nl9265afy7x6d" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JVM——加载引擎" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" class="article-date">
@@ -102,7 +167,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ckahx5brl003fxo266hpuhi8u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E5%8A%A0%E8%BD%BD%E5%BC%95%E6%93%8E/" data-id="ckal0v28y003rl9262i461cef" class="article-share-link">Share</a>
       
       
     </footer>
@@ -149,7 +214,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ckahx5bro003ixo2655ky6fpf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/02/15/JVM%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/" data-id="ckal0v28z003tl92665y07dpz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -213,7 +278,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ckahx5bsf0045xo268ahf1jcx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/10/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ckal0v298004cl926bfpz6sya" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Retrofit/" rel="tag">Retrofit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag">源码学习</a></li></ul>
@@ -263,7 +328,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckahx5bto004oxo26dbh22fvu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EHeadFirst-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckal0v29g004vl9266t4mhpt7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -317,7 +382,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckahx5bsj0049xo26gyvnd3jm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/29/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94Retrofit%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckal0v297004al926gjrt2swx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -377,7 +442,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckahx5brv003qxo261txy8m0p" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/Java%E3%80%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%8F/" data-id="ckal0v2950045l9267ujwc6y4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
@@ -450,7 +515,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckahx5bsd0042xo26dze6gyg7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/28/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckal0v2960049l9267g9lb7n9" class="article-share-link">Share</a>
       
       
     </footer>
@@ -500,7 +565,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckahx5bsl004cxo261f6jhex3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/14/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckal0v298004el9269atjaf82" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li></ul>
@@ -563,72 +628,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ckahx5bra0032xo266oqx1ysw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ckal0v28i003fl926hmhgexwz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Android基础三部曲『onDraw+onMessage+onLayout』" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" class="article-date">
-  <time datetime="2019-04-09T11:33:54.000Z" itemprop="datePublished">2019-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/">Android基础三部曲『onDraw+onMessage+onLayout』</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://47.110.40.63:8080/img/blog/View%E7%BB%93%E6%9E%84%E5%9B%BE.png" alt="View结构图.png"></p>
-<p>Activity内部有个Window成员，它的实例为PhoneWindow，PhoneWindow有个内部类是DecorView，这个DecorView就是存放布局文件的，里面有TitleActionBar和我们setContentView传入进去的layout布局文件</p>
-<ul>
-<li><strong>Window类时一个抽象类，提供绘制窗口的API</strong></li>
-<li><strong>PhoneWindow是继承Window的一个具体的类，该类内部包含了一个DecorView对象，该DectorView对象是所有应用窗口(Activity界面)的根View</strong></li>
-<li><strong>DecorView继承FrameLayout，里面id=content的就是我们传入的布局视图</strong></li>
-</ul>
-<p>依据面向对象从抽象到具体我们可以类比上面关系就像如下：<br> Window是一块电子屏，PhoneWindow是一块手机电子屏，DecorView就是电子屏要显示的内容，Activity就是手机电子屏安装位置</p>
-<h2 id="setContentView流程"><a href="#setContentView流程" class="headerlink" title="setContentView流程"></a>setContentView流程</h2><p><strong>setContentView整个过程主要是如何把Activity的布局文件或者java的View添加至窗口里，重点概括为：</strong></p>
-<ol>
-<li>创建一个DecorView的对象mDecor，该mDecor对象将作为整个应用窗口的根视图。</li>
-<li>依据Feature等style theme创建不同的窗口修饰布局文件，并且通过findViewById获取Activity布局文件该存放的地方（窗口修饰布局文件中id为content的FrameLayout）。</li>
-<li>将Activity的布局文件添加至id为content的FrameLayout内。</li>
-<li>当setContentView设置显示OK以后会回调Activity的onContentChanged方法。Activity的各种View的findViewById()方法等都可以放到该方法中，系统会帮忙回调。</li>
-</ol>
-<h2 id="android的View绘制"><a href="#android的View绘制" class="headerlink" title="android的View绘制"></a>android的View绘制</h2><p>view绘制主要包括三个方面：</p>
-<ul>
-<li>measure 测量组件本身的大小</li>
-<li>layout  确定组件在视图中的位置</li>
-<li>draw    根据位置和大小，将组件画出来</li>
-</ul>
-        
-          <p class="article-more-link">
-            <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ckahx5brh003bxo267euacunx" class="article-share-link">Share</a>
-      
-      
     </footer>
   </div>
   
@@ -693,6 +697,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/">Android『进阶解密』</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/">Android『电量检测及优化使用』</a>
           </li>
         
@@ -706,10 +714,6 @@
         
           <li>
             <a href="/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/">读书笔记『深入理解Java虚拟机』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/">Android基础『V1V2V3签名』</a>
           </li>
         
       </ul>
