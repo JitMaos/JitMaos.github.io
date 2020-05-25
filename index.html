@@ -110,308 +110,15 @@
 
 <p>在注释1处创建<strong>非阻塞的Socket</strong>。在注释2处调用listen函数对property_set_fd进行监听，这样创建的Socket就成为Server，也就是属性服务；listen函数的第二个参数设置为8，意味着属性服务最多可以同时为8个<font color="#dd0000"><strong>视图设置属性的用户</strong></font>提供服务。</p>
 <h3 id="2-2-1-Zygote概述"><a href="#2-2-1-Zygote概述" class="headerlink" title="2.2.1 Zygote概述"></a>2.2.1 Zygote概述</h3><p><font color="#dd0000"><strong>在Android系统中，Dalvik和ART、应用程序进程以及运行系统的关键服务的SystemServer进程都是有Zygote进程创建的</strong></font>，Zygote进程通过fork(复制进程）的形式来创建<strong>应用程序进程</strong>和<strong>SystemServer进程</strong>，由于Zygote进程在启动时会创建Dalvik和ART，因此通过fork创建的应用程序进程和SystemServer进程可以在内部获取一个Dalvik或ART的虚拟机实例副本。</p>
-<h3 id="2-2-3-Zygote进程启动过程介绍"><a href="#2-2-3-Zygote进程启动过程介绍" class="headerlink" title="2.2.3 Zygote进程启动过程介绍"></a>2.2.3 Zygote进程启动过程介绍</h3><p><strong>P34</strong>：ZygoteInit的main方法主要做了4件事：</p>
-<ol>
-<li>创建一个Server端的Socket(个人理解：因为此时连SystemServer进程都还没创建，没有Binder，所以进程间通信先通过Socket)</li>
-<li>预加载类和资源</li>
-<li>启动SystemServer进程</li>
-<li>等待AMS请求创建新的应用程序进程（P35-&gt;还是通过Socket来实现的）</li>
-</ol>
-<p><strong>P35</strong>：在Zygote进程将SystemServer进程启动后，就会在这个服务器端的Socket上等待AMS请求Zygote进程来创建新的应用程序进程。</p>
-<h3 id="4-1-根Activity的启动过程"><a href="#4-1-根Activity的启动过程" class="headerlink" title="4.1 根Activity的启动过程"></a>4.1 根Activity的启动过程</h3><p>根Activity的启动过程主要分为3步，分别是Launcher请求AMS、AMS到ApplicationThread的调用过程、ActivityThread启动Activity。</p>
-<h3 id="4-1-1-Launcher-请求AMS过程"><a href="#4-1-1-Launcher-请求AMS过程" class="headerlink" title="4.1.1 Launcher 请求AMS过程"></a>4.1.1 Launcher 请求AMS过程</h3><p><img src="http://47.110.40.63:8080/img/blog/%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B_Launcher%E8%AF%B7%E6%B1%82AMS.png" alt="img"></p>
-<p><strong>扩展</strong></p>
-<ol>
-<li><p>为什么从Application/Service的Context启动Activity，需要指定Intent.FLAG_ACTIVITY_NEW_TASK？</p>
-<p><strong>因为非Activity的Context没有所谓的任务栈(这里可以在扩展出Context的继承关系）</strong>，而Activity的存在需要任务栈来承载。所以指定NEW_TASK的Flag用于为Activity指定一个新的任务栈。</p>
-</li>
-<li><p>ApplicationThread虽然看上去是个Thread，但其实它是ActivityThread的内部类，<font color="#dd0000"><strong>继承自IApplicationThread.Stub</strong></font>，其中包含了很多scheduleXxx方法用于操作Service和BroadcastReceiver，具体可以参考这篇博文：<a href="https://blog.csdn.net/xu_song/article/details/81983724" target="_blank" rel="noopener">Android主线程(ActivityThread)源代码分析</a></p>
-</li>
-<li><p>Instrumentation可以看做是ActivityThread的管家</p>
-</li>
-</ol>
-<p><strong>P85</strong>：Android8.0之前并没有采用AIDL，而是采用了类似AIDL的形式，用AMS的代理对象ActivityManagerProxy来与AMS进行进程间通信，Android8.0使用IActivityManager替代了ActivityManagerProxy，<strong>它是AMS在本地的代理。</strong>execStartActivity方法最终调用的是AMS的startActivity方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton&lt;IActivityManager&gt; IActivityManagerSingleton = <span class="keyword">new</span> </span><br><span class="line">  Singleton&lt;IActivityManager&gt;() &#123;</span><br><span class="line">  <span class="meta">@override</span> </span><br><span class="line">  <span class="function"><span class="keyword">protected</span> IActivityManager <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE); <span class="comment">//1</span></span><br><span class="line">    <span class="keyword">final</span> IActivityManager am = IActivityManager.Stub.asInterface(b); <span class="comment">//2</span></span><br><span class="line">    <span class="keyword">return</span> am;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>###4.12 AMS到ApplicationThread的调用过程</p>
-<p><img src="http://47.110.40.63:8080/img/blog/AMS%E5%88%B0ApplicationThread%E8%BF%87%E7%A8%8B%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg" alt="img"></p>
-<p><strong>P93</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">realStartActivityLocked</span><span class="params">(ActivityRecord r,ProcessRecord app,<span class="keyword">boolean</span> andResume,<span class="keyword">boolean</span> checkConfi)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">    app.thread.scheduleLaunchActivity(<span class="keyword">new</span> Intent(r.intent),r.appToken,System.identityHashCode(r) .....)</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的app指的是Process（要启动Activity的应用程序进程），<strong>app.thread指的是IApplicationThread，它的实现是ActivityThread的内部类ApplicationThread，其中ApplicaitonThread继承了IApplicaitonThread.Stub</strong>。通过ApplicationThreadL来与应用程序进行Binder通信，换句话说，<font color="#dd0000"><strong>ApplicationThread是AMS所在进程（SystemServer进程）和应用程序进程的通信桥梁</strong></font>。</p>
-<p>###4.1.3 ActivityThread启动Activity过程</p>
-<p><img src="http://47.110.40.63:8080/img/blog/ActivityThread%E5%90%AF%E5%8A%A8Activity%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg" alt="img"></p>
-<p><strong>P96</strong>：因为ApplicationThread是一个Binder，它的调用逻辑运行在Binder线程池中，所以需要用H将代码的逻辑切换到主线程中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">frameworks/base/core/java/android/app/AndroidThread.java</span><br><span class="line"><span class="function"><span class="keyword">private</span> Activity <span class="title">performLaunchActivity</span><span class="params">(ActivityClientRecord r,Intent customIntent)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">  <span class="comment">//创建要启动Activity的上下文环境</span></span><br><span class="line">  ContextImpl appContext = createBaseContextForActivity(r); </span><br><span class="line">  java.lang.ClassLoader cl = appContext.getClassLoader(); </span><br><span class="line">  activity = mInstrumentation.newActivity(cl,component.getClassName(),r.intent); <span class="comment">//1</span></span><br><span class="line">  ...</span><br><span class="line">  activity.attach(...); <span class="comment">//2</span></span><br><span class="line">  ...</span><br><span class="line">  mInstrumentation.callActivityOnCreate(activity,r.state,r.persistentState); <span class="comment">//3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>1-&gt; 调用Instrumentation的newActivity创建Activity，<font color="#dd0000"><strong>有些需求可以通过hook Instrumentation来实现一些功能，就是基于newActivity创建Activity的机制。</strong></font></p>
-<p>2-&gt; 在attach中初始化Activity，<font color="#dd0000"><strong>在attach方法中会创建Window对象，并与Activity自身进行关联。</strong></font></p>
-<p>扩展：</p>
-<p>摘自：<a href="https://blog.csdn.net/huaxun66/article/details/78151361" target="_blank" rel="noopener">https://blog.csdn.net/huaxun66/article/details/78151361</a></p>
-<p><font color="#dd0000"><strong>总体流程</strong></font><br>1.Launcher通过Binder机制通知AMS启动一个Activity.<br>2.AMS使Launcher栈最顶端Activity进入onPause状态.<br>3.AMS通知Process使用Socket和Zygote进程通信，请求创建一个新进程.<br>4.Zygote收到Socket请求，fork出一个进程，并调用ActivityThread#main().<br>5.ActivityThread通过Binder通知SystemServer进程中的AMS启动应用程序.<br>6.AMS通知ActivityStackSupervisor真正的启动Activity.<br>7.ActivityStackSupervisor通知ApplicationThread启动Activity.<br>8.ApplicationThread发消息给ActivityThread，需要启动一个Activity.<br>9.ActivityThread收到消息之后，通知LoadedApk创建Applicaition，并且调用其onCteate()方法.<br>10.ActivityThread装载目标Activity类，并调用Activity#attach().<br>11.ActivityThread通知Instrumentation调用Activity#onCreate().<br>12.Instrumentation调用Activity#performCreate()，在Activity#performCreate()中调用自身onCreate()方法.</p>
-<h3 id="4-2Service的启动过程"><a href="#4-2Service的启动过程" class="headerlink" title="4.2Service的启动过程"></a>4.2Service的启动过程</h3><p>图片来源：</p>
-<p><a href="https://blog.csdn.net/huaxun66/article/details/78151361" target="_blank" rel="noopener">https://blog.csdn.net/huaxun66/article/details/78151361</a></p>
-<h2 id="第七章-理解WindowManager"><a href="#第七章-理解WindowManager" class="headerlink" title="第七章 理解WindowManager"></a>第七章 理解WindowManager</h2><h3 id="7-1Window、WindowManager和WMS"><a href="#7-1Window、WindowManager和WMS" class="headerlink" title="7.1Window、WindowManager和WMS"></a>7.1Window、WindowManager和WMS</h3><p><strong>P187</strong>：Window是一个抽象类，实现类为PhoneWindow，它对View进行管理。WindowManager是一个接口类，继承自接口ViewManager，从名字可以知道它是用来管理Window的，它的实现类为WindowManagerImpl。WindowManager和AMS通过Binder来进行跨进程通信。</p>
-<p>###7.2 WindowManager的关联类</p>
-<p><strong>P189</strong>：PhoneWindow的创建时机在</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/core/java/android/app/Activity.java</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(Context context,ActivityThread aThread,...)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  mWindow = <span class="keyword">new</span> PhoneWindow(<span class="keyword">this</span>,window,activityConfigCallback);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>P191</strong>：WindowManagerImpl虽然是WindowManager的实现类，但是它把功能的实现委托给了WindowManagerGlobal。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view,ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">  mGlobal.addView(view,params,mContext.getDisplay(),mParentWindow);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>P192</strong>：WindowManagerGlobal是一个<font color="#dd0000"><strong>单例</strong></font>，一个进程中只有一个WIndowManagerGlobal实例。</p>
-<p>PhoneWindow继承自Window，Window通过setWindowManager与WindowManager进行关联。WindowManager继承ViewManager接口，WindowManagerImpl是WindowManager的实现类，但是具体的功能由WindowManagerGlobal来实现。</p>
-<p><img src="http://47.110.40.63:8080/img/blog/WindowManager%E7%B1%BB%E5%9B%BE.png" alt="img"></p>
-<p>图片来源：<a href="https://www.jianshu.com/p/1c4059d3865b?utm_campaign=maleskine" target="_blank" rel="noopener">https://www.jianshu.com/p/1c4059d3865b?utm_campaign=maleskine</a></p>
-<h3 id="7-3-1-Window的类型和显示次序"><a href="#7-3-1-Window的类型和显示次序" class="headerlink" title="7.3.1 Window的类型和显示次序"></a>7.3.1 Window的类型和显示次序</h3><p><strong>P194</strong>：应用程序窗口的Type值范围为1<del>99；子窗口的Type值范围为1000</del>1999；系统窗口为2000~2999，数值越大离用户越近(屏幕Z轴)。 </p>
-<h3 id="7-4-1-系统窗口的添加过程"><a href="#7-4-1-系统窗口的添加过程" class="headerlink" title="7.4.1 系统窗口的添加过程"></a>7.4.1 系统窗口的添加过程</h3><p><strong>P196</strong>：</p>
-<p>1.调用WindowManagerImpl的addView</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/core/java/android/WindowManagerImpl.java</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view,ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">  mGlobal.addView(view,params,mContext.getDisplay(),mParentWindow);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.WindowManagerGlobal的addView</p>
-<p>在窗体添加、更新、删除的过程中涉及3个列表，<strong>View列表(ArrayList<View> mViews)、布局参数列表(ArrayList&lt;WindowManager.LayoutParams&gt; mParams)和ViewRootImpl列表（ArrayList<ViewRootImpl> mRoots)</strong>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/core/java/android/view/WindowManagerGlobal.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view,ViewGroup.LayoutParams params,Display display,Window parentWindow)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  root = <span class="keyword">new</span> ViewRootImpl(view.getContext,display);</span><br><span class="line">  mViews.add(view); <span class="comment">//添加到view列表</span></span><br><span class="line">  mRoots.add(root); <span class="comment">//添加到ViewRootImpl列表</span></span><br><span class="line">  mParams.add(wparams); <span class="comment">//添加到布局参数列表</span></span><br><span class="line">  root.setView(View,wparams,panelParentView);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>ViewRootImpl有很多功能，主要有以下几点</p>
-<ol>
-<li>View树的根并管理View树</li>
-<li><strong>触发View的测量、布局和绘制</strong></li>
-<li>输入事件的中转站</li>
-<li>管理Surface</li>
-<li><font color="#dd0000"><strong>负责与WMS进行进程间通信</strong></font></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/core/java/android/view/ViewRootImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view,WindowManager.LayoutParams attrs,View panelParentView)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  res = mWindowSession.addToDisplay(mWindow,mSeq,...);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>mWindowSession是IWindowSession类型的，它是一个Binder对象，用于进程间通信，IWindowSession是Client端的代理，它的Server端为Session，此前的代码逻辑都是运行在本地进程的，而Session的addToDisplay方法则是运行在WMS所在的进程（SystemServer进程）中。</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/services/core/java/com/android/server/wm/Session.java</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addToDisplay</span><span class="params">(IWindow window,<span class="keyword">int</span> seq,WindowManager.LayoutParams attrs,...)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> mService.addWindow(<span class="keyword">this</span>,window,seq,attrs...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><font color="#dd0000"><strong>在addToDisplay方法中调用了WMS的addWindow方法，并将自身也就是Session作为参数传进去，每个应用程序进程都会对应一个Session，WMS会用ArrayList来保存这些Session。</strong></font>剩下的工作由WMS完成，在WMS中会为这个添加的窗口分配surface，并确定窗口的显示次序，可见负责显示界面的画布Surface，而不是窗口本身。<font color="#dd0000"><strong>WMS会将它管理的Surface交由SurfaceFlinger处理，SurfaceFlinger会将这些Surface混合并绘制在屏幕上</strong></font>。</p>
-<h3 id="7-4-3-Window的更新过程"><a href="#7-4-3-Window的更新过程" class="headerlink" title="7.4.3 Window的更新过程"></a>7.4.3 Window的更新过程</h3><p><strong>P203</strong>：</p>
-<p>1.Window的更新过程调用ViewManager接口中的updateViewLayout，在WindowManagerGlobal的实现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/core/java/android/view/WindowManagerGlobal.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateViewLayout</span><span class="params">(View view,ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  root.setLayoutParams(wparams,<span class="keyword">false</span>);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.跟进去，ViewRootImpl的setLayoutParams最后会滴啊用ViewRootImpl的scheduleTraversals</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setLayoutParams</span><span class="params">(WindowManager.LayoutParams attrs, <span class="keyword">boolean</span> newView)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">    scheduleTraversals();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.<font color="#dd0000"><strong>scheduleTraversals通过Choreographer设置了下一帧的回调mTraversalRunnable</strong></font></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  mChoreographer.postCallback(</span><br><span class="line">    Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.TraversalRunnable</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TraversalRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    doTraversal();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5.doTraversal</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doTraversal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (mTraversalScheduled) &#123;</span><br><span class="line">    ...</span><br><span class="line">    performTraversals();</span><br><span class="line">		...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>6.最后是我们熟悉的performTraversals，在里面执行measure/layout/darw过程</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  relayoutResult = relayoutWindow(params, viewVisibility, insetsPending);</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">if</span> (!mStopped || mReportNextDraw) &#123;</span><br><span class="line">    ...</span><br><span class="line">    performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">  &#125; </span><br><span class="line">  <span class="keyword">if</span> (didLayout) &#123;</span><br><span class="line">    performLayout(lp, mWidth, mHeight);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (!cancelDraw &amp;&amp; !newSurface) &#123;</span><br><span class="line">    ...</span><br><span class="line">    performDraw();</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="第八章-理解WindowManagerService"><a href="#第八章-理解WindowManagerService" class="headerlink" title="第八章 理解WindowManagerService"></a>第八章 理解WindowManagerService</h2><p><strong>P215</strong>：Watchdog用来监控系统的一些关键服务的运行状况（比如传入的WMS的运行状况），这些被监控的服务都会实现Watchdog.Monitor接口。<font color="#dd0000"><strong>Watchdog每分钟都会对被监控的系统服务进行检查，如果被监控的系统服务出现死锁，则会杀死Watchdog所在的进程，也就是SystemServer进程</strong></font>。</p>
-<p><strong>P224</strong>：addWindow方法总结</p>
-<ul>
-<li>对所要添加到窗口进行检查，如果窗口不满足一些条件，就不会执行下面段代码逻辑。</li>
-<li>WindowToken相关的处理，比如有的窗口类型需要提供WindowToken，没有提供的话就不会执行下面的代码逻辑，有的窗口类型则需要由WMS隐式创建WindowToken。</li>
-<li>WindowState的创建和相关处理，将WindowToken和WindowState相关联。</li>
-<li>创建和配置DisplayContent，完成窗口添加到系统前的准备工作。</li>
-</ul>
-<p><strong>P230</strong>：删除Window过程总结</p>
-<ul>
-<li>检查删除线程的正确性，如果不正确就抛出异常。</li>
-<li><strong>从ViewRootImple列表、布局参数列表和View列表中删除与V对应的元素。</strong></li>
-<li>判断是否可以直接执行删除操作，如果不能就推迟删除操作。</li>
-<li>执行删除操作，清理和释放与V相关的一切资源。</li>
-</ul>
-<h2 id="第九章-JNI原理"><a href="#第九章-JNI原理" class="headerlink" title="第九章 JNI原理"></a>第九章 JNI原理</h2><p><strong>P235</strong>：Native方法注册分为静态注册和动态注册，其中静态注册多用于NDK开发，而动态注册多用于Framework开发。</p>
-<p><strong>扩展</strong>：<a href="https://www.jianshu.com/p/1d6ec5068d05" target="_blank" rel="noopener">Android JNI 函数注册的两种方式</a></p>
-<p><strong>P242</strong>：JNI的方法签名格式为</p>
-<p>​    (参数签名格式…) 返回值签名格式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">native_setup</span><span class="params">(Object meidarecorder_this,String fileName,String opPackageName)</span> </span>=&gt;它在JNI中方法签名为：</span><br><span class="line">(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>P244</strong>：JNIEnv是Native世界中Java环境的代表，通过JNIEnv<em>指针就可以在Native世界中访问Java世界的代码进行操作，<font color="#dd0000">*</em>它只在创建它的线程中有效，不能跨线程传递**</font>，因此不同线程的JNIEnv是彼此独立的。</p>
-<p><strong>P249</strong>：JNI也有引用类型，它们分别是本地引用(Local References)、全局引用(Global References)和弱全局引用(Weak Global References)</p>
-<p>本地引用</p>
-<ul>
-<li><p>当Nativa函数返回时，这个本地引用就会被自动释放。</p>
-</li>
-<li><p>只在创建它的线程中有效，不能跨线程使用。</p>
-</li>
-<li><p>局部引用是JVM负责的引用类型，受JVM管理。</p>
-</li>
-</ul>
-<p>全局引用</p>
-<ul>
-<li>在native函数返回时不会被自动释放，因此全局引用需要手动来进行释放。并且不会被GC回收。</li>
-<li>全局引用是可以跨线程使用的。</li>
-<li>全局引用不受到JVM管理。</li>
-</ul>
-<p>弱全局引用</p>
-<ul>
-<li>是一种特殊的全局引用，不同点在于弱全局引用是可以被GC回收的，弱全局引用被GC回收之后会指向NULL</li>
-</ul>
-<h2 id="第十章-Java虚拟机"><a href="#第十章-Java虚拟机" class="headerlink" title="第十章 Java虚拟机"></a>第十章 Java虚拟机</h2><p><strong>P256</strong>：classfile格式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//u1/u2/u4/u8分别表示1，2，4，8个字节的无符号类型。</span></span><br><span class="line">ClassFile &#123;</span><br><span class="line">  u4 magic: <span class="comment">//魔数，OxCAFEBABE</span></span><br><span class="line">  u2 minor_version; <span class="comment">//副版本</span></span><br><span class="line">  u2 major_version; <span class="comment">//主版本</span></span><br><span class="line">  u2 constant_pool_count; <span class="comment">//常量池计数器</span></span><br><span class="line">  cp_info constant_pool[constant_pool_count-<span class="number">1</span>]; <span class="comment">//常量池</span></span><br><span class="line">  u2 access_flags; <span class="comment">//类和接口层次的访问标志</span></span><br><span class="line">  u2 this_class; <span class="comment">//类索引</span></span><br><span class="line">  u2 super_class; <span class="comment">//父类索引</span></span><br><span class="line">  u2 interfaces_count; <span class="comment">//接口计数器</span></span><br><span class="line">  u2 interfaces[interfaces_count]; <span class="comment">//接口表</span></span><br><span class="line">  u2 fields_count; <span class="comment">//字段计数器</span></span><br><span class="line">  field_info_fields[fields_count]; <span class="comment">//字段表</span></span><br><span class="line">  u2 methods_count; <span class="comment">//方法计数器</span></span><br><span class="line">  method_info_methods[methods_count]; <span class="comment">//方法表</span></span><br><span class="line">  u2 attributes_count; <span class="comment">//属性计数器</span></span><br><span class="line">  attribute_info attributes[attributes_count]; <span class="comment">//属性表</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>P257</strong>：类加载子系统</p>
-<ol>
-<li><p>BootStrap ClassLoader(引导类加载器)</p>
-<p>用C/C++代码实现的加载器，用于加载指定的JDK的核心库，比如java.lang，java.util等。</p>
-</li>
-<li><p>Extensions ClassLoader(扩展类加载器)</p>
-<p>用于加载Java的扩展类，提供除了系统类之外的额外功能。</p>
-</li>
-<li><p>Application ClassLoader(应用程序加载器)</p>
-<p>这个类加载器可以通过ClassLoader的getSystemLoader获取到，也成为系统类加载器。</p>
-</li>
-</ol>
-<p><strong>P258-P260</strong>：运行时数据区域</p>
-<p>在<a href="[https://jitmaos.github.io/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/](https://jitmaos.github.io/2020/04/19/读书笔记『深入理解Java虚拟机』/)">读书笔记『深入理解Java虚拟机』</a>有记录过，不再重复记录。</p>
-<p><strong>P261</strong>：对象的创建</p>
-<ol>
-<li><p>判断对象对应的类是否加载、链接和初始化</p>
-</li>
-<li><p>为对象分配内存</p>
-</li>
-<li><p>处理并发安全问题</p>
-</li>
-<li><p>初始化分配到的内存空间</p>
-<p>出对象头外，都初始化为零。</p>
-</li>
-<li><p>设置对象的对象头</p>
-<p>将对象的所属类、对象的HashCode和对象的GC分代年龄等数据存储在对象头中。</p>
-</li>
-<li><p>执行init方法进行初始化</p>
-</li>
-</ol>
-<p><strong>P262</strong>：对象的堆内布局主要分为三部分：对象头、实例数据、对齐填充(不一定存在，没有特殊意义)</p>
-<p>对象头：</p>
-<p>​    hash：对象的哈希码</p>
-<p>​    age：<font color="#dd0000"><strong>对象的分代年龄</strong></font>。</p>
-<p>​    biased_lock：<font color="#dd0000"><strong>偏向锁标志位</strong></font>。</p>
-<p>​    lock：锁状态标志位。</p>
-<p>​    JavaThread<em>：<font color="#dd0000">*</em>持有偏向锁的线程ID**</font>。</p>
-<p>​    epoch：<strong>偏向时间戳</strong></p>
-<p><strong>P266-P275</strong>：垃圾回收算法</p>
-<p>在<a href="[https://jitmaos.github.io/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/](https://jitmaos.github.io/2020/04/19/读书笔记『深入理解Java虚拟机』/)">读书笔记『深入理解Java虚拟机』</a>有记录过，不再重复记录。</p>
-<h2 id="第十一章-Dalvik和ART"><a href="#第十一章-Dalvik和ART" class="headerlink" title="第十一章 Dalvik和ART"></a>第十一章 Dalvik和ART</h2><p><strong>P276</strong>：<font color="#dd0000"><strong>Dalvik并不是一个Java虚拟机</strong></font>，因为Dalvik没有遵循Java虚拟机规范，Dalvik是基于寄存器的，而Java虚拟机是基于栈的。<strong>基于寄存器的Dalvik，减少了出入栈的指令，更紧凑、简洁</strong>。</p>
-<p><strong>P277</strong>：Dex文件将所包含的class文件的信息整合在一起，去除冗余信息，更紧凑。</p>
-<p><strong>P282</strong>：Dalvik和ART的区别</p>
-<ol>
-<li>在ART中，系统在安装时会进行一次AOT（Ahead of time compilation，预编译)，将字节码预先编译成机器码并存储在本地，这样应用程序每次运行时就不需要进行编译了，程序的运行效率得以提高，耗电量也会减少。ART在7.0前是全编译的，但是这样导致安装时间过长，且占据更大的存储空间。<font color="#dd0000"><strong>在7.0以后，ART加入了即时编译器JIT，在安装时不会将字节码全部编译成机器码，而是在运行中将热点代码编译成机器码（据说是在屏幕息屏，或者设备空闲的时候执行的)，存储在本地，从而取得一个平衡</strong></font>。</li>
-<li>Dalvik是基于32位CPU设计的，而ART支持64位并兼容32位CPU，这是Dalvik被淘汰的主要原因之一。</li>
-<li>ART对垃圾回收机制进行了改进，比如更频繁地执行并行垃圾回收，将GC暂停有2次减少为1次。</li>
-<li>ART的运行时堆空间划分和Dalvik不同。</li>
-</ol>
-<p><strong>P288</strong>：Zygote进程创建了Dalvik或ART虚拟机的实例，之后fork出来的进程都同样带有Dalvik或ART虚拟机的实例。</p>
-<h2 id="第十二章-理解ClassLoader"><a href="#第十二章-理解ClassLoader" class="headerlink" title="第十二章 理解ClassLoader"></a>第十二章 理解ClassLoader</h2><p><strong>P295</strong>：ClassLoader双亲委托加载机制的好处</p>
-<ul>
-<li>防止重复加载，已经加载过得Class，直接使用就可以了。</li>
-<li>更加安全，防止被自定义类已经加载的类。</li>
-</ul>
-<p>自定义ClassLoader</p>
-<ol>
-<li>定义一个自定义ClassLoader类</li>
-<li>复写findClass方法，并在findClass方法中调用defineClass方法</li>
-</ol>
-<p><strong>P299</strong>：Android中的ClassLoader</p>
-<p>Android中的ClassLoader和Java中的ClassLoader有些类似，也分为系统类加载器和自定义类加载器，其中系统类加载器分为：BootClassLoader、PathClassLoader、DexClassLoader。</p>
-<p><strong>BootClassLoader</strong>：是ClassLoader的<strong>内部类</strong>，并继承自ClassLoader。<font color="#dd0000"><strong>BootClassLoader是一个单例类，需要注意的是BootClassLoader的访问修饰符是默认的，只有在同一个包中才能访问，因此我们在应用程序中是无法直接调用的。</strong></font></p>
-<p><strong>DexClassLoader</strong>：可以加载dex文件以及包含dex的压缩文件(apk和jar文件)，<font color="#dd0000"><strong>DexClassLoader继承自BaseDexClassLoader，方法都在BaseDexClassLoader中实现。</strong></font></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DexClassLoader</span> <span class="keyword">extends</span> <span class="title">BaseDexClassLoader</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">DexClassLoader</span><span class="params">(String dexPath,String optimizedDirectory,String 			  		    librarySearchPath,ClassLoader parent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(dexPath,<span class="keyword">new</span> File(optimizedDirectory),librarySearchPath,parent);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>DexClassLoader构造函数包含4个参数</p>
-<ul>
-<li>dexPath：dex相关文件路径集合，多个路径用文件分隔符分隔默认文件分隔符为”:”；</li>
-<li>optimizedDirectory：解压的dex文件的存储路径，这个路径必须是一个内部存储路径，在一般情况下，使用当前应用程序的私有路径：/data/data/<Package Name>/…</li>
-<li>librarySearchPath：包含C/C++库的路径集合，多个路径用文件分隔符分隔，可以为null</li>
-<li>Parent：父加载器</li>
-</ul>
-<p><strong>PathClassLoader</strong>：Android系统使用PathClassLoader来加载<strong>系统类和应用程序的类</strong>。和DexClassLoader一样继承自BaseDexClassLoader，也在BaseDexClassLoader中实现。</p>
-<p>在PathClassLoader的构造方法中没有optimizedDirectory，<strong>这是因为PathClasLoader的optimizedDirectory已经被指定为/data/data/dalvik-cache</strong>，该目录用于存放已经加载过得dex，<font color="#dd0000"><strong>因此PathClassLoader通常用来加载已经安装的apk的dex文件</strong></font>。</p>
-<p>![img](<a href="http://47.110.40.63:8080/img/blog/Android" target="_blank" rel="noopener">http://47.110.40.63:8080/img/blog/Android</a> 8.0ClassLoader继承关系.png)</p>
-<ul>
-<li>ClassLoader是一个抽象类，其中定义了ClassLoader的主要功能。<strong>BootClassLoader是它的内部类</strong>。</li>
-<li>SecureClassLoader类和JDK 8中的SecureClassLoader的代码是一样的，它继承了抽象类ClassLoader。SecureClassLoader并不是ClassLoader的实现类，而是<font color="#dd0000"><strong>拓展了ClassLoader类加入了权限方面的功能，加强了ClassLoader的安全性</strong></font>。</li>
-<li>URLClassLoader类和JDK 8中的URLClassLoader是一样的，<font color="#dd0000"><strong>它继承自SecureClassLoader，用来通过URL路径从jar文件和文件夹中加载类和资源</strong></font>。</li>
-<li>InMemoryDexClassLoader是Android 8.0新增的类加载器，继承自BaseDexClassLoader，<font color="#dd0000"><strong>用来加载内存中的dex文件</strong></font>。</li>
-<li>BaseDexClassLoader继承自ClassLoader，是抽象类ClassLoader的具体实现类，PathClassLoader、DexClassLoader、InMemoryDexClassLoader都继承自它。</li>
-</ul>
-<p><strong>ClassLoader的加载流程</strong></p>
-<p>![img](<a href="http://47.110.40.63:8080/img/blog/Android" target="_blank" rel="noopener">http://47.110.40.63:8080/img/blog/Android</a> 类加载流程示例.png)</p>
-<h2 id="第十三章-热修复原理"><a href="#第十三章-热修复原理" class="headerlink" title="第十三章 热修复原理"></a>第十三章 热修复原理</h2><p><strong>P313</strong>：热修复的核心技术包括三类，分别是<strong>代码修复</strong>，<strong>资源修复</strong>，<strong>动态链接库修复</strong>。</p>
-<h3 id="13-3-1-Instant-Run概述"><a href="#13-3-1-Instant-Run概述" class="headerlink" title="13.3.1 Instant Run概述"></a>13.3.1 Instant Run概述</h3><p><img src="http://47.110.40.63:8080/img/blog/InstantRun%E7%BC%96%E8%AF%91%E9%83%A8%E7%BD%B2.png" alt="img"></p>
-<p><strong>Hot Swap</strong>：不需要重启程序，不需要重启Activity，如：修改一个现有方法。</p>
-<p><strong>Warm Swap</strong>：需要Activity重启，如：修改或删除一个现有的资源文件。</p>
-<p><strong>Code Swap</strong>：App需要重启，但是不需要重新安装，如：添加、删除一个字段和方法、添加一个类等。</p>
-<p>图片来源：<a href="https://www.jianshu.com/p/fe2f739928ec" target="_blank" rel="noopener">https://www.jianshu.com/p/fe2f739928ec</a></p>
-<p><strong>P318</strong>：InstantRun中资源热修复的原理</p>
-<ol>
-<li>创建新的AssetManager，通过<strong>反射</strong>调用addAssetPath方法加载外部的资源，这样新创建的AssetManager就含有了外部资源。</li>
-<li>将AssetManager类型的mAssets字段的引用全部替换为新创建的AssetManager。</li>
-</ol>
-<p>###13.4 代码修复</p>
-<p>代码修复主要有3个方案，分别是<font color="#dd0000"><strong>底层替换方案、类加载方案和Instant Run方案</strong></font>。</p>
-<h3 id="13-4-1-类加载方案"><a href="#13-4-1-类加载方案" class="headerlink" title="13.4.1 类加载方案"></a>13.4.1 类加载方案</h3><p><strong>P319</strong>：</p>
-<p><strong>65536限制</strong>：<strong>类加载方案基于Dex分包方案</strong>，<font color="#dd0000"><strong>DVM指令集的方法调用指令invoke-kind索引为16bits，最多能引用65536个方法</strong></font>。</p>
-<p><strong>LinearAlloc限制</strong>：DVM中LinearAlloc是一个固定的缓存区，当方法数超过了缓存区的大小时会报错。</p>
-<p><strong>Dex分包方案</strong>：将程序启动必须要用到的方法的类放到<strong>主Dex</strong>中，其余代码放置到<strong>次Dex</strong>中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//libcore/dalvik/src/main/java/dalvik/system/DexPathList.java</span></span><br><span class="line"><span class="keyword">public</span> Class&lt;?&gt; findClass(String name,List&lt;Throwable&gt; suppressed) &#123;</span><br><span class="line">  <span class="keyword">for</span>(Element element:dexElements) &#123;</span><br><span class="line">    Class&lt;?&gt; clazz = element.findClass(name,definingContext,suppressed);</span><br><span class="line">    <span class="keyword">if</span>(clazz != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> clazz;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(dexElementsSuppressedExceptions != <span class="keyword">null</span>) &#123;</span><br><span class="line">    suppressed.addAll(Arrays.asList(dexElementsSuppressedExceptions));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Element内部封装了DexFile，DexFile用于加载dex文件，因此每个dex文件对应衣蛾Element。多个Element组成了有序的Element数组dexElements。当要查找类时，会遍历Element数组dexElements(相当于遍历dex文件数组），调用Element的findClass方法，其内部调用DexFile的loadClassBinaryName方法，<strong>如果在当前Element中找到了目标Class，就返回。否则接着找下一个Element</strong>。</p>
-<p>根据加载顺序，我们可以将有问题的代码修复好以后，打成一个dex，<font color="#dd0000"><strong>将其放置在dexElements数组的首位</strong></font>，这样可以是虚拟机加载到修复后的Class。</p>
-<p>为什么需要重启呢？<font color="#dd0000"><strong>因为已经加载过的类是无法卸载的，只能重新走一遍类加载流程加载修复过的Class</strong></font>。</p>
-<p>QQ空间的超级补丁和Nuwa按上面说的将补丁包放在Element数组的第一个元素以优先加载；微信Tinker将新旧APK做diff，得到patch.dex，再将patch.dex与手机中APK的classes.dex合并，生成新的classes.dex，<font color="#dd0000"><strong>然后在运行时通过反射将classes.dex放到Elements数组的第一位</strong></font>；饿了么的Amigo则是将补丁包中每个dex对应的Element取出来，之后组成新的Element数组，<strong>在运行时通过反射用新的Element数组替换掉现在的Element数组</strong>。</p>
-<h3 id="13-4-2-底层替换方案"><a href="#13-4-2-底层替换方案" class="headerlink" title="13.4.2 底层替换方案"></a>13.4.2 底层替换方案</h3><p><strong>P322</strong>：</p>
-<p>底层替换方案不需要再次加载类，而是直接在Native层修改原有类，<strong>由于在原有类进行修改限制会比较多，且不能增减原有类的方法和字段，如果我们增加了方法数，那么方法索引数也会增加，这样访问方法时无法通过索引找到正确的方法，同样的字段也有类似的情况。</strong></p>
-<p><font color="#dd0000"><strong>替换ArtMethod结构体中的字段或者替换整个ArtMethod结构体，这就是底层替换方案。</strong></font>AndFix采用替换ArtMethod结构体中的字段，这样会有兼容问题，因为厂商可能修改ArtMethod结构体，导致方法替换失败。<strong>Sophix采用的是替换整个ArtMethod结构体，这样不会存在兼容问题</strong>。</p>
-<h3 id="13-4-3-Instant-Run方案"><a href="#13-4-3-Instant-Run方案" class="headerlink" title="13.4.3 Instant Run方案"></a>13.4.3 Instant Run方案</h3><p><strong>P323</strong>：</p>
-<p><font color="#dd0000"><strong>Instant Run在第一次构建APK时，使用ASM在每一个方法中注入了类似如下的代码</strong></font></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">IncrementalChange localIncrementalChange = $change;<span class="comment">//1</span></span><br><span class="line"><span class="keyword">if</span>(localIncrementalChange != <span class="keyword">null</span>) &#123; <span class="comment">//2</span></span><br><span class="line">  localIncrementalChange.access$dispatch(</span><br><span class="line">  	<span class="string">"onCreate.(Landroid/os/bundle;)V"</span>,<span class="keyword">new</span> Object[]&#123;<span class="keyword">this</span>,paramBundle&#125;);</span><br><span class="line">  <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当我们点击InstantRun时，如果方法没有变化则$change为null；就调用return如果方法有变化，就生成替代类，这里我们假设MainActiivity的onCreate做了修改，就会生成MainActivity#override，这个类实现了IncrementalChange接口。</p>
-<h3 id="13-5-动态链接库的修复"><a href="#13-5-动态链接库的修复" class="headerlink" title="13.5 动态链接库的修复"></a>13.5 动态链接库的修复</h3><p><strong>p323</strong>：热修复框架的so修复主要更新so，因此so的修复的基础原理是加载so。</p>
-<p><strong>P324</strong>：<font color="#dd0000"><strong>System的load方法传入的参数是so在磁盘的完整路径，用于加载指定路径的so。System的loadLibrary传入的参数是so的名称，用于加载App安装后自动从apk包中复制到/data/data/packangename/lib下的so.</strong></font></p>
-<p><strong>P332</strong>：修复SO文件的两个方案</p>
-<ol>
-<li>将SO补丁插入到NativeLibraryElement数组的前部，让SO补丁的路径先被返回和加载（类似代码dex修复)。</li>
-<li>调用System的load方法来接管So的加载入口。</li>
-</ol>
-<h2 id="第十四章-Hook技术"><a href="#第十四章-Hook技术" class="headerlink" title="第十四章 Hook技术"></a>第十四章 Hook技术</h2><p><strong>P335</strong>：被劫持的对象，称作Hook点，为了保证Hook的稳定性，Hook点一般选择<strong>容易找到且不易变化</strong> 的对象，<strong>静态变量和单例</strong>就符合这一条件。</p>
-<p><strong>P336</strong>：根据Hook的实现方式可以分为两种</p>
-<ul>
-<li>通过<strong>反射和代理</strong>实现，只能Hook当前的应用程序进程。</li>
-<li>通过<strong>Hook框架</strong>来实现，比如Xposed，可以实现全局Hook(Zygote进程)，但是<font color="#dd0000"><strong>需要root</strong></font>。</li>
-</ul>
-<p><strong>P343</strong>：一个进程中只有一个ActivityThread，ActivityThread是主线程的管理类。</p>
-<p><font color="#dd0000"><strong>扩展：ActivityThread</strong></font></p>
-<p>安卓应用程序的入口是什么呢？我想不少人可能回答说:application的onCreate方法，其实并不是的，即使是application，<strong>也有一个方法比onCreate先执行，这个方法就是attachBaseContext(Context context)方法:一般情况下，可以在这个方法中进行多dex的分包注入</strong>，比如下面的代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    protected void attachBaseContext(Context base) &#123;</span><br><span class="line">        MultiDex.install(base);</span><br><span class="line">        super.attachBaseContext(base);</span><br><span class="line">        try &#123;</span><br><span class="line">            HandlerInject.hookHandler(base);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>application并不是安卓程序的入口，跟Java程序类似，都是有一个入口的，而这个入口就是ActivityThread，<font color="#dd0000"><strong>ActiviyThread也有一个main方法，这个main方法是安卓应用程序真正的入口</strong></font>。</p>
-<p><strong>ActivityThread的作用很多，但最主要的作用是根据AMS(ActivityManagerService的要求，通过IApplicationTHread的接口)负责调度和执行activities、broadcasts和其它操作</strong>。</p>
-<h2 id="第十五章-插件化原理"><a href="#第十五章-插件化原理" class="headerlink" title="第十五章 插件化原理"></a>第十五章 插件化原理</h2><p><strong>P352</strong>：如果加载的插件不需要和宿主有任何耦合，也无须和宿主进行通信，比如加载第三方APP，那么推荐使用RePlugin，其他情况推荐使用VirtualApk。</p>
-<p>###15.4 Activiyt插件化</p>
-<p>三种实现方式：反射、接口、Hook。主流的采用Hook的方式，Hook的实现有两种方案：</p>
-<ul>
-<li>通过Hook  IActivityManager实现</li>
-<li>通过Hook Instrumentation实现</li>
-</ul>
-<h2 id="第十六章-绘制优化"><a href="#第十六章-绘制优化" class="headerlink" title="第十六章 绘制优化"></a>第十六章 绘制优化</h2><h3 id="16-1-1绘制原理"><a href="#16-1-1绘制原理" class="headerlink" title="16.1.1绘制原理"></a>16.1.1绘制原理</h3><p><strong>P395</strong>：View的绘制流程有3个步骤，分别是measure、layout和draw，它们主要运行在系统的应用架构层，<font color="#dd0000"><strong>而真正将数据渲染到屏幕上的则是系统Native层的SurfaceFlinger服务来完成的。</strong></font></p>
-<p>绘制过程主要由CPU来进行Measure、Layout、Record、Execute的数据计算工作，GPU负责栅格化、渲染。<strong>CPU和GPU是通过图形驱动层来进行连接的，图形驱动层维护了一个队列，CPU将display list添加到改队列中，这样GPU就可以从这个队列中取出数据进行绘制</strong>。</p>
-<p>Android系统每16ms发出VSYNC(垂直同步型号)信号，触发UI进行渲染，VSYNC是一种<font color="#dd0000"><strong>定时中断</strong></font>，一旦收到VSYNC信号，CPU就开始处理各帧数据。</p>
-<p>产生卡顿的原因：</p>
-<ul>
-<li>布局Layout过于复杂，无法在16ms内完成渲染。</li>
-<li>同一时间动画执行的次数过多，导致CPU和GPU负载过重。</li>
-<li>View过度绘制，导致某些像素在同一帧时间内被绘制多次。</li>
-<li>在UI线程中做了稍微耗时的操作。</li>
-<li>GC回收时暂停时间过长或频繁的GC产生了大量暂停时间。</li>
-</ul>
-
+        
+          <p class="article-more-link">
+            <a href="/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/" data-id="ckal0v29c004nl926drmrfspj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/" data-id="ckalqfbzr004mti26dpag9ii8" class="article-share-link">Share</a>
       
       
     </footer>
@@ -509,7 +216,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckal0v28m003il926cfrsa6ss" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/12/Android%E3%80%8E%E7%94%B5%E9%87%8F%E7%9B%91%E6%B5%8B%E5%8F%8A%E4%BC%98%E5%8C%96%E4%BD%BF%E7%94%A8%E3%80%8F/" data-id="ckalqfbz60034ti261dabhqal" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android%EF%BC%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%8C%E7%94%B5%E9%87%8F%E4%BC%98%E5%8C%96/" rel="tag">Android，性能优化，电量优化</a></li></ul>
@@ -605,7 +312,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckal0v2aa0062l926bmj33zsj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/12/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckalqfc0e0063ti26hw8teraf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -666,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/06/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E5%A4%A7%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E3%80%8F/" data-id="ckal0v29d004pl92603dxcuh2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/06/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E5%A4%A7%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E3%80%8F/" data-id="ckalqfbzs004rti260wlfdn78" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flutter/" rel="tag">Flutter</a></li></ul>
@@ -714,7 +421,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" data-id="ckal0v29j0054l926ao6n2r05" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/" data-id="ckalqfbzw0050ti26hxx91gln" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -775,7 +482,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/" data-id="ckal0v28s003jl926705fh0o3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/10/Android%E5%9F%BA%E7%A1%80%E3%80%8EV1V2V3%E7%AD%BE%E5%90%8D%E3%80%8F/" data-id="ckalqfbz90038ti26dlv26gbf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -825,7 +532,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckal0v29i0050l926dqy04sx7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EJava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckalqfbzx0053ti267ftddbse" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -876,7 +583,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckal0v29a004gl92620ta24et" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E3%80%8E%E8%85%BE%E8%AE%AFMMKV%E5%AD%98%E5%82%A8%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckalqfbzp004gti26b2ew0kn4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -951,7 +658,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ckal0v2a90061l926fwjvbzd0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94OkHttp%E3%80%8E%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E3%80%8F/" data-id="ckalqfc0d0062ti262nvs2bid" class="article-share-link">Share</a>
       
       
     </footer>
@@ -1002,7 +709,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/" data-id="ckal0v2960048l926cxec482k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/19/Java%E8%BF%9B%E9%98%B6%E3%80%8EJavassist%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%8F/" data-id="ckalqfbzh003pti26apvycetp" class="article-share-link">Share</a>
       
       
     </footer>
