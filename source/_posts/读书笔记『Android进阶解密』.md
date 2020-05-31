@@ -383,8 +383,6 @@ private native final void native_setup(Object meidarecorder_this,String fileName
 (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
 ```
 
-
-
 **P244**：JNIEnv是Native世界中Java环境的代表，通过JNIEnv*指针就可以在Native世界中访问Java世界的代码进行操作，<font color="#dd0000">**它只在创建它的线程中有效，不能跨线程传递**</font>，因此不同线程的JNIEnv是彼此独立的。
 
 **P249**：JNI也有引用类型，它们分别是本地引用(Local References)、全局引用(Global References)和弱全局引用(Weak Global References)

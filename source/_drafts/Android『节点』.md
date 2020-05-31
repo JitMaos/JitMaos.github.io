@@ -327,6 +327,41 @@ b 、然后就各个surface 之间可能有重叠，比如说在上面的简略�
 
   在实际中对这些Surface 进行merge 可以采用两种方式，一种就是采用软件的形式来merge ，还一种就是采用硬件的方式，软件的方式就是我们的SurfaceFlinger ，而硬件的方式就是Overlay 。
 
+## App刷新屏幕流程
+
+摘自：https://blog.csdn.net/vicwudi/article/details/100191529
+
+1. 界面上任何一个 View 的刷新请求最终都会走到 ViewRootImpl 中的 scheduleTraversals() 里来安排一次遍历绘制 View 树的任务；
+2. scheduleTraversals() 会先过滤掉同一帧内的重复调用，在同一帧内只需要安排一次遍历绘制 View 树的任务即可，这个任务会在下一个屏幕刷新信号到来时调用 performTraversals() 遍历 View 树，遍历过程中会将所有需要刷新的 View 进行重绘；
+3. 接着 scheduleTraversals() 会往主线程的消息队列中发送一个同步屏障，拦截这个时刻之后所有的同步消息的执行，但不会拦截异步消息，以此来尽可能的保证当接收到屏幕刷新信号时可以尽可能第一时间处理遍历绘制 View 树的工作；
+4. 发完同步屏障后 scheduleTraversals() 才会开始安排一个遍历绘制 View 树的操作，作法是把 performTraversals() 封装到 Runnable 里面，然后调用 Choreographer 的 postCallback() 方法；
+5. postCallback() 方法会先将这个 Runnable 任务以当前时间戳放进一个待执行的队列里，然后如果当前是在主线程就会直接调用一个native 层方法，如果不是在主线程，会发一个最高优先级的 message 到主线程，让主线程第一时间调用这个 native 层的方法；
+6. native 层的这个方法是用来向底层注册监听下一个屏幕刷新信号，当下一个屏幕刷新信号发出时，底层就会回调 Choreographer 的onVsync() 方法来通知上层 app；
+7. onVsync() 方法被回调时，会往主线程的消息队列中发送一个执行 doFrame() 方法的消息，这个消息是异步消息，所以不会被同步屏障拦截住；
+8. doFrame() 方法会去取出之前放进待执行队列里的任务来执行，取出来的这个任务实际上是 ViewRootImpl 的 doTraversal() 操作；
+9. 上述第4步到第8步涉及到的消息都手动设置成了异步消息，所以不会受到同步屏障的拦截；
+10. doTraversal() 方法会先移除主线程的同步屏障，然后调用 performTraversals() 开始根据当前状态判断是否需要执行performMeasure() 测量、perfromLayout() 布局、performDraw() 绘制流程，在这几个流程中都会去遍历 View 树来刷新需要更新的View；
+
+<font color="#dd0000">**结来说，当有屏幕刷新操作时，系统会将View树的测量、布局和绘制等封装到一个Runnable，然后监听VSync信号，等Vsync信号来时，再触发此Runnable。**</font>
+
+## LaunchMode & taskAffinity
+
+摘自：https://www.cnblogs.com/yyz666/p/4674173.html
+
+总结：
+
+1. <font color="#dd0000">**SingleInstance的优先级很高，如果launchMode为SingleInstance，意味着所有的task中只能有一个目标Activity，且该Activity独占一个Task**</font>。
+2. **SingleTop和Standard不受taskAffinity影响，即使两个Activity的taskAffinity不相同**，在这两个launchMode下，也会将两个Activity分在同一个Task中，这两者的区别在于SingleTop如果栈顶是目标Activity，则会复用Activity，走onNewIntent。
+3. 当LaunchMode为SingleTask时，startActivity会先检测目标Activity的taskAffinity是否和当前Activity的taskAffinity相同，<font color="#dd0000">**如果相同，则依然将目标Activity分配到当前Task；反之新启一个Task**</font>。
+
+问题：
+
+1. A启动B，B启动SingleInstance的C，C返回，会返回到哪里？
+
+2. A启动SingleTask且taskAffinity不同的B，B在启动standard的C，C在A的栈中，还是在B的栈中？
+
+   
+
 ##利用Choreographer监测APP卡顿
 
 摘自：https://www.jianshu.com/p/9e8f88eac490
@@ -994,6 +1029,13 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 摘自：https://blog.csdn.net/hai_chao/article/details/79626161
 
 
+
+## Class文件解析
+
+摘自：
+
+1. https://blog.csdn.net/weelyy/article/details/78969412
+2. 《深入理解Java虚拟机》
 
 
 

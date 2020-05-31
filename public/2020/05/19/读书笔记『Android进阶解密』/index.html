@@ -20,7 +20,7 @@
 <meta property="og:image" content="http://47.110.40.63:8080/img/blog/WindowManager%E7%B1%BB%E5%9B%BE.png">
 <meta property="og:image" content="http://47.110.40.63:8080/img/blog/InstantRun%E7%BC%96%E8%AF%91%E9%83%A8%E7%BD%B2.png">
 <meta property="article:published_time" content="2020-05-19T13:25:56.739Z">
-<meta property="article:modified_time" content="2020-05-24T12:06:23.267Z">
+<meta property="article:modified_time" content="2020-05-25T00:07:15.185Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://47.110.40.63:8080/img/blog/%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B_Launcher%E8%AF%B7%E6%B1%82AMS.png">
@@ -118,6 +118,8 @@
 
 <p>在注释1处创建<strong>非阻塞的Socket</strong>。在注释2处调用listen函数对property_set_fd进行监听，这样创建的Socket就成为Server，也就是属性服务；listen函数的第二个参数设置为8，意味着属性服务最多可以同时为8个<font color="#dd0000"><strong>视图设置属性的用户</strong></font>提供服务。</p>
 <h3 id="2-2-1-Zygote概述"><a href="#2-2-1-Zygote概述" class="headerlink" title="2.2.1 Zygote概述"></a>2.2.1 Zygote概述</h3><p><font color="#dd0000"><strong>在Android系统中，Dalvik和ART、应用程序进程以及运行系统的关键服务的SystemServer进程都是有Zygote进程创建的</strong></font>，Zygote进程通过fork(复制进程）的形式来创建<strong>应用程序进程</strong>和<strong>SystemServer进程</strong>，由于Zygote进程在启动时会创建Dalvik和ART，因此通过fork创建的应用程序进程和SystemServer进程可以在内部获取一个Dalvik或ART的虚拟机实例副本。</p>
+<a id="more"></a>
+
 <h3 id="2-2-3-Zygote进程启动过程介绍"><a href="#2-2-3-Zygote进程启动过程介绍" class="headerlink" title="2.2.3 Zygote进程启动过程介绍"></a>2.2.3 Zygote进程启动过程介绍</h3><p><strong>P34</strong>：ZygoteInit的main方法主要做了4件事：</p>
 <ol>
 <li>创建一个Server端的Socket(个人理解：因为此时连SystemServer进程都还没创建，没有Binder，所以进程间通信先通过Socket)</li>
@@ -398,12 +400,12 @@
 <p>application并不是安卓程序的入口，跟Java程序类似，都是有一个入口的，而这个入口就是ActivityThread，<font color="#dd0000"><strong>ActiviyThread也有一个main方法，这个main方法是安卓应用程序真正的入口</strong></font>。</p>
 <p><strong>ActivityThread的作用很多，但最主要的作用是根据AMS(ActivityManagerService的要求，通过IApplicationTHread的接口)负责调度和执行activities、broadcasts和其它操作</strong>。</p>
 <h2 id="第十五章-插件化原理"><a href="#第十五章-插件化原理" class="headerlink" title="第十五章 插件化原理"></a>第十五章 插件化原理</h2><p><strong>P352</strong>：如果加载的插件不需要和宿主有任何耦合，也无须和宿主进行通信，比如加载第三方APP，那么推荐使用RePlugin，其他情况推荐使用VirtualApk。</p>
-<p>###15.4 Activiyt插件化</p>
-<p>三种实现方式：反射、接口、Hook。主流的采用Hook的方式，Hook的实现有两种方案：</p>
+<h3 id="15-4-Activiyt插件化"><a href="#15-4-Activiyt插件化" class="headerlink" title="15.4 Activiyt插件化"></a>15.4 Activiyt插件化</h3><p>三种实现方式：反射、接口、Hook。主流的采用Hook的方式，Hook的实现有两种方案：</p>
 <ul>
 <li>通过Hook  IActivityManager实现</li>
 <li>通过Hook Instrumentation实现</li>
 </ul>
+<p>###后序另外开一片博客，写插件化内容~~</p>
 <h2 id="第十六章-绘制优化"><a href="#第十六章-绘制优化" class="headerlink" title="第十六章 绘制优化"></a>第十六章 绘制优化</h2><h3 id="16-1-1绘制原理"><a href="#16-1-1绘制原理" class="headerlink" title="16.1.1绘制原理"></a>16.1.1绘制原理</h3><p><strong>P395</strong>：View的绘制流程有3个步骤，分别是measure、layout和draw，它们主要运行在系统的应用架构层，<font color="#dd0000"><strong>而真正将数据渲染到屏幕上的则是系统Native层的SurfaceFlinger服务来完成的。</strong></font></p>
 <p>绘制过程主要由CPU来进行Measure、Layout、Record、Execute的数据计算工作，GPU负责栅格化、渲染。<strong>CPU和GPU是通过图形驱动层来进行连接的，图形驱动层维护了一个队列，CPU将display list添加到改队列中，这样GPU就可以从这个队列中取出数据进行绘制</strong>。</p>
 <p>Android系统每16ms发出VSYNC(垂直同步型号)信号，触发UI进行渲染，VSYNC是一种<font color="#dd0000"><strong>定时中断</strong></font>，一旦收到VSYNC信号，CPU就开始处理各帧数据。</p>
@@ -415,11 +417,21 @@
 <li>在UI线程中做了稍微耗时的操作。</li>
 <li>GC回收时暂停时间过长或频繁的GC产生了大量暂停时间。</li>
 </ul>
+<h3 id="后序另外开一片博客，写绘制优化内容"><a href="#后序另外开一片博客，写绘制优化内容" class="headerlink" title="后序另外开一片博客，写绘制优化内容~~"></a>后序另外开一片博客，写绘制优化内容~~</h3><h2 id="第十七章-内存优化"><a href="#第十七章-内存优化" class="headerlink" title="第十七章 内存优化"></a>第十七章 内存优化</h2><h3 id="17-1-2-内存泄漏的场景"><a href="#17-1-2-内存泄漏的场景" class="headerlink" title="17.1.2 内存泄漏的场景"></a>17.1.2 内存泄漏的场景</h3><ol>
+<li><p>非静态内部类的静态实例</p>
+<p><strong>非静态内部类会持有外部类实例的引用</strong>，如果非静态内部类的实例是静态的，就会间接地长时间持有外部类的引用，阻止外部类实例被系统回收。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Object inner;</span><br><span class="line">  <span class="keyword">private</span> Button button;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p>###后序另外开一片博客，写内存优化内容~~</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/" data-id="ckal0v29c004nl926drmrfspj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/" data-id="ckalqfbzr004mti26dpag9ii8" class="article-share-link">Share</a>
       
       
     </footer>

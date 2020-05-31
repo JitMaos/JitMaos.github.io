@@ -25,9 +25,25 @@ Android系统每16ms发出VSYNC(垂直同步型号)信号，触发UI进行渲染
 
 ### Profile GPU Rendering
 
+ 本节参考：[Android性能优化典范——GPU渲染（Profile GPU Rendering)](https://blog.csdn.net/o190847959/article/details/54411721)
 
+Profile GPU Rendering是**Android4.1**系统提供的开发辅助功能。绿色的横先为警戒先，超过这条线意味着某一帧的绘制时长超过了16ms。
 
+![img](http://47.110.40.63:8080/img/blog/非架构/ProfileGPURendering.jpeg)
 
+每一条柱状线都包含三部分：
+（1）蓝色代表<font color="#dd0000">**测量绘制**</font>的时间，也就是需要多长时间去创建和更新DisplayList。<font color="#dd0000">**如果蓝色部分很高，可能需要重新绘制，或者View的onDraw方法处理事情太多**</font>。
+（2）红色代表<font color="#dd0000">**执行**</font>的时间，这部分是Android进行2D渲染Display List的时间。如果红色部分很高，**可能是由于重新提交了视图导致的。还有复杂的自定义View也会导致红色部分变高**。
+（3）橙色部分代表<font color="#dd0000">**处理**</font>时间，是CUP高速GPU渲染一帧的地方，**这是一个阻塞调用**，因为CPU会一直等待GPU发送接到命令的回复，<font color="#dd0000">**如果橙色部分很高，说明GPU很繁忙**</font>。
+**CPU 与 GPU**
+现代的图形API不允许CPU直接与GPU通信，而是通过中间的一个图形驱动层（Graphics Driver）来连接这两部分。
+![CPU——GPU任务传递1](http://47.110.40.63:8080/img/blog/CPU_GPU任务传递1.png)
+图形驱动维护了一个队列，CPU把display list添加到队列里，GPU从这个队列取出数据进行绘制。
+![CPU——GPU任务传递2](http://47.110.40.63:8080/img/blog/CPU_GPU任务传递2.png)
+
+### Systrace
+
+Systrace是**Android 4.1**中新增的性能数据采集和分析工具，它可以帮助开发者收集Android关键子系统（SurfaceFlinger、WMS等Framework部分关键模块、服务，View体系系统等）的运行信息。**Systrace的功能包括跟踪系统的I/O操作、内核工作队列、CPU负载以及Android各个子系统的运行状况等。对于UI显示性能，比如动画播放不流畅、渲染卡顿等问题提供了分析数据。**
 
 ## 优化建议
 
