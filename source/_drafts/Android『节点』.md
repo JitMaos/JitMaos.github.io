@@ -106,7 +106,7 @@ KMP算法是一种改进的字符串匹配算法，KMP算法的**核心是利用
 
 application并不是安卓程序的入口，跟Java程序类似，都是有一个入口的，而这个入口就是ActivityThread，<font color="#dd0000">**ActiviyThread也有一个main方法，这个main方法是安卓应用程序真正的入口**</font>。
 
-**ActivityThread的作用很多，但最主要的作用是根据AMS(ActivityManagerService的要求，通过IApplicationTHread的接口)负责调度和执行activities、broadcasts和其它操作**。
+**ActivityThread的作用很多，但最主要的作用是根据AMS(ActivityManagerService的要求，通过IApplicationThread的接口)负责调度和执行activities、broadcasts和其它操作**。
 
 ## RecyclerView和ListView缓存机制
 
@@ -114,8 +114,8 @@ application并不是安卓程序的入口，跟Java程序类似，都是有一�
 
 **ListView**的缓存有两级，在ListView里面有一个内部类 RecycleBin，RecycleBin有两个对象Active View和Scrap View来管理缓存，Active View是第一级，Scrap View是第二级。
 
-- **Active View**：是缓存在`屏幕内的ItemView`，当列表数据发生变化时，屏幕内的数据可以直接拿来复用，`无须进行数据绑定`。
-- **Scrap view**：缓存屏幕外的ItemView，这里所有的缓存的数据都是"脏的"，也就是数据需要重新绑定，也就是说`屏幕外的所有数据在进入屏幕的时候都要走一遍getView（）方法`。
+- **Active View**：是缓存在屏幕内的ItemView，当列表数据发生变化时，屏幕内的数据可以直接拿来复用，无须进行数据绑定。
+- **Scrap view**：缓存屏幕外的ItemView，这里所有的缓存的数据都是"脏的"，也就是数据需要重新绑定，也就是说屏幕外的所有数据在进入屏幕的时候都要走一遍getView（）方法。
 - 图片1：![img](http://47.110.40.63:8080/img/blog/ListView缓存示意图.png)
 - 图片2：![img](http://47.110.40.63:8080/img/blog/ListView缓存流程图.png)
 
@@ -135,7 +135,7 @@ application并不是安卓程序的入口，跟Java程序类似，都是有一�
 
 - RecycledViewPool
 
-  刚才说了**Cache默认的缓存数量是2个**，当Cache缓存满了以后会根据FIFO（先进先出）的规则把Cache先缓存进去的ViewHolder移出并缓存到RecycledViewPool中，**RecycledViewPool默认的缓存数量是5个。RecycledViewPool与Cache相比不同的是，从Cache里面移出的ViewHolder再存入RecycledViewPool之前ViewHolder的数据会被全部重置**，相当于一个新的ViewHolder，而且Cache是根据position来获取ViewHolder，而RecycledViewPool是根据itemType获取的，如果没有重写getItemType（）方法，itemType就是默认的。`因为RecycledViewPool缓存的ViewHolder是全新的，所以取出来的时候需要走onBindViewHolder（）方法`。
+  刚才说了**Cache默认的缓存数量是2个**，当Cache缓存满了以后会根据FIFO（先进先出）的规则把Cache先缓存进去的ViewHolder移出并缓存到RecycledViewPool中，**RecycledViewPool默认的缓存数量是5个。RecycledViewPool与Cache相比不同的是，从Cache里面移出的ViewHolder再存入RecycledViewPool之前ViewHolder的数据会被全部重置**，相当于一个新的ViewHolder，而且Cache是根据position来获取ViewHolder，而RecycledViewPool是根据itemType获取的，如果没有重写getItemType（）方法，itemType就是默认的。因为RecycledViewPool缓存的ViewHolder是全新的，所以取出来的时候需要走onBindViewHolder（）方法。
 
 ## 关于Context
 
@@ -250,7 +250,7 @@ public class MainActivity extends Activity {
 
 不足：
 
-`存在bug，屏幕横竖屏切换时设置的屏幕密度可能会被重置`。
+存在bug，屏幕横竖屏切换时设置的屏幕密度可能会被重置。
 
 **使用自定义SizeUtil**
 
@@ -275,8 +275,8 @@ public class MainActivity extends Activity {
 六、删除无用资源ShinkResource
 
 七、使用微信资源压缩方案AndResGuard
-**AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。`底层原理
-andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk。`
+**AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。底层原理
+andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk。
 
 ## 自定义权限
 
@@ -444,7 +444,7 @@ void scheduleTraversals() {
 
 **Property Animation**
 
-在`AnimationHandler`中的循环取帧的关键代码
+在AnimationHandler中的循环取帧的关键代码
 
 ```java
 public class AnimationHandler {
@@ -770,17 +770,17 @@ public final class MySingleton implements Serializable{
 
 由于ReentrantLock是java.util.concurrent包下提供的一套互斥锁，相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项：
 
-1. 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程`可以选择放弃等待`，这相当于Synchronized来说可以避免出现死锁的情况。通过lock.lockInterruptibly()来实现这个机制。
+1. 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程可以选择放弃等待，这相当于Synchronized来说可以避免出现死锁的情况。通过lock.lockInterruptibly()来实现这个机制。
 
 2. 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁是非公平锁，**ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好**。
 
 3. 锁绑定多个条件，一个ReentrantLock对象可以同时绑定多个对象。ReenTrantLock提供了一个Condition（条件）类，用来实现分组唤醒需要唤醒的线程们，而不是像synchronized要么随机唤醒一个线程要么唤醒全部线程。
 
-   Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，`Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中`，从而**可以有选择的进行线程通知，在调度线程上更加灵活**。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。
+   Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中，从而**可以有选择的进行线程通知，在调度线程上更加灵活**。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。
 
-`ReenTrantLock的实现是一种自旋锁，通过循环调用CAS+volatile操作来实现加锁。`
+ReenTrantLock的实现是一种自旋锁，通过循环调用CAS+volatile操作来实现加锁。
 
-`ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。`
+ReentrantLock的锁释放一定要在finally中处理，否则可能会产生严重的后果。
 
 
 
@@ -938,7 +938,7 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 1. Last-Modified
 
-   标识文件在服务器的最新更新修改时间。请求资源时，浏览器通过 `If-Modified-Since` 字段带上本地缓存的最新修改时间，服务器通过比较缓存文件的修改时间是否一致，来判断文件是否有修改。如果没有修改，则服务器返回 304 告知浏览器继续使用缓存；否则返回 200，同时返回最新的文件。
+   标识文件在服务器的最新更新修改时间。请求资源时，浏览器通过 If-Modified-Since 字段带上本地缓存的最新修改时间，服务器通过比较缓存文件的修改时间是否一致，来判断文件是否有修改。如果没有修改，则服务器返回 304 告知浏览器继续使用缓存；否则返回 200，同时返回最新的文件。
 
    
 
@@ -973,7 +973,7 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 4. ETag
 
-   是对文件进行标识的特征字符串。浏览器向服务器请求文件时，通过 `If-None-Match` 字段把特征字串发送给服务器，服务器通过 Etag 比对来判断文件是否更新。Etag 一致，则返回 304；否则返回 200 和最新的文件。
+   是对文件进行标识的特征字符串。浏览器向服务器请求文件时，通过 If-None-Match 字段把特征字串发送给服务器，服务器通过 Etag 比对来判断文件是否更新。Etag 一致，则返回 304；否则返回 200 和最新的文件。
 
    
 
@@ -984,7 +984,7 @@ IWindowSession 在viewRootImpl构造函数中初始化:
    If-None-Match: 248b11be4d6c7db6b2a699988a6603a5
    ```
 
-   `ETag` 和 `Last-Modified` 一同使用，是要其中一个判断缓存有效，则浏览器使用缓存数据
+   ETag 和 Last-Modified 一同使用，是要其中一个判断缓存有效，则浏览器使用缓存数据
 
 5. Cache-Control:no-cache (Pragma:no-cache)
 
@@ -1162,18 +1162,18 @@ LruCache(Least Recently Used)是一个基于LinkedHashMap进行封装的**线程
 
 自己实现一个LruCache的关键步骤
 
-`1.(必填)`你需要提供一个缓存容量作为构造参数。
+1.(必填)你需要提供一个缓存容量作为构造参数。
 
-`2.（必填）` 覆写 sizeOf 方法 ，自定义设计一条数据放进来的容量计算，如果不覆写就无法预知数据的容量，不能保证缓存容量限定在最大容量以内。
+2.（必填） 覆写 sizeOf 方法 ，自定义设计一条数据放进来的容量计算，如果不覆写就无法预知数据的容量，不能保证缓存容量限定在最大容量以内。
 
-`3.（选填）` 覆写 `entryRemoved` 方法 ，你可以知道最少使用的缓存被清除时的数据（ evicted, key, oldValue, newVaule ）。
+3.（选填） 覆写 entryRemoved 方法 ，你可以知道最少使用的缓存被清除时的数据（ evicted, key, oldValue, newVaule ）。
 
-`4.（记住）`LruCache是<font color="#dd0000">**线程安全**</font>的，在内部的 get、put、remove 包括 trimToSize 都是安全的（因为都上锁了）。
+4.（记住）LruCache是<font color="#dd0000">**线程安全**</font>的，在内部的 get、put、remove 包括 trimToSize 都是安全的（因为都上锁了）。
 
-`5.（选填）` 还有就是覆写 `create` 方法 。create()方法的执行可能需要很长时间，此时如果有其他线程也操作相同key的对象，则将当前create的对象舍弃。
+5.（选填） 还有就是覆写 create 方法 。create()方法的执行可能需要很长时间，此时如果有其他线程也操作相同key的对象，则将当前create的对象舍弃。
 
-LruCache源码异常的精简，核心原理是通过`LinkedHashMap`双向循环链表，每次访问过的数据会被移动到<font color="#dd0000">**队列末尾**</font>，在使用过程中我们需要重写`sizeOf`方法来帮助LruCache计算缓存大小，每当缓存数据发生覆盖或者清理时会回调`entryRemoved`方法，并且LruCache是线程安全的，核心操作都上了同步锁。
- Ps:我们可以手动调用`trimToSize`清理一批数据，也可以调用`resize`方法，重新赋值缓存大小的上限并计算当前空间是否需要清理，`snapshot`来获取缓存map的切片，注意是浅拷贝。
+LruCache源码异常的精简，核心原理是通过<font color="#dd0000">**LinkedHashMap双向循环链表**</font>，每次访问过的数据会被移动到<font color="#dd0000">**队列末尾**</font>，在使用过程中我们需要重写sizeOf方法来帮助LruCache计算缓存大小，每当缓存数据发生覆盖或者清理时会回调entryRemoved方法，并且LruCache是<font color="#dd0000">**线程安全的，核心操作都上了同步锁**</font>。
+ Ps:我们可以手动调用trimToSize清理一批数据，也可以调用resize方法，重新赋值缓存大小的上限并计算当前空间是否需要清理，snapshot来获取缓存map的切片，注意是浅拷贝。
 
 ## DiskLruCache使用及思考
 
@@ -1808,12 +1808,12 @@ CMake 是一个跨平台构建系统，在 Android Studio 引入 CMake 之前，
 
 总结官网对 CMake 的使用，其实也就如下的步骤：
 
-1. add_library 指定要编译的库，并将**所有**的 `.c` 或 `.cpp` 文件包含指定。
+1. add_library 指定要编译的库，并将**所有**的 .c 或 .cpp 文件包含指定。
 2. include_directories 将**头文件**添加到搜索路径中
 3. set_target_properties 设置库的一些属性
 4. target_link_libraries **将库与其他库相关联**
 
-在 cpp 的同一目录下创建 `CMakeLists.txt` 文件，内容如下：
+在 cpp 的同一目录下创建 CMakeLists.txt 文件，内容如下：
 
 ```
 # 指定 CMake 使用版本
@@ -1824,9 +1824,9 @@ project(HelloCMake)
 add_executable(HelloCMake main.cpp )
 ```
 
-其中，通过 `cmake_minimum_required` 方法指定 CMake 使用版本，通过 `project` 指定工程名。
+其中，通过 cmake_minimum_required 方法指定 CMake 使用版本，通过 project 指定工程名。
 
-而 `add_executable` 就是指定**最后编译的可执行文件名称和需要编译的 cpp 文件**，如果工程很大，有多个 cpp 文件，那么都要把它们添加进来(**使用空格分隔**)。
+而 add_executable 就是指定**最后编译的可执行文件名称和需要编译的 cpp 文件**，如果工程很大，有多个 cpp 文件，那么都要把它们添加进来(**使用空格分隔**)。
 
 **add_library**
 
@@ -1851,8 +1851,3 @@ source1 source2 … sourceN)
  缺点: 对新手来说稍微有点难理解, 同时会由于搞错签名, 方法, 导致注册失败
 
 
-
-作者：smewise
-链接：https://www.jianshu.com/p/1d6ec5068d05
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

@@ -64,6 +64,69 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Android『小知识点』" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" class="article-date">
+  <time datetime="2019-04-09T11:41:37.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/">Android『小知识点』</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><h5 id="HanderThread"><a href="#HanderThread" class="headerlink" title="HanderThread"></a>HanderThread</h5><p>一个包含一个looper的<strong>线程</strong>，这个looper可以用来创建hanlder，需要注意start()方法还是需要调用才能使用。</p>
+<p>HandlerThread有<strong>quit()和quitSafely()</strong>方法用于退出HandlerThread对应的Looper，其实应该是直接调用了Looper.quit()和Looper.quitSafely()，<strong>后者自API 18</strong>添加。除此之外，还有其他方法：</p>
+<p><strong>getLooper()：该方法是同步的，如果线程已经启动了，那么这个方法会在looper初始化完成之前保持阻塞。</strong></p>
+<h5 id="SharePreferences"><a href="#SharePreferences" class="headerlink" title="SharePreferences"></a>SharePreferences</h5><p>提交修改可以使用apply()和commit()，两者是不同的，具体：</p>
+<ol>
+<li><p>commit是同步的，会返回一个执行成功与否的boolean结果；apply是异步的，提交以后直接改变内容中的值，然后返回，将入数据写入磁盘的动作放到异步线程里进行，不返回成功与否的boolean结果。</p>
+</li>
+<li><p>如果你不在乎数据写入的结果，而且又位于主线程中，那么apply比较合适，因为比较快。反之，如果存在则使用commit比较合适。</p>
+</li>
+</ol>
+<h5 id="IntentService"><a href="#IntentService" class="headerlink" title="IntentService"></a>IntentService</h5><p>IntentService是一个用来处理异步请求的的类，通过startService(Intent)启动，所有的Intent会在一个<strong>工作线程按顺序处理</strong>。工作队列处理器模式一般用来处理从application的主线程卸下的任务。IntentService的存在只是为了简化工作，IntentService是抽象类，集成它并实现onHandleIntent方法，IntentService接收到Intent，并启动一个线程。<strong>所有的请求Intent都会被一个工作线程处理，会处理直到所有任务都完成，注意每次只能处理一个请求。</strong></p>
+<h5 id="FragmentTranscation"><a href="#FragmentTranscation" class="headerlink" title="FragmentTranscation"></a>FragmentTranscation</h5><p>用于保证一些列Fragment操作的原子性。</p>
+<ol>
+<li>transaction.add() //往Activity中添加一个Fragment</li>
+<li>transaction.remove() //从Activity中移除一个Fragment</li>
+<li>transaction.replace() //先remove在add的组合操作</li>
+<li>transaction.hide() //隐藏当前Fragment，仅仅设为不可见，并不会销毁</li>
+<li>transaction.show() //显示之前隐藏的Fragment</li>
+</ol>
+<h5 id="AsyncQueryHandler"><a href="#AsyncQueryHandler" class="headerlink" title="AsyncQueryHandler"></a>AsyncQueryHandler</h5><p>AsyncQueryHandler是用于在ContentProvider上面执行<font color="#dd0000"><strong>异步的CRUD</strong></font>操作的工具类，CRUD操作通常会被放到一个<strong>单独的子线程</strong>中执行，当操作结束获取结果后，将通过消息的方式传递给调用AsyncQueryHandler的线程，通常就是主线程。AsyncQueryHandler是一个抽象类，继承自Handler。通过封装ContentResolver、HandlerThread、Handler等实现对ContentProvider的异步操作。</p>
+<h5 id="JobService"><a href="#JobService" class="headerlink" title="JobService"></a>JobService</h5><p>在Android 5.0中引入<strong>JobScheduler</strong>来执行一些<strong>需要满足特定条件但不紧急的后台任务</strong>，当一系列预置的条件被满足时，JobScheduler API为你的应用执行一个操作，jobScheduler API允许同时执行多个任务。这允许你的应用执行某些指定的任务时不需要考虑时机控制引起的电池消耗。<font color="#dd0000"><strong>JobScheduler是一个系统级的作业调度器，我们将某些任务扔给系统，当达到我们设定的条件以后，JobScheduler再吊起我们的JobService执行我们的业务逻辑。</strong></font></p>
+        
+          <p class="article-more-link">
+            <a href="/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/04/09/Android%E3%80%8E%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E3%80%8F/" data-id="ckaupd1ed0034d0262lgra50t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Android基础三部曲『onDraw+onMessage+onLayout』" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" class="article-date">
@@ -115,7 +178,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ckalqfbzc003fti268sm4dgzn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EonDraw+onMessage+onLayout%E3%80%8F/" data-id="ckaupd1eh003dd026coagctgs" class="article-share-link">Share</a>
       
       
     </footer>
@@ -161,7 +224,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ckalqfbzb003cti26brx5fw79" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Android%E5%9F%BA%E7%A1%80%E4%B8%89%E9%83%A8%E6%9B%B2%E3%80%8EHandler+Message+Looper%E3%80%8F/" data-id="ckaupd1eg003ad026h14j129l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/" rel="tag">Framework</a></li></ul>
@@ -203,19 +266,63 @@
 </li>
 <li><p><strong>问题</strong></p>
 <ul>
+<li><p><strong>为什么重写equals方法必须重写hashCode方法？</strong>可以看hashCode方法注释中三点限制：</p>
+<ol>
+<li><p>同一个对象上调用多次hashCode必须输出相同的整型数据。</p>
+</li>
+<li><p><font color="#dd0000"><strong>两个对象如果equals，那么他们必须有相同的hashCode</strong></font>。</p>
+</li>
+<li><p>有相同的hashCode的2个对象，不一定equals。</p>
+</li>
+</ol>
+<p><font color="#dd0000"><strong>由第2点可以得出结论，如果重写了equals，必须重写hashCode；因为euqals方法中设计的字段必须得参与到hashCode的计算中去，才能保证第2点能够正确</strong></font>。</p>
+</li>
 <li><p>为什么HashMap的长度是2的幂次方？</p>
 <p><strong>为了更高效，因为如果除数是2的幂次方，那么取余操作等同于右移一位(hash % length) == (hash &amp; (length -1))</strong></p>
 </li>
+<li><p><font color="#dd0000"><strong>如何解决散列表的哈希冲突问题？</strong></font></p>
+<p>答：链表法(将相同的hash值的对象组织成一个链表放在hash值对应的槽位)和开发地址法(通过一个探测算法，当某个槽位已经被占据的情况下继续寻找下一个可以使用的槽位)。目前HashMap使用的是链表法。</p>
+</li>
+<li><p>为什么HashMap不是线程安全的？</p>
+<p>1、HashMap 在插入的时候</p>
+<p>现在假如 A 线程和 B 线程同时进行插入操作，然后计算出了相同的哈希值对应了相同的数组位置，因为此时该位置还没数据，然后对同一个数组位置，两个线程会同时得到现在的头结点，然后 A 写入新的头结点之后，B 也写入新的头结点，那B的写入操作就会覆盖 A 的写入操作造成 A 的写入操作丢失。</p>
+<p>2、HashMap 在扩容的时候</p>
+<p>HashMap 有个扩容的操作，这个操作会<strong>新生成一个新的容量的数组</strong>，然后对原数组的所有键值对重新进行计算和写入新的数组，之后指向新生成的数组。当多个线程同时进来，检测到总数量超过门限值的时候就会<font color="#dd0000"><strong>同时调用 resize 操作，各自生成新的数组并 rehash 后赋给该 map 底层的数组</strong></font>，结果最终只有最后一个线程生成的新数组被赋给该 map 底层，其他线程的均会丢失。</p>
+</li>
 </ul>
 </li>
-<li><p><strong>注意</strong></p>
-<ul>
-<li>循环引用，当在多线程环境下，对HashMap进行put操作，可能会出发扩容；扩容意味着数组元素及元素下挂载的链表的复制，所以可能在扩容是会发生循环引用。</li>
 </ul>
+<ul>
+<li><p><strong>注意</strong></p>
+<p>循环引用，当在多线程环境下，对HashMap进行put操作，可能会出发扩容；扩容意味着数组元素及元素下挂载的链表的复制，所以可能在扩容是会发生循环引用。</p>
 </li>
 <li><p><font color="#dd0000"><strong>equals和hashCode</strong></font></p>
+<p>hashCode方法用于得到一个对象的整型类型的hashCode值。equals<font color="#dd0000"><strong>通常</strong></font>用来比较两个<strong>对象的值</strong>是否相等。查看Object类中的equals方法的默认实现是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>从这里看出默认不重写equals方法的情况下，调用equals是等同于==的，然而很多类都重写了equals方法，<strong>使之用于比较对象上的值是否相等</strong>，如字符串类String中的equals：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">        String anotherString = (String)anObject;</span><br><span class="line">        <span class="keyword">int</span> n = length();</span><br><span class="line">        <span class="keyword">if</span> (n == anotherString.length()) &#123;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (charAt(i) != anotherString.charAt(i))</span><br><span class="line">                        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们知道一个HashMap中不能存在两个相同的key。<strong>这里的相同的key，指的是hash相等，且key的值相等(==或者equals)。</strong></p>
+<h4 id="HashMap的putVal方法"><a href="#HashMap的putVal方法" class="headerlink" title="HashMap的putVal方法"></a>HashMap的putVal方法</h4><p>设有对象A要添加到HashMap中去，<strong>putVal方法回返回插入对象的旧值(return previous value, or null if none)</strong>，过程如下：</p>
+<ol>
+<li><p>首先使用<font color="#dd0000"><strong>(n-1) &amp; hash</strong></font>得到key对应HashMap数组的索引位置，如果<strong>该位置为空，则直接插入新Node。过程结束</strong>，返回null</p>
 </li>
-</ul>
+<li><p>如果<strong>1</strong>中数组索引位置上<strong>已存在对象</strong>，那么</p>
+<ol>
+<li><p>如果该位置上对象的hash和A的hash相等，且key的引用相等或值相等，直接替换（<strong>即在数组上已经找到了hash和key相同的元素，不需要在从链表或红黑树中查找元素</strong>)</p>
+</li>
+<li><p>如果桶上找到了hash相等的对象，但是他们的key不相等，那么需要判断节点是红黑树节点还是链表节点来选择不同的put方式。</p>
+</li>
+<li><p>是红黑树节点，调用putTreeVal()，<strong>这个本段落暂不分析</strong>。</p>
+</li>
+<li><p>是链表节点，那么久使用Node.next遍历链表，<strong>直至遍历到末尾插入新Node</strong>；或者找到一个key相等的，<strong>替换之</strong>。</p>
+<p>注意此时，记录了遍历的节点数，当<font color="#dd0000"><strong>遍历次数</strong></font>大于等于阈值(TREEIFY_THRESHOLD，默认是8)，会进行树化操作（treeifyBin()）。</p>
+</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Implements Map.put and related methods</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> onlyIfAbsent if true, don't change existing value</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">                 <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">      Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">      <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">          n = (tab = resize()).length;</span><br><span class="line">      <span class="comment">//1. 首先使用(n-1) &amp; hash得到key对应HashMap桶上的位置(即数组的索引位置)，如果该位置为空，则直接插入新Node。</span></span><br><span class="line">      <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">          tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">      <span class="keyword">else</span> &#123; <span class="comment">//2. 数组索引位置上已存在对象</span></span><br><span class="line">          Node&lt;K,V&gt; e; K k;</span><br><span class="line">          <span class="comment">//2.1 如果该位置上对象的hash和A的hash相等，且key的引用相等或值相等</span></span><br><span class="line">          <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">              ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">              e = p;</span><br><span class="line">          <span class="comment">//2.2 如果桶上找到了hash相等的对象，但是他们的key不相等，那么判断节点是红黑树节点还是链表节点</span></span><br><span class="line">          <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) </span><br><span class="line">              <span class="comment">//2.3 是红黑树节点，调用putTreeVal()，这个暂不分析</span></span><br><span class="line">              e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">          <span class="keyword">else</span> &#123;</span><br><span class="line">              <span class="comment">//2.4 是链表节点，那么久使用Node.next遍历链表，直至遍历到末尾插入新Node；或者找到一个key相等的，替换之</span></span><br><span class="line">              <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                  <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                      p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                      <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                          treeifyBin(tab, hash);</span><br><span class="line">                      <span class="keyword">break</span>;</span><br><span class="line">                  &#125;</span><br><span class="line">                  <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                      ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                      <span class="keyword">break</span>;</span><br><span class="line">                  p = e;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">              V oldValue = e.value;</span><br><span class="line">              <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                  e.value = value;</span><br><span class="line">              afterNodeAccess(e);</span><br><span class="line">              <span class="keyword">return</span> oldValue;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      ++modCount;</span><br><span class="line">      <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">          resize();</span><br><span class="line">      afterNodeInsertion(evict);</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
         
           <p class="article-more-link">
             <a href="/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/#more">Read More</a>
@@ -224,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ckalqfbzg003oti261rpe1r2y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/09/Java%E3%80%8E%E6%95%B0%E6%8D%AE%E5%AE%B9%E5%99%A8%E3%80%8F/" data-id="ckaupd1ej003jd026dvfchzpw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
@@ -334,7 +441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ckalqfbzh003rti26b7mndxc6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/Kotlin%E7%9B%B8%E5%85%B3/" data-id="ckaupd1eq003ud02688sfgb0w" class="article-share-link">Share</a>
       
       
     </footer>
@@ -384,7 +491,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ckalqfbzo004dti26cgsw528l" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/08/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E2%80%94%E2%80%94RxJava2%E3%80%8E%E5%9F%BA%E7%A1%80%E3%80%8F/" data-id="ckaupd1ey004ed02677j3cwt2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava2/" rel="tag">RxJava2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li></ul>
@@ -441,7 +548,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckalqfbzt004tti26eruthciy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/05/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EGradle%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckaupd1f2004rd026gly7ffy3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -486,7 +593,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ckalqfbzf003mti264kk2eenx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/04/01/Java%E3%80%8E%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E3%80%8F/" data-id="ckaupd1ek003ld026ey7p4fh0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -531,7 +638,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckalqfbzq004iti264mxtht1t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/26/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E7%BB%84%E4%BB%B6%E5%8C%96%E6%A1%86%E6%9E%B6%E3%80%8F/" data-id="ckaupd1f1004nd0268pz9c0xa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag">组件化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -597,7 +704,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckalqfbzw004yti26d6jx398n" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EKotlin%E5%AE%9E%E6%88%98%E3%80%8F/" data-id="ckaupd1f80054d026c9ikh6lz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/" rel="tag">Kotlin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
@@ -666,6 +773,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/31/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%BD%9C%E8%A7%84%E5%88%99%E3%80%8F/">读书笔记『潜规则』</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EAndroid%E8%BF%9B%E9%98%B6%E8%A7%A3%E5%AF%86%E3%80%8F/">Android『进阶解密』</a>
           </li>
         
@@ -679,10 +790,6 @@
         
           <li>
             <a href="/2020/05/06/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8EFlutter%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E5%A4%A7%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E3%80%8F/">读书笔记『Flutter从0到1构建大前端应用』</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/19/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E3%80%8E%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8F/">读书笔记『深入理解Java虚拟机』</a>
           </li>
         
       </ul>

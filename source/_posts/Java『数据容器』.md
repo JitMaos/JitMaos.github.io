@@ -35,7 +35,7 @@ public int hashCode() {
     
   + <font color="#dd0000">**如何解决散列表的哈希冲突问题？**</font>
 
-    答：链表法(将相同的hash值的对象组织成一个链表放在hash值对应的槽位)和开发地址法(通过一个探测算法，当某个槽位已经被占据的情况下继续寻找下一个可以使用的槽位)。目前HashMap使用的是链表法。
+    答：<font color="#dd0000">**链表法**</font>(将相同的hash值的对象组织成一个链表放在hash值对应的槽位)和<font color="#dd0000">**开发地址法**</font>(通过一个探测算法，当某个槽位已经被占据的情况下继续寻找下一个可以使用的槽位)。目前HashMap使用的是链表法。
 
   + 为什么HashMap不是线程安全的？
 
@@ -177,7 +177,7 @@ public int hashCode() {
 #### ConcurrentHashMap
 
 + **结构**：JDK 1.8之前采用**分段的数组+链表**实现，JDK1.8开始数据结构和JDK 1.8下的HashMap 一样，采用**数组+链表/红黑树**。
-+ **注意**：在JDK 1.8之前，对整个桶进行分割分段(Segment)，每一把锁只锁定其中一部分数据，多线程访问容器中不同数据段的数据时就不存在锁竞争了。在JDK 1.8中摒弃了Segment的概念，而是使用JDK 1.8 HashMap的数据结构配合Synchronized和CAS来操作，**看起来就像是优化过且线程安全的HashMap**。
++ **注意**：在JDK 1.8之前，对整个桶进行分割分段(Segment)，每一把锁只锁定其中一部分数据，多线程访问容器中不同数据段的数据时就不存在锁竞争了。<font color="#dd0000">**在JDK 1.8中摒弃了Segment的概念，而是使用JDK 1.8 HashMap的数据结构配合Synchronized和CAS来操作**</font>，**看起来就像是优化过且线程安全的HashMap**。
 
 #### LinkedHashMap
 
