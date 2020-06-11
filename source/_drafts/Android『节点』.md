@@ -1,7 +1,5 @@
----
 title: Android『节点』
 tags:
----
 
 #虚拟机
 
@@ -115,7 +113,7 @@ application并不是安卓程序的入口，跟Java程序类似，都是有一�
 **ListView**的缓存有两级，在ListView里面有一个内部类 RecycleBin，RecycleBin有两个对象Active View和Scrap View来管理缓存，Active View是第一级，Scrap View是第二级。
 
 - **Active View**：是缓存在屏幕内的ItemView，当列表数据发生变化时，屏幕内的数据可以直接拿来复用，无须进行数据绑定。
-- **Scrap view**：缓存屏幕外的ItemView，这里所有的缓存的数据都是"脏的"，也就是数据需要重新绑定，也就是说屏幕外的所有数据在进入屏幕的时候都要走一遍getView（）方法。
+- **Scrap view**：缓存屏幕外的ItemView，这里所有的缓存的数据都是"脏的"，<font color="#dd0000">**也就是数据需要重新绑定，也就是说屏幕外的所有数据在进入屏幕的时候都要走一遍getView（）方法**</font>。
 - 图片1：![img](http://47.110.40.63:8080/img/blog/ListView缓存示意图.png)
 - 图片2：![img](http://47.110.40.63:8080/img/blog/ListView缓存流程图.png)
 
@@ -127,7 +125,7 @@ application并不是安卓程序的入口，跟Java程序类似，都是有一�
 
 - Cache
 
-  刚刚移出屏幕的缓存数据，默认大小是2个，当其容量被充满同时又有新的数据添加的时候，会根据FIFO原则，把优先进入的缓存数据移出并放到下一级缓存中，然后再把新的数据添加进来。Cache里面的数据是干净的，也就是携带了原来的ViewHolder的所有数据信息，数据可以直接来拿来复用。需要注意的是，cache是根据position来寻找数据的，这个postion是根据第一个或者最后一个可见的item的position以及用户操作行为（上拉还是下拉）。
+  **刚刚移出屏幕的缓存数据，默认大小是2个**，当其容量被充满同时又有新的数据添加的时候，会根据FIFO原则，把优先进入的缓存数据移出并放到下一级缓存中，然后再把新的数据添加进来。<font color="#dd0000">**Cache里面的数据是干净的，也就是携带了原来的ViewHolder的所有数据信息，数据可以直接来拿来复用**</font>。需要注意的是，cache是根据position来寻找数据的，这个postion是根据第一个或者最后一个可见的item的position以及用户操作行为（上拉还是下拉）。
 
 - ViewCacheExtension
 
@@ -260,24 +258,6 @@ public class MainActivity extends Activity {
 
 传入需要适配的View，通常为Activity或Fragment的root view，遍历其中的所有子View，根据View的dp数结合屏幕密度比例进行缩放，更新LayoutParams即可。
 
-## APK压缩
-
-一、转换图片格式，使用jpg，或者webp。WebP比PNG小45%。
-
-二、去除多语言
-
-三、删除不必要的so库，微信也只保留了armeabi-v7a
-
-四、使用Lint进行无用资源检查（谨慎删除）
-
-五、开启混淆
-
-六、删除无用资源ShinkResource
-
-七、使用微信资源压缩方案AndResGuard
-**AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。底层原理
-andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk。
-
 ## 自定义权限
 
 摘自：https://www.cnblogs.com/liuzhipenglove/p/7102889.html
@@ -331,15 +311,132 @@ b 、然后就各个surface 之间可能有重叠，比如说在上面的简略�
 
 摘自：https://blog.csdn.net/vicwudi/article/details/100191529
 
-1. 界面上任何一个 View 的刷新请求最终都会走到 ViewRootImpl 中的 scheduleTraversals() 里来安排一次遍历绘制 View 树的任务；
-2. scheduleTraversals() 会先过滤掉同一帧内的重复调用，在同一帧内只需要安排一次遍历绘制 View 树的任务即可，这个任务会在下一个屏幕刷新信号到来时调用 performTraversals() 遍历 View 树，遍历过程中会将所有需要刷新的 View 进行重绘；
-3. 接着 scheduleTraversals() 会往主线程的消息队列中发送一个同步屏障，拦截这个时刻之后所有的同步消息的执行，但不会拦截异步消息，以此来尽可能的保证当接收到屏幕刷新信号时可以尽可能第一时间处理遍历绘制 View 树的工作；
+1. 界面上任何一个 View 的刷新请求最终都会走到 ViewRootImpl 中的 **scheduleTraversals()**里来安排一次遍历绘制 View 树的任务；
+
+   ```java
+   //ViewRootImpl.java
+   void scheduleTraversals() {
+     if (!mTraversalScheduled) { //过滤掉同一帧内的重复调用
+       mTraversalScheduled = true;
+       //插入同步内存屏障，拦截这个时刻之后所有同步消息的执行，但不会拦截异步消息
+       mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();
+       mChoreographer.postCallback(
+         Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null);
+       if (!mUnbufferedInputDispatch) {
+         scheduleConsumeBatchedInput();
+       }
+       notifyRendererOfFramePending();
+       pokeDrawLockIfNeeded();
+     }
+   }
+   ```
+
+2. scheduleTraversals() 会先**过滤掉同一帧内的重复调用**，在同一帧内只需要安排一次遍历绘制 View 树的任务即可，这个任务会在下一个屏幕刷新信号到来时调用 performTraversals() 遍历 View 树，遍历过程中会将所有需要刷新的 View 进行重绘；
+
+3. 接着 scheduleTraversals() 会往主线程的消息队列中发送一个<font color="#dd0000">**同步屏障**</font>，**拦截这个时刻之后所有的同步消息的执行，但不会拦截异步消息**，以此来尽可能的保证当接收到屏幕刷新信号时可以尽可能第一时间处理遍历绘制 View 树的工作；
+
 4. 发完同步屏障后 scheduleTraversals() 才会开始安排一个遍历绘制 View 树的操作，作法是把 performTraversals() 封装到 Runnable 里面，然后调用 Choreographer 的 postCallback() 方法；
+
+   ```java
+   //TraversalRunnable.java
+   final class TraversalRunnable implements Runnable {
+     @Override
+     public void run() {
+       doTraversal();
+     }
+   }
+   ```
+
+   doTravelsal
+
+   ```java
+   void doTraversal() {
+     if (mTraversalScheduled) {
+       mTraversalScheduled = false;
+       mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);
+   
+       if (mProfile) {
+         Debug.startMethodTracing("ViewAncestor");
+       }
+   
+       performTraversals();
+   
+       if (mProfile) {
+         Debug.stopMethodTracing();
+         mProfile = false;
+       }
+     }
+   }
+   ```
+
+   
+
 5. postCallback() 方法会先将这个 Runnable 任务以当前时间戳放进一个待执行的队列里，然后如果当前是在主线程就会直接调用一个native 层方法，如果不是在主线程，会发一个最高优先级的 message 到主线程，让主线程第一时间调用这个 native 层的方法；
+
 6. native 层的这个方法是用来向底层注册监听下一个屏幕刷新信号，当下一个屏幕刷新信号发出时，底层就会回调 Choreographer 的onVsync() 方法来通知上层 app；
+
 7. onVsync() 方法被回调时，会往主线程的消息队列中发送一个执行 doFrame() 方法的消息，这个消息是异步消息，所以不会被同步屏障拦截住；
+
+   ```java
+   void doFrame(long frameTimeNanos, int frame) {
+           final long startNanos;
+           synchronized (mLock) {
+               if (!mFrameScheduled) {
+                   return; // no work to do
+               }
+   ...
+               long intendedFrameTimeNanos = frameTimeNanos;
+               startNanos = System.nanoTime();
+               final long jitterNanos = startNanos - frameTimeNanos;
+               if (jitterNanos >= mFrameIntervalNanos) {
+                   final long skippedFrames = jitterNanos / mFrameIntervalNanos;
+                   final long lastFrameOffset = jitterNanos % mFrameIntervalNanos;
+                   frameTimeNanos = startNanos - lastFrameOffset;
+               }
+   
+               if (frameTimeNanos < mLastFrameTimeNanos) {
+                   scheduleVsyncLocked(); 
+                   return;
+               }
+   
+               if (mFPSDivisor > 1) {
+                   long timeSinceVsync = frameTimeNanos - mLastFrameTimeNanos;
+                   if (timeSinceVsync < (mFrameIntervalNanos * mFPSDivisor) && timeSinceVsync > 0) {
+                       scheduleVsyncLocked();
+                       return;
+                   }
+               }
+   
+               mFrameInfo.setVsync(intendedFrameTimeNanos, frameTimeNanos);
+               mFrameScheduled = false;
+               mLastFrameTimeNanos = frameTimeNanos;
+           }
+   
+           try {
+               Trace.traceBegin(Trace.TRACE_TAG_VIEW, "Choreographer#doFrame");
+               AnimationUtils.lockAnimationClock(frameTimeNanos / TimeUtils.NANOS_PER_MS);
+   
+               mFrameInfo.markInputHandlingStart();
+               doCallbacks(Choreographer.CALLBACK_INPUT, frameTimeNanos);
+   
+               mFrameInfo.markAnimationsStart();
+               doCallbacks(Choreographer.CALLBACK_ANIMATION, frameTimeNanos);
+   
+               mFrameInfo.markPerformTraversalsStart();
+               doCallbacks(Choreographer.CALLBACK_TRAVERSAL, frameTimeNanos);
+   
+               doCallbacks(Choreographer.CALLBACK_COMMIT, frameTimeNanos);
+           } finally {
+               AnimationUtils.unlockAnimationClock();
+               Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+           }
+       }
+   ```
+
 8. doFrame() 方法会去取出之前放进待执行队列里的任务来执行，取出来的这个任务实际上是 ViewRootImpl 的 doTraversal() 操作；
+
 9. 上述第4步到第8步涉及到的消息都手动设置成了异步消息，所以不会受到同步屏障的拦截；
+
 10. doTraversal() 方法会先移除主线程的同步屏障，然后调用 performTraversals() 开始根据当前状态判断是否需要执行performMeasure() 测量、perfromLayout() 布局、performDraw() 绘制流程，在这几个流程中都会去遍历 View 树来刷新需要更新的View；
 
 <font color="#dd0000">**结来说，当有屏幕刷新操作时，系统会将View树的测量、布局和绘制等封装到一个Runnable，然后监听VSync信号，等Vsync信号来时，再触发此Runnable。**</font>
@@ -676,12 +773,48 @@ public void apply() {
 
 ## AIDL通信===
 
+摘自：https://www.cnblogs.com/ganchuanpu/p/9263578.html
+
+
+
 ## 多进程带来的问题
 
 - 静态成员和单例模式完全失效(不是同一块内存，会产生不同的副本)
 - 线程同步机制完全失效(不是同一块内存，所以对象也不是同一个，因此类锁、对象锁也不是同一个，不能保证线程同步)
 - SharedPreferences 可靠性下降(SharedPreferences不支持多个进程同时写，会有一定的几率丢失数据)
 - Application 多次创建(Android为每个进程分配独立的虚拟机，这个过程其实就是启动一个应用，所以Application会被创建多次)，所以我们不能直接将一些数据保存在Application中。
+
+## SparseArray
+
+摘自：https://blog.csdn.net/u013493809/article/details/21699121
+
+Sparse [spɑːrs] 稀疏的
+
+**SparseArray是android里为<Interger,Object>这样的Hashmap而专门写的类**,<font color="#dd0000">**目的是提高内存效率，底层基于数组，其核心是二分查找函数（binarySearch）**</font>。注意内存二字很重要，因为它仅仅提高内存效率，而不是提高执行效率，所以也决定它只适用于android系统（内存对android项目有多重要，地球人都知道）。SparseArray有两个优点：
+
+1. 避免了自动装箱（auto-boxing）
+
+2. 不需要开辟内存空间来额外存储外部映射
+
+   我们知道HashMap 采用一种所谓的“Hash 算法”来决定每个元素的存储位置，存放的都是数组元素的引用，通过每个对象的hash值来映射对象。而SparseArray则是用数组数据结构来保存映射，然后通过折半查找来找到对象。但其实一般来说，SparseArray执行效率比HashMap要慢一点，因为查找需要折半查找，而添加删除则需要在数组中执行，而HashMap都是通过外部映射。但相对来说影响不大，**最主要是SparseArray不需要开辟内存空间来额外存储外部映射，从而节省内存**。
+
+## ArrayMap
+
+和SparseArray类似，也是基于数组实现。区别在于ArrayMap的Key数组元素为任意对象的hash值。
+
+## Android如何实现长连接
+
+1. [WebSocket](https://www.jianshu.com/p/954f022671fc)
+
+   初始化服务-----初始化websocket------设置心跳的间隔----启动服务----发送消息(心跳包)------接收消息即可
+
+2. [自定义实现长连接，可以通过NIO或者第三方NIO框架，如MINA实现](https://www.jianshu.com/p/7b3e5edf1951)
+
+   Mina与后来兴起的高性能IO新贵Netty一样，都是韩国人Trustin Lee的大作。<font color="#dd0000">**Mina的底层依赖的主要是Java NIO库，上层提供的是基于事件的异步接口。**</font>
+
+   [Android基于Mina实现Socket长连接](https://www.jianshu.com/p/9c37612f227f)
+
+3. 使用第三方长连接服务，如Push
 
 #Java核心
 
@@ -1028,7 +1161,12 @@ IWindowSession 在viewRootImpl构造函数中初始化:
 
 摘自：https://blog.csdn.net/hai_chao/article/details/79626161
 
+## 客户端的HTTPS原理
 
+1. 客户端生成随机字符串A，作为数据**传输对称加密**的秘钥。
+2. 使用<font color="#dd0000">**本地预置的RSA公钥**</font>对**随机字符串**进行加密A，得到加密字符串B。
+3. 将加密字符串B传输到服务器，服务器使用<font color="#dd0000">**RSA私钥**</font>进行解密，得到对称加密字符串。
+4. **之后只需要使用对称加密字符串进行文件加密传输**。
 
 ## Class文件解析
 
@@ -1226,7 +1364,45 @@ LruCache源码异常的精简，核心原理是通过<font color="#dd0000">**Lin
 
 6. 调用open()会遍历日志文件的每一行，解析每一行调用get(key)方法，<font color="#dd0000">**基于LinkedHashMap的特性，被访问过得entry会排在尾部。如果get(key)在内存中找不到对应的cache，则使用put()，依然会被安排在尾部**</font>。然后调用commit()的时候，**会判断缓存文件的总大小，如果超出限制。则调用remove()方法，移除内存中头部元素并删除文件并更新日志文件**。之后判断是否记录超过2000行，看是否需要rebuild日志文件。
 
-## Glide三级图片缓存===
+## Glide三级图片缓存
+
+摘自：https://www.jianshu.com/p/17644406396b
+
+**Glide内存缓存源码分析**
+
+内存存缓存的 读存都在Engine类中完成。缓存对象有两个
+
+```java
+private final MemoryCache cache; //LruCache，使用完的图片保存在这里
+private final Map<Key, WeakReference<EngineResource<?>>> activeResources; //使用中的缓存
+```
+
+使用中的图片，保存在弱引用activeResources中；使用完以后保存在LruCache中；
+
+loadFromCache方法读取缓存时，先判断isMemoryCacheable是不是false；之后从LruCache中读取缓存，读取到缓存以后将对象放置到使用中缓存activeResources，并且每次引用都会在图片对象Resources中使用计数+1。
+
+<font color="#dd0000">**Glide内存缓存的特点**</font>
+
+内存缓存使用<font color="#dd0000">**弱引用和LruCache**</font>结合完成的,<font color="#dd0000">**弱引用来缓存的是正在使用中的图片**</font>。**图片封装类Resources内部有个计数器判断是该图片否正在使用**。
+
+<font color="#dd0000">**Glide内存缓存的流程**</font>
+
+- 读：是先从lruCache取，取不到再从弱引用中取；
+- 存：内存缓存取不到，从网络拉取回来先放在弱引用里，渲染图片，图片对象Resources使用计数加一；
+- 渲染完图片，图片对象Resources使用计数减一，如果计数为0，图片缓存从弱引用中删除，放入lruCache缓存。
+
+<font color="#dd0000">**Glide磁盘缓存流程**</font>
+
+基于DiskLruCache算法实现
+
+- 读：**先找处理后（result）的图片，没有的话再找原图**。
+- 存：**先存原图，再存处理后的图**。
+
+
+
+## Glide使用优化
+
+内存缓存使用弱引用和LruCache结合完成的,弱引用来缓存的是正在使用中的图片。图片封装类Resources内部有个计数器判断是该图片否正在使用。
 
 ## ButterKnife源码解析
 
@@ -1546,11 +1722,25 @@ if (cache != null) {
 
 **一个连接池最多对应一个清理线程，清理线程不断的调用cleanup(long now)方法，清理连接上失效的Stream，记录空闲最久的连接，然后将该连接从连接池中移除**。
 
-## EventBus源码===
+## EventBus源码
 
+一句话概括：运行时动态解析register类中被@Subscribe注册的方法，并收集到集合，每次postEvent会触发一次遍历。根据不同的线程模式，分别反射调用方法。
 
+**如果没有在Activity的onDestory中反注册unregister，可能会发生内存泄漏**，虽然EventBus的invokeSubscriber方法做了捕获：
 
+```java
+void invokeSubscriber(Subscription subscription, Object event) {
+        try {
+            subscription.subscriberMethod.method.invoke(subscription.subscriber, event);
+        } catch (InvocationTargetException e) {
+            handleSubscriberException(subscription, event, e.getCause());
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Unexpected exception", e);
+        }
+    }
+```
 
+详情查看流程图
 
 ## EventBus优点与缺点
 
@@ -1573,9 +1763,40 @@ if (cache != null) {
 
 ![img](http://47.110.40.63:8080/img/blog/TCPIP五层模型.png)
 
-## Android类加载机制===
+## Android类加载机制
 
+Android中的ClassLoader和Java中的ClassLoader有些类似，也分为系统类加载器和自定义类加载器，其中系统类加载器分为：BootClassLoader、PathClassLoader、DexClassLoader。
 
+**BootClassLoader**：是ClassLoader的**内部类**，并继承自ClassLoader。<font color="#dd0000">**BootClassLoader是一个单例类，需要注意的是BootClassLoader的访问修饰符是默认的，只有在同一个包中才能访问，因此我们在应用程序中是无法直接调用的。**</font>
+
+**DexClassLoader**：可以加载dex文件以及包含dex的压缩文件(apk和jar文件)，<font color="#dd0000">**DexClassLoader继承自BaseDexClassLoader，方法都在BaseDexClassLoader中实现。**</font>
+
+```java
+public class DexClassLoader extends BaseDexClassLoader {
+  public DexClassLoader(String dexPath,String optimizedDirectory,String 			  		    librarySearchPath,ClassLoader parent) {
+    super(dexPath,new File(optimizedDirectory),librarySearchPath,parent);
+  }
+}
+```
+
+<font color="#dd0000">**DexClassLoader构造函数包含4个参数**</font>
+
++ dexPath：dex相关文件路径集合，多个路径用文件分隔符分隔默认文件分隔符为":"；
++ optimizedDirectory：解压的dex文件的存储路径，这个路径必须是一个内部存储路径，在一般情况下，使用当前应用程序的私有路径：/data/data/<Package Name>/...
++ librarySearchPath：包含C/C++库的路径集合，多个路径用文件分隔符分隔，可以为null
++ Parent：父加载器
+
+**PathClassLoader**：Android系统使用PathClassLoader来加载**系统类和应用程序的类**。和DexClassLoader一样继承自BaseDexClassLoader，也在BaseDexClassLoader中实现。
+
+在PathClassLoader的构造方法中没有optimizedDirectory，**这是因为PathClasLoader的optimizedDirectory已经被指定为/data/data/dalvik-cache**，该目录用于存放已经加载过得dex，<font color="#dd0000">**因此PathClassLoader通常用来加载已经安装的apk的dex文件**</font>。
+
+![img](http://47.110.40.63:8080/img/blog/Android 8.0ClassLoader继承关系.png)
+
++ ClassLoader是一个抽象类，其中定义了ClassLoader的主要功能。**BootClassLoader是它的内部类**。
++ SecureClassLoader类和JDK 8中的SecureClassLoader的代码是一样的，它继承了抽象类ClassLoader。SecureClassLoader并不是ClassLoader的实现类，而是<font color="#dd0000">**拓展了ClassLoader类加入了权限方面的功能，加强了ClassLoader的安全性**</font>。
++ URLClassLoader类和JDK 8中的URLClassLoader是一样的，<font color="#dd0000">**它继承自SecureClassLoader，用来通过URL路径从jar文件和文件夹中加载类和资源**</font>。
++ InMemoryDexClassLoader是Android 8.0新增的类加载器，继承自BaseDexClassLoader，<font color="#dd0000">**用来加载内存中的dex文件**</font>。
++ BaseDexClassLoader继承自ClassLoader，是抽象类ClassLoader的具体实现类，PathClassLoader、DexClassLoader、InMemoryDexClassLoader都继承自它。
 
 # 组件化
 
@@ -1662,11 +1883,48 @@ if (cache != null) {
 
 # 性能优化
 
-## 包体积优化===
+## 包体积优化
 
 摘自：https://juejin.im/post/5e7ad1c0e51d450edc0cf053#heading-83
 
 ![img](http://47.110.40.63:8080/img/blog/包体积优化思维导图.png)
+
+## APK压缩
+
+1. 转换图片格式，使用jpg，或者webp。WebP比PNG小45%。
+
+2. 去除多语言
+
+3. 删除不必要的so库，微信也只保留了armeabi-v7a
+
+4. 使用Lint进行无用资源检查（谨慎删除）
+
+5. 开启混淆
+
+6. 删除无用资源ShinkResource
+
+7. 使用**微信资源压缩**方案AndResGuard
+   **AndResGuard通过修改resources.arsc文件，从而可以混淆安卓的资源文件路径**（比如res/drawable/activity_advanced_setting_for_test=>r/d/a），达到减少apk包的体积的目的。**底层原理
+   andresGuard在原生的buildApk步骤之后，使用产生的apk作为输入文件，对其进行混淆压缩，产出一个新的apk**。
+
+8. SO文件动态下发
+
+   需要注意几个地方
+
+   1. 安全性问题，md5校验，或者结合APK安装包签名校验的方式进行校验
+   2. SO文件支持升降级配置，强制升级，或者回退到旧版本。本地需要保留旧版本文件。
+
+9. Dex分包优化
+
+   把相互依赖的代码分到同一个dex文件中，也可以优化一点空间。
+
+10. 插件化方案
+
+    插件化的前提是组件化
+
+11. D8和R8工具的使用
+
+    D8是优化的dex打包工具，R8是优化后的proguard工具
 
 ## 动态下发SO库
 
@@ -1678,15 +1936,15 @@ Android 加载 so 文件本身就是一种运行时动态加载可执行代码�
 
 **安全性问题**
 
-动态化本质上就是运行时加载可执行代码，而所有可执行代码在拷贝安装到安全路径（比如 Android 的 data/data 内部路径）之前，都有被劫持或者破坏的风险。最好的做法是每次加载 so 库之前都对其做一次安全性校验。考虑到检查带来的时间成本，可以假设内部路径是无条件可信的；而且除了劫持风险外，内部路径文件有可能被应用自身一些不当文件操作给破坏导致插件不完整，因此如果要考虑绝对安全，内部路径插件被加载也必须做安全检查），在 so 文件拷贝到内部路径后单独做一次检查，检查失败就丢弃文件走 fail 逻辑，检查通过就生成一个 flag 文件作为标志，以后通过判断 flag 标志是否存在来决定是否需要执行安全检查。
+动态化本质上就是运行时加载可执行代码，而所有可执行代码在拷贝安装到安全路径（比如 Android 的 data/data 内部路径）之前，都有被劫持或者破坏的风险。**最好的做法是每次加载 so 库之前都对其做一次安全性校验**。考虑到检查带来的时间成本，可以假设内部路径是无条件可信的；而且除了劫持风险外，内部路径文件有可能被应用自身一些不当文件操作给破坏导致插件不完整，因此如果要考虑绝对安全，内部路径插件被加载也必须做安全检查），在 so 文件拷贝到内部路径后单独做一次检查，检查失败就丢弃文件走 fail 逻辑，检查通过就生成一个 flag 文件作为标志，以后通过判断 flag 标志是否存在来决定是否需要执行安全检查。
 
 **怎么校验安全性呢？**
 
-最简单的方式是记录 so 文件的 MD5 或者 CRC 等 Hash 信息，不过 Hash 信息一般都会随之 so 文件的变动而改变，每次都需要调整这些数据比较麻烦。优化方案是“通过类似 APK 安装包签名校验的方式来确保安全性”：将 so 文件打包成 APK 格式的插件包并使用 Android Keystore 进行签名，将 Keystore 的指纹信息保存在宿主包内部，安全检验环节只需要校验插件包的签名信息是否和内置的指纹信息一致即可。（一种优化的方案是，使用和宿主包一样的 Keystore 给插件包签名，检验环节只需要检查插件和宿主的签名信息是否一致。）
+**最简单的方式是记录 so 文件的 MD5 或者 CRC 等 Hash 信息，不过 Hash 信息一般都会随之 so 文件的变动而改变，每次都需要调整这些数据比较麻烦**。优化方案是“通过类似 APK 安装包签名校验的方式来确保安全性”：<font color="#dd0000">**将 so 文件打包成 APK 格式的插件包并使用 Android Keystore 进行签名，将 Keystore 的指纹信息保存在宿主包内部，安全检验环节只需要校验插件包的签名信息是否和内置的指纹信息一致即可**</font>。（一种优化的方案是，使用和宿主包一样的 Keystore 给插件包签名，检验环节只需要检查插件和宿主的签名信息是否一致。）
 
 **版本控制问题**
 
-从 APK 里把 so 剥离出来后，我们除了要保证 so 文件的安全性，还要保证 so 文件和依赖它的宿主代码是 API 兼容的。如果需要做到动态升降级，还需要保留最近一两个版本的存量 so 文件，用于 fallback 逻辑需要。
+从 APK 里把 so 剥离出来后，我们除了要保证 so 文件的安全性，还要保证 so 文件和依赖它的宿主代码是 API 兼容的。<font color="#dd0000">**如果需要做到动态升降级，还需要保留最近一两个版本的存量 so 文件，用于 fallback 逻辑需要**</font>。
 
 通过版本控制流程，我们可以在服务端禁用这个版本的 so 插件，从而使客户端进入“so 插件不可用”的逻辑，而不至于执行有问题的代码。如果 so 插件支持动态升降级，还可以配置让客户端强制更新到 fix 插件版本，或者 fallback 回没有问题的存量旧版。
 
@@ -1789,6 +2047,23 @@ Dart VM启动后，那么一个新的Thread就会被创建，并且只会有一�
 - 启动 Event Loop
 
 Event Loop就像一个 infinite loop，被内部时钟来调谐，每一个tick，如果没有其他Dart Code在执行，就会做如下的事情（伪代码）：
+
+## cc
+
+1. 熟练Android基础，如四大组件、Context相关、Touch事件分发、Handler消息分发、View的绘制、界面的刷新机制流程等原理。
+2. 掌握常见算法，如排序，动态规划，递归，二分查找等。掌握常用数据容器，如：HashMap、ArrayList、ConcurrentHashMap、HashSet等。
+3. 掌握OkHttp、Retrofit、ButterKnife、EentBus、Dagger、BlockCanary、LeakCanary等主流框架的使用，并阅读过其中多数的源码。
+4. 能够熟练使用MVC、MVP、MVVM等架构模式进行项目开发。
+5. 掌握常用设计模式，如单例模式、适配器模式、责任链、观察者模式等设计模式。
+6. 熟练掌握动态代理模式及Java反射机制；了解Hook技术；了解注解、注解处理器等原理。
+7. 有热修复实战经验，了解热修复、插件化实现原理。
+8. 熟练掌握组件化架构实现。
+9. 了解Android系统源码，如系统启动流程、Activity启动流程、Binder机制、AIDL、AMS、PMS等原理。
+10. 对Java类加载、运行时、GC、内存模型有一定了解；
+
+
+
+
 
 ## Platfrom Channel
 
