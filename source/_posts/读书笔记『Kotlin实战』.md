@@ -226,7 +226,7 @@ val otherPerson = o as? Person?: return false
 
 **P146**：非空断言(**!!**)，可以将任何值转换成非空类型。如果对null值做非空断言，则会抛出异常。明确告诉编译器知道可能为空，也愿意接受异常。
 
-**P148**：**let**函数可以把一个调用它的对象变成lambda表达式的参数。如：
+**P148**：let函数让处理可空表达式变的更容易。`安全调用"let"只在表达式不为null时执行lambda`。如：
 
 ```java
 if(email!= null) sendEmailTo(email) -> 
@@ -235,7 +235,7 @@ email？.let{ email -> sendEmailTo(email)}
 
 **P149**：Kotlin通常要求你在构造方法中初始化所有属性，如果**某个属性是非空类型，你就必须提供非空的初始化值**。如果你使用可空类型，意味着该属性的每一次访问都需要null检查或者**!!**运算符；延迟初始化标识符(**lateinit**)只能修饰var，因为val是final的，在编译期就确定了其变量值，也不存在延迟初始化的需求。
 
-**P153**：**Kotlin中所有泛型类和泛型函数的类型参数默认都是可空的。**要是类型参数非空，必须要为它指定一个非空的上界，如：
+**P153**：`Kotlin中所有泛型类和泛型函数的类型参数默认都是可空的。`要是类型参数非空，必须要为它指定一个非空的上界，如：
 
 ```java
 fun <T:Any> printHashCode(t:T) {
@@ -249,7 +249,7 @@ fun <T:Any> printHashCode(t:T) {
 
 **P165**：List<Int?> 表示列表中的元素可空，List<Int>? 表示整个列表可空，但是其中的元素不可空。
 
-**P167**：Kotlin的集合设计和Java有所不同，它把访问集合数据的接口(**kotlin.collections.Collection**)和修改集合数据的接口(**kotlin.collections.MutableCollection**，继承了Collection接口)
+**P167**：Kotlin的集合设计和Java有所不同，它把访问集合数据的接口(**kotlin.collections.Collection**)和修改集合数据的接口分开了(**kotlin.collections.MutableCollection**，继承了Collection接口)
 
 **P168**：<font color="#dd0000">**只读集合不一定是不可变的**</font>，当一个变量同时被只读集合和可变集合引用时，他就可能被改变。
 
@@ -326,7 +326,7 @@ fun String.filter(predicate:(Char) -> Boolean):String {
 
 **P211**：一个函数类型的变量时FunctionN接口的一个实现，Kotlin标准库定义了一系列的接口，Function0<R>，Function1<P1,R)，Function<P1,P2,R>等。每个接口定义了一个invoke方法，调用这个方法就会执行函数。
 
-**P214**：返回函数的函数，**really cool！**，声明一个返回另一个函数的函数，**需要指定一个函数类型作为返回类型**。
+**P214**：返回函数的函数，**really cool！**声明一个返回另一个函数的函数，**需要指定一个函数类型作为返回类型**。
 
 ```java
 enum class Delivery {STANDARD,EXPEDITED}
@@ -339,7 +339,7 @@ fun getShippingCostCalculator(delivery: Delivery):(Order) -> Double {
 }
 ```
 
-**P218**：lambda表达式会被正常的编译成匿名类，这表明没调用一次lambda表达式，一个额外的类就会被创建。**并且如果lambda捕捉了某个变量，那么每次调用的时候都会创建一个新的对象**。这会带来运行时的额外开销，导致使用lambda比使用一个直接执行的相同代码的函数效率更低。<font color="#dd0000">**当一个函数被声明为inline时，它的函数体是内联的，换句话说，函数体会直接替换到函数被调用的地方，而不是被正常调用。**</font>
+**P218**：lambda表达式会被正常的编译成匿名类，这表明每调用一次lambda表达式，一个额外的类就会被创建。**并且如果lambda捕捉了某个变量，那么每次调用的时候都会创建一个新的对象**。这会带来运行时的额外开销，导致使用lambda比使用一个直接执行的相同代码的函数效率更低。<font color="#dd0000">**当一个函数被声明为inline时，它的函数体是内联的，换句话说，函数体会直接替换到函数被调用的地方，而不是被正常调用。**</font>
 
 **P221**：如果lambda作为参数被调用，这样的代码能被容易的内联，**如果lambda在某个地方被保存起来，此时lambda表达式将不能被内联，因为必须要有一个包含这些代码的对象存在**。
 
@@ -359,6 +359,20 @@ fun lookForAlice2(boys:List<Boy>) {
 ```
 
 **229**：**return从最近使用fun关键字声明的函数返回**，在匿名函数中，不带标签的return会从匿名函数返回，而不是从包含匿名函数的函数返回。
+
+```kotlin
+fun lookForAlice(people:List<People>) { 
+  people.forEach(fun(people){//从这Return
+    if(person.name == "Alice") return
+  })
+}
+
+fun lookForAlice(people:List<People>) { //从这Return
+  people.forEach {
+    if(it.name == "Alice") return
+  }
+}
+```
 
 **P236**：和Java中使用关键字extends来约束泛型形参上界不同，Kotlin中使用**:**来约束上界，如下：
 
@@ -386,7 +400,7 @@ fun <T> ensureTrailingPeriod(seq:T):T where T:CharSequence,T:Appendable {
 >>>println(ensureTrailingPeriod(StringBuilder("ABC"))) //输出：ABC.
 ```
 
-**P239**：泛型的类型擦除，泛型之所以能限制容器或者方法实参的类型，是因为在**编译期**做了校验，但是到了**运行是**泛型类型会被擦出掉，也就是编译期不会区分List&lt;String&gt;和List&lt;Student&gt;；不能判断一个对象是否是List&lt;String&gt;，只能使用List<?>判断该对象是否是List；在Kotlin中使用星号投影 ：
+**P239**：泛型的类型擦除，泛型之所以能限制容器或者方法实参的类型，是因为在**编译期**做了校验，但是到了**运行时**泛型类型会被擦出掉，也就是编译期不会区分List&lt;String&gt;和List&lt;Student&gt;；不能判断一个对象是否是List&lt;String&gt;，只能使用List<?>判断该对象是否是List；在Kotlin中使用星号投影 ：
 
 ```java
 if(value is List<*>){ ... }
