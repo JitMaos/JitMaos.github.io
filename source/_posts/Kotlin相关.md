@@ -10,6 +10,8 @@ tags:
 
 #### 1.1 主构造方法
 
+参考：https://blog.csdn.net/xlh1191860939/article/details/79412319
+
 在类的顶部声明，初始化语句块包含在类被创建时执行的代码，并与主构造方法一起使用。因为**主构造方法不能包含初始化代码**，所以需要使用初始化语句块。
 
 ```kotl
@@ -35,9 +37,19 @@ class User(_nickname: String) {
 class User(val nickname: String) // "val" 表示相应的属性会用构造方法的参数来初始化
 ```
 
+还有一种写法：
+
+```kotlin
+class User(nickname:String) {
+  private val nickname:String = nickname;
+}
+```
+
 #### 1.2 
 
+#### 2 with apply let run区别
 
+摘自：https://www.jianshu.com/p/e7abbfb109ac
 
 
 
@@ -140,6 +152,33 @@ open fun Disposable.add() {
   compositeDisposable.add(this) //this指代Disposable
 }
 ```
+
+#### typealias
+
+可用于提供一个更语义精简的类型别名取代具体泛型类型、匿名函数等含糊定义。※ typealias 不会生成新的类型，编译器只做简单内联替换
+
+```kotlin
+// 泛型别名
+typealias NodeSet = Set<Network.Node>
+typealias FileTable<K> = MutableMap<K, MutableList<File>>
+
+// 函数别名
+typealias MyHandler = (Int, String, Any) -> Unit
+typealias Predicate<T> = (T) -> Boolean
+
+// 同名类型别名
+class A {
+    inner class Inner
+}
+class B {
+    inner class Inner
+}
+
+typealias AInner = A.Inner
+typealias BInner = B.Inner
+```
+
+
 
 
 
