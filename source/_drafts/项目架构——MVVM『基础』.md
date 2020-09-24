@@ -3,33 +3,35 @@ title: MVVM『基础』
 tags: [android,DataBinding,Room,MVVM,Dagger2]
 ---
 
-### DataBinding
-
-#### 基于XML的绑定
-
-
-
-### Room
-
-#### 常用注解
-
-#### 初始化
-
-#### 使用
-
-
-
 ### MVVM
 
-#### LiveData
+摘自：https://www.jianshu.com/p/35d143e84d42
 
-本节参考：[Android架构组件之LiveData](<https://www.jianshu.com/p/6e7e05a8b750>)
+MVVM由M(Model)、V(View)、VM（ViewModel)三部分组成，其中V指的是Activity/Fragment；M指的是数据对象，比如各种Bean；VM 则是负责在V和M之间传递消息数据的对象，其中定义了操作M的方法，由V来调用。通常与ViewModel配合使用的是LiveData。
 
-`LiveData`采用了观察者模式设计，其中`LiveData`是被观察者，当数据发生变化时会通知观察者进行数据更新。通过这点，可以确保数据和界面的实时性。这是因为`LiveData`能够感知到组件的生命周期，当组件状态处于`DESTROYED`状态时，观察者对象会被`remove`。这是因为组件处于非激活状态时，在界面不会收到来自`LiveData`的数据变化通知。这样规避了很多因为页面销毁之后，修改UI导致的`crash`。由于`LiveData`保存数据的时候，组件和数据是分离的，所以在配置更改（如横竖屏切换等）的时候，即便组件被重新创建，因为数据还保存在`LiveData`中，这样也能够做到实时的更新。
 
-单例模式扩展`LiveData`对象并包装成系统服务，以便在应用程序中进行共享，需要该资源的只需要观察`LiveData`即可。
 
-#### BoundaryCallBack
+MVVM有什么特性
+
+1. 数据持久化
+
+   ViewModel的生命周期从Activity的onCreate到onDestory，这意味着在屏幕旋转时，执行activity的销毁与重建时，可以使用ViewModel保存数据，来避免数据的释放与重建。
+
+2. 异步回调问题
+
+   ViewModel配合LiveData使用，可以十分方便的实现**异步数据**的回调处理过程。
+
+   
+
+   
+
+   
+
+   
+
+   
+
+   BoundaryCallBack
 
 ```html
 Note that a BoundaryCallback instance shared across multiple PagedLists (e.g. when passed to {@link LivePagedListBuilder#setBoundaryCallback}), the callbacks may be issued multiple times. If for example {@link #onItemAtEndLoaded(Object)} triggers a network load, it should avoid triggering it again while the load is ongoing.

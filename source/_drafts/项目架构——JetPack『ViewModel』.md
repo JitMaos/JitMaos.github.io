@@ -11,7 +11,9 @@ ViewModel对象的生命周期由传递至ViewModelProvider的LifeCycle所决定
 MyViewModel viewmodel = ViewModelProviders.of(getActivity()).get(MyViewModel.class)
 ```
 
-这意味着，当一个Activity关联多个Fragment时，可以使用Activity的LifeCycle创建ViewModel对象，并使用该ViewModel对象在Fragment之间实现数据共享。
+###ViewModel实现Fragment之间的数据共享
+
+这意味着，**当一个Activity关联多个Fragment时，可以使用Activity的LifeCycle创建ViewModel对象，并使用该ViewModel对象在Fragment之间实现数据共享**。
 
 ```java
 public class SharedViewModel extends ViewModel {
@@ -45,4 +47,6 @@ public class DetailFragment extends LifecycleFragment {
     }
 }
 ```
+
+### ViewModel的封装
 
