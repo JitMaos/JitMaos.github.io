@@ -1883,6 +1883,27 @@ public class DexClassLoader extends BaseDexClassLoader {
 
 # 性能优化
 
+## ANR 治理
+
+### ANR介绍
+
+摘自：[Android ANR：原理分析及解决办法](https://www.jianshu.com/p/388166988cef)
+
+[Android应用ANR分析](https://www.jianshu.com/p/30c1a5ad63a3)
+
+Android系统中，**ActivityManagerService(简称AMS)**和**WindowManagerService(简称WMS)**会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或者特定事件没有处理完毕，就会出现ANR。
+
+以下四个条件都可以造成ANR发生：
+
+- **InputDispatching Timeout**：5秒内无法响应屏幕触摸事件或键盘输入事件
+- **BroadcastQueue Timeout** ：在执行前台广播（BroadcastReceiver）的`onReceive()`函数时10秒没有处理完成，后台为60秒。
+- **Service Timeout** ：前台服务20秒内，后台服务在200秒内没有执行完毕。
+- **ContentProvider Timeout** ：ContentProvider的publish在10s内没进行完。
+
+
+
+
+
 ## 包体积优化
 
 摘自：https://juejin.im/post/5e7ad1c0e51d450edc0cf053#heading-83
@@ -2017,6 +2038,8 @@ InitializeUtil.isNotificationIntent(intent)) && (!InitializeOptimizer.isHighSDKI
     InitializeOptimizer.setApplicationCreated(false);    return super.newActivity(cl, className, intent);
 }
 ```
+
+
 
 # Flutter
 
